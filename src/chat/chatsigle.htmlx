@@ -1,0 +1,151 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<script>
+		$M.includeFile("/common/commonUtils.html");
+		$M.includeFile("/chat/commonchat.html");
+	</script>
+</head>
+<body>
+	
+</body>
+<script>
+$M.includeFile("/chat/chatTemplate.html");
+var items = [];
+var myID;
+var myName;
+var to;
+var name;
+var type = "1";
+userDiv.setDisplay(true);
+Userstaue.setValue("离线");
+var chat = new Emp.Chat();
+$M.page.addEvent('onLoad', function(params){
+	addPerson.setDisplay(false);
+	myID = params.myID;
+	myName = params.myName;
+	to = params.to.userID;
+	name = params.to.name;
+	titleInfo.setValue(name);
+	type = params.type;
+	var toList = [];
+	toList.push(to);
+	chat.subscribeUserStatus({'userList':toList},function(r){
+		if($M.isAndroid) { //安卓要单独获取指定人的状态
+		 	if(chat.getUserStatus({'userID':to}) == "0"){
+				Userstaue.setValue("离线");
+			}else{
+				Userstaue.setValue("在线");
+			}
+		} else { //iOS回调参数有人员状态信息
+			var userstatus = Utils.stringToJson(r);
+			if(userstatus.status == "0"){
+				Userstaue.setValue("离线");
+			}else{
+				Userstaue.setValue("在线");
+			}
+		}
+	});
+	setTimeout(function () {
+		log("我开始执行了；");
+		if($M.isAndroid) { //安卓要单独获取指定人的状态
+			log(chat.getUserStatus({'userID':to}));
+			log(to);
+			if(chat.getUserStatus({'userID':to}) == "0"){
+				Userstaue.setValue("离线");
+			}else{
+				Userstaue.setValue("在线");
+			}
+		} else { //iOS回调参数有人员状态信息
+			
+		}
+	}, 300);
+	
+	chat.setChatListener({'to':to,'chatType':'single'},function(r){
+		var msg = Utils.stringToJson(r);
+		var item = {};
+		if (msg.type == "text") {
+			item.template = "rtext";
+			item.name = msg.from.name;
+			item.text = msg.text;
+			item.time = msg.time;
+		} else if (msg.type == "img") {
+			item.template = "rimg";
+			item.name = msg.from.name;
+			item.img = "baimg://" + msg.mID;
+			item.time = msg.time;
+		}
+		var date = new Date(msg.time);
+		item.date = date.format("yyyy-MM-dd hh:mm");
+		items.push(item);
+		reloadData();
+		chat.setAllMsgRead();
+	});
+	chat.loadMessages({'time':0,},function(r){
+		loadMessage(Utils.stringToJson(r),"1");
+		chat.setAllMsgRead();
+	});
+});
+
+function goBack() {
+	if(type == "1"){
+		$M.page.goBack({}, '/index.html');
+	}
+}
+$M.page.addEvent('onPressBackKeySystem', function(){
+	if(type == "1"){
+		$M.page.goBack({}, '/index.html');
+	}
+});
+
+function sendmsg() {
+	if (sendtext.getValue() == "") {
+		return;
+	}
+	var item = {'template':'stext','name':myName,'text':sendtext.getValue()};
+	chat.sendMessage({'chatType':'single','type':'text','to':to,'text':sendtext.getValue()},function(r){
+		log("send "+r);
+			var ajaxData = {};
+			ajaxData.userids = "["+to+"]"; //推送人员列表
+			ajaxData.title = myName; 		//标题
+			ajaxData.msgContent = "2";//类型
+			ajaxData.type = "chatMessage";	//推送组类型
+			ajaxData.summary = "";	//摘要
+			AjaxUtil.submit("/com.primeton.pmbusiness.push.pushComponent.appStorePush.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(result){
+				log("推送成功");
+			}, function(errCode, errMsg){
+				log("推送失败");
+			});
+		
+	});
+	var date = new Date();
+	item.date = date.format("yyyy-MM-dd hh:mm");
+	items.push(item);
+	reloadData();
+	sendtext.setValue("");
+}
+
+function sendImg(path) {
+	var item = {'template':'simg','name':myName,'img':path};
+	chat.sendMessage({'chatType':'single','type':'img','to':to,'path':path},function(r){log("send img "+r);
+		var ajaxData = {};
+			ajaxData.userids = "["+to+"]"; //推送人员列表
+			ajaxData.title = myName; 		//标题
+			ajaxData.msgContent = "2";//类型
+			ajaxData.type = "chatMessage";	//推送组类型
+			ajaxData.summary = "";	//摘要
+			AjaxUtil.submit("/com.primeton.pmbusiness.push.pushComponent.appStorePush.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(result){
+				log("推送成功");
+			}, function(errCode, errMsg){
+				log("推送失败");
+			});
+	});
+	var date = new Date();
+	item.date = date.format("yyyy-MM-dd hh:mm");
+	items.push(item);
+	reloadData();
+}
+
+
+</script>
+</html>

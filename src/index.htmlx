@@ -1,0 +1,263 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+	//$M.includeFile("/common/commonCUI.html");
+	$M.includeFile("/common/commonAnimation.html");
+	$M.includeFile("/common/netNav.html");
+	$M.includeFile("/common/commonSkin.html");
+	$M.includeFile("/chat/commonchat.html");
+</script>
+<body>
+	<div id="wholeDiv" width="100%" height="100%" layout="VBox">
+		<div id="div1" display="false" width="100%" height="100%"
+			position="relative" top="0" left="0" layout="VBox" hAlign="center"
+			vAlign="middle" backgroundColor="#333333" opacity="0.6"></div>
+
+		<!-- <div id="div2" display="false" width="100%" height="100%"
+			position="relative" top="0" left="0" hAlign="center" vAlign="middle">
+			<div width="220" height="222" backgroundImage="/AI/bg_boat.png"
+				layout="VBox" hAlign="center" vAlign="middle">
+				<div width="100%" height="100%" />
+				<input type="label" value="是否开启AI智能模式？" />
+				<div width="100%" height="30" />
+				<input type="label" value="立即开启" onClick="openAI" />
+				<div width="100%" height="10" />
+			</div>
+			<div width="100%" height="100%" position="relative" top="220"
+				left="280">
+				<img src="/AI/close.png" width="30" height="30" onClick="closeDiv2" />
+			</div>
+		</div> -->
+
+
+		<div id="div3" display="false" width="100%" height="100%"
+			position="relative" top="0" left="0" hAlign="center" vAlign="middle">
+			<div width="220" height="222" backgroundImage="/AI/bg_pinwheel.png"
+				layout="VBox" hAlign="center" vAlign="middle">
+				<div width="100%" height="100%" />
+				<input type="label" value="根据您在该时段的使用习惯" fontSize="16"
+					color="#666666" width="200" hAlign="center" />
+				<div width="200" hAlign="center">
+					<input type="label" value="猜您想去" fontSize="16" color="#666666" />
+					<input type="label" value="“我要考勤”" fontSize="16" color="#111111" />
+					<input type="label" value="？" fontSize="16" color="#666666" />
+				</div>
+				<div width="100%" height="30" />
+				<input type="label" value="火速考勤" color="#ff0000"
+					onClick="gotoCheckin" />
+				<div width="100%" height="10" />
+			</div>
+<!-- 			<div width="100%" height="100%" position="relative" top="220" -->
+<!-- 				left="280"> -->
+<!-- 				<img src="/AI/close.png" width="30" height="30" onClick="closeDiv3" /> -->
+<!-- 			</div> -->
+		</div>
+
+		<div id="div4" display="false" width="100%" height="100%"
+			position="relative" top="0" left="0" hAlign="center" vAlign="middle">
+			<div width="220" height="222" backgroundImage="/AI/bg_pinwheel.png"
+				layout="VBox" hAlign="center" vAlign="middle">
+				<div width="100%" height="100%" />
+				<input type="label" value="根据您在该时段的使用习惯" fontSize="16"
+					color="#666666" width="200" hAlign="center" />
+				<div width="200" hAlign="center">
+					<input type="label" value="猜您想去" fontSize="16" color="#666666" />
+					<input type="label" value="“待我审批”" fontSize="16" color="#111111" />
+					<input type="label" value="？" fontSize="16" color="#666666" />
+				</div>
+				<div width="100%" height="30" />
+				<input type="label" value="立即审批" color="#ff0000"
+					onClick="gotoApproval" />
+				<div width="100%" height="10" />
+			</div>
+<!-- 			<div width="100%" height="100%" position="relative" top="220" -->
+<!-- 				left="280"> -->
+<!-- 				<img src="/AI/close.png" width="30" height="30" onClick="closeDiv4" /> -->
+<!-- 			</div> -->
+		</div>
+
+
+
+		<div width="100%" height="100%">
+			<slide id="my_nearby_slide" width="100%" height="100%" 
+				enableScroll="false" tipVisible="false"> <slideurl
+				url="/chat/conversationList.html"></slideurl> <slideurl
+				url="/index/workbenchT.html"></slideurl> <slideurl
+				url="/linkman/linklist.html"></slideurl> <slideurl
+				url="/index/aboutme.html"></slideurl> 
+			</slide>
+		</div>
+		<div width="100%" height="1px" backgroundColor="#eaeaea" />
+		<div width="100%" height="46" layout="HBox" id="tab"
+			backgroundColor="#f9f9f9">
+			<div width="100%" height="100%" vAlign="middle" hAlign="center"
+				onClick="homePage" layout="VBox">
+				<img src="/index/tab_conversation_click.png" width="26" height="26"
+					id="sy" /> <input type="label" value="消息" 
+					fontSize="13" id="syFont" />
+			</div>
+			<div width="100%" height="100%" vAlign="middle" hAlign="center"
+				onClick="fundSupermarket" layout="VBox">
+				<img src="/index/tab_workbench.png" width="26" height="26" id="jjcs" />
+				<input type="label" value="工作台"  fontSize="13"
+					id="jjcsFont" />
+			</div>
+			<div width="100%" height="100%" vAlign="middle" hAlign="center"
+				onClick="myAssets" layout="VBox">
+				<img src="/index/tab_contact.png" width="26" height="26" id="wdzc" />
+				<input type="label" value="联系人"  fontSize="13"
+					id="wdzcFont" />
+			</div>
+			<div width="100%" height="100%" vAlign="middle" hAlign="center"
+				onClick="activityArea" layout="VBox">
+				<img src="/index/tab_more.png" width="26" height="26" id="hdzq" />
+				<input type="label" value="我的"  fontSize="13"
+					id="hdzqFont" />
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	if (Emp.isIOS) {
+		Utils.setStatusBarStyle('light');
+	}
+
+	function closeDiv2() {
+		div1.setDisplay(false);
+		div2.setDisplay(false);
+		preference.put('isFirst', 'notanymore');
+	}
+	
+	function closeDiv3() {
+		div1.setDisplay(false);
+		div3.setDisplay(false);
+	}
+	function closeDiv4() {
+		div1.setDisplay(false);
+		div4.setDisplay(false);
+	}
+
+	function openAI() {
+		div1.setDisplay(false);
+		div2.setDisplay(false);
+		preference.put('isFirst', 'notanymore');
+		preference.put('isOpenAI', 'true');
+	}
+
+	function gotoCheckin() {
+		div1.setDisplay(false);
+		div3.setDisplay(false);
+		$M.page.goTo('/common/comingSoon.html', {}, false);
+	}
+
+	function gotoApproval() {
+		div1.setDisplay(false);
+		div4.setDisplay(false);
+		$M.page.goTo('/approval/myapproval.html', {}, false);
+	}
+
+	var isFirst = preference.get('isFirst');
+	
+	var LoandAllMsg = {};
+	LoandAllMsg.loandMsg = function(){
+	};
+	
+	$M.page.addEvent("onLoad", function(args) {
+		loginChat();
+		titleInfo.setValue("移动工作平台");
+		if(args == "m"){
+			titleInfo.setValue("消息");
+			sy.setSrc("/index/tab_conversation_click.png");
+			syFont.setColor(skin_fondcolor);
+			jjcs.setSrc("/index/tab_workbench.png");
+			jjcsFont.setColor(skin_fondcolor_gray);
+			wdzc.setSrc("/index/tab_contact.png");
+			wdzcFont.setColor(skin_fondcolor_gray);
+			hdzq.setSrc("/index/tab_more.png");
+			hdzqFont.setColor(skin_fondcolor_gray);
+			my_nearby_slide.setSelectedIndex(0);
+			$M.page.goTo("/index/message.html", {}, false);
+		}else{
+			sy.setSrc("/index/tab_conversation.png");
+			syFont.setColor(skin_fondcolor_gray);
+			jjcs.setSrc("/index/tab_workbench_click.png");
+			jjcsFont.setColor(skin_fondcolor);
+			wdzc.setSrc("/index/tab_contact.png");
+			wdzcFont.setColor(skin_fondcolor_gray);
+			hdzq.setSrc("/index/tab_more.png");
+			hdzqFont.setColor(skin_fondcolor_gray);
+			my_nearby_slide.setSelectedIndex(1);
+		}
+		
+		if (isFirst == null || isFirst == " " || isFirst == 'undefined') {
+			preference.put('isFirst', 'notanymore');
+		}
+	});
+
+	$M.page.addEvent("onBack", function(param) {
+		$M.setCurrentAppId('com.primeton.mwork');
+		if(param&&param.key=="workbench"){
+			Broadcast.send('updateWorkBench', {
+			});
+		}
+		LoandAllMsg.loandMsg();
+	});
+
+	function homePage() {
+		titleInfo.setValue("消息");
+		my_nearby_slide.setSelectedIndex(0);
+		sy.setSrc("/index/tab_conversation_click.png");
+		syFont.setColor(skin_fondcolor);
+		jjcs.setSrc("/index/tab_workbench.png");
+		jjcsFont.setColor(skin_fondcolor_gray);
+		wdzc.setSrc("/index/tab_contact.png");
+		wdzcFont.setColor(skin_fondcolor_gray);
+		hdzq.setSrc("/index/tab_more.png");
+		hdzqFont.setColor(skin_fondcolor_gray);
+		LoandAllMsg.loandMsg();
+	}
+
+	function fundSupermarket() {
+		titleInfo.setValue("移动工作平台");
+		my_nearby_slide.setSelectedIndex(1);
+		sy.setSrc("/index/tab_conversation.png");
+		syFont.setColor(skin_fondcolor_gray);
+		jjcs.setSrc("/index/tab_workbench_click.png");
+		jjcsFont.setColor(skin_fondcolor);
+		wdzc.setSrc("/index/tab_contact.png");
+		wdzcFont.setColor(skin_fondcolor_gray);
+		hdzq.setSrc("/index/tab_more.png");
+		hdzqFont.setColor(skin_fondcolor_gray);
+	}
+
+	function myAssets() {
+		titleInfo.setValue("联系人");
+		my_nearby_slide.setSelectedIndex(2);
+		preference.put('isFromEmail', "no");
+		sy.setSrc("/index/tab_conversation.png");
+		syFont.setColor(skin_fondcolor_gray);
+		jjcs.setSrc("/index/tab_workbench.png");
+		jjcsFont.setColor(skin_fondcolor_gray);
+		wdzc.setSrc("/index/tab_contact_click.png");
+		wdzcFont.setColor(skin_fondcolor);
+		hdzq.setSrc("/index/tab_more.png");
+		hdzqFont.setColor(skin_fondcolor_gray);
+	}
+	function activityArea() {
+		titleInfo.setValue("我的");
+		my_nearby_slide.setSelectedIndex(3);
+		sy.setSrc("/index/tab_conversation.png");
+		syFont.setColor(skin_fondcolor_gray);
+		jjcs.setSrc("/index/tab_workbench.png");
+		jjcsFont.setColor(skin_fondcolor_gray);
+		wdzc.setSrc("/index/tab_contact.png");
+		wdzcFont.setColor(skin_fondcolor_gray);
+		hdzq.setSrc("/index/tab_more_click.png");
+		hdzqFont.setColor(skin_fondcolor);
+	}
+
+</script>
+</html>

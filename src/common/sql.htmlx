@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+	<meta charset="UTF-8"/>
+</HEAD>
+<BODY>
+
+</BODY>
+<SCRIPT>
+// 联系人表
+var Topcontacts = 
+"create table if not exists contacts("
+		+ "_id integer primary key autoincrement," + "UserID text," // 用户ID
+		+ "UserName text," // 用户姓名
+		+ "Department text," // 部门
+		+ "Position text," // 职位
+		+ "PhoneNumber text," // 电话
+		+ "Count integer," // 联系次数
+		+ "Email text)"; // 邮箱
+		
+var Topcity = 
+"create table if not exists citys("
+		+ "_id integer primary key autoincrement," + "Cityname text," // 城市名称
+		+ "Citycount integer)"; // 点击次数
+//消息表
+var ctmworkmsg =
+"create table if not exists t_mwork_msg("
+	+ "_id integer primary key,"
+	+ "userid text,"
+	+ "title text,"
+	+ "summary text,"
+	+ "msgtype text,"
+	+ "msgcontent text,"
+	+ "msgtime text)";
+
+var dtmworkmsg = "drop table t_mwork_msg;"; 	
+</SCRIPT>
+</HTML>

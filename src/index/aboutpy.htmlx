@@ -1,0 +1,67 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div id="nav" width="100%" height="50" vAlign="middle" class="emp-nav-backgroundColor" >
+	<div width="80" height="100%" id="leftDiv" vAlign="middle"  onPressUp="goBack">
+		<div width="10" height="100%"/>
+		<img src="/linkman/back.png" width="11" height="18"/>
+		<div width="4" height="100%"/>
+		<input type="label" value="我的"  fontSize="18" color="#ffffff" />
+	</div>
+	<input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" value="关于我们" />
+	<div width="80" height="100%" id="rightDiv" vAlign="middle">
+	</div>
+</div>
+<div width="340" height="100%" layout="VBox" marginLeft="10" marginRight="10" >
+	<div width="100%" height="100" vAlign="middle" marginLeft="10" >
+		<div width="70" height="70" borderColor="#cccccc" borderWidth="1px" cornerRadius="16" >
+			<img src="/index/appImg.png" width="70" height="70" />
+		</div>
+		<div width="20" height="100%"/>
+		<div width="100%" height="100%" layout="VBox" vAlign="middle" >
+			<input type="label" value="企业移动工作平台" fontBold="true" />
+			<div width="100%" height="10"/>
+			<input id="appVersion" type="label" value="版本号：7.0" color="#999999" fontSize="14" />
+		</div>
+	</div>
+	<div width="100%" height="10" vAlign="middle" >
+		<div width="100%" height="2px" backgroundColor="#e5e5e5" />
+	</div>
+	<div width="340" height="100%" hAlign="center" layout="VBox" >
+		<div width="100%" height="15"/>
+		<input type="label" width="320" singleLine="false" color="#3b3a3b" lineSpace="8"  fontSize="18" value="        移动平台产品致力于移动互联网技术的创新，为大型企业和政府提供全方位立体化的移动应用解决方案，帮助企业和政府在互联网时代更好地实现内部通讯、移动协作、高效管理等需求，完善信息化建设。" />
+		<input type="label" width="320" singleLine="false" color="#3b3a3b" lineSpace="8"  fontSize="18" value="        企业移动工作平台为客户提供统一的移动工作门户，提供可扩展的移动框架，集成丰富的企业微应用，帮助企业建立便携、易用、协同、高效的移动应用平台。" />
+	</div>
+	<div width="100%" height="30" hAlign="center" vAlign="middle" >
+		<input type="label" value="上海外高桥造船有限公司" color="#999999"  fontSize="14" />
+	</div>
+	<div width="100%" height="10"/>
+</div>
+</body>
+<script>
+	$M.page.addEvent("onLoad", function(){
+		var cversion = "";
+		
+		var patchVersion = "";
+    	var apps = $M.Portal.getAllApps();
+	   	for(var i=0;i<apps.length;i++){
+	   		if(apps[i].appId=="com.primeton.mwork"){
+	   			cversion = apps[i].appVersion;
+	   			patchVersion = apps[i].patchVersion;
+	   		}
+	   	}
+	   	
+		appVersion.setValue("版本号："+cversion+"."+patchVersion);
+	});
+	
+	if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+	function goBack(){
+		$M.page.goBack();
+	}
+</script>
+</html>

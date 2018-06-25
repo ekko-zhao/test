@@ -1,0 +1,38 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+	<div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3" >
+		<div width="80" height="100%" id="leftDiv" vAlign="middle" onClick="goBack">
+			<div width="10" height="100%"/>
+			<img src="/appstore/back.png" width="11" height="18"/>
+			<div width="4" height="100%"/>
+			<input type="label" value="返回"  fontSize="18" color="#ffffff" />
+		</div>
+		<input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="20" value=""/>
+		<div width="80" height="100%" id="rightDiv" hAlign="center">
+ 			<input type="label" width="100%" height="100%" color="#FFFFFF" fontSize="16" hAlign="center" />
+ 		</div> 
+	</div>
+	<webview id="webview" width="100%" height="100%" />
+</body>
+<script> 
+if(Emp.isIOS){
+	nav.setHeight(60);
+	nav.setPaddingTop(8);
+}
+Emp.page.addEvent("onLoad", function(params) {	
+	log(Utils.jsonToString(params));
+	titleInfo.setValue(params.name);
+	log(params);
+	webview.setUrl(params.entryUrl);
+});	
+
+function goBack(){
+	$M.page.goBack();
+}
+
+
+</script>
+</html>

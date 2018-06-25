@@ -1,0 +1,169 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Hello World</title>
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+	<div id="nav" width="100%" height="50" vAlign="middle"
+		backgroundColor="#0b78e3">
+		<div width="100%" height="100%" id="leftDiv" vAlign="middle"
+			onClick="goBack">
+			<img src="/schedule/back.png" width="13" height="20" marginLeft="20"></img>
+		</div>
+		<input type="label" id="title" value="预定详情" width="100%" height="100%"
+			hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="22" />
+		<div width="100%" height="100%" id="rightDiv" vAlign="middle"
+			hAlign="right">
+			<input type="label" width="100%" height="100%" value="编辑"
+				fontSize="19" color="#ffffff" hAlign="right" marginRight="20"
+				onClick="goEdit" />
+		</div>
+	</div>
+	<div width="100%" height="100%" layout="VBox" backgroundColor="#ffffff">
+		<input type="label" id="theme" width="320" marginRight="20"
+			fontSize="21" singleLine="false" value="提交bug" marginLeft="20"
+			marginTop="20" /> <input type="label" id="location" width="320"
+			marginRight="20" fontSize="18" singleLine="false" value="地点"
+			marginLeft="20" marginTop="15" marginBottom="20" />
+
+		<div width="100%" height="1" backgroundColor="#CDCECF"></div>
+		<div width="100%" height="60" layout="VBox" marginBottom="20">
+			<input type="label" id="sDate" width="100%" height="20"
+				value="2017年03月15日 星期三" marginLeft="20" color="#797A7B"
+				vAlign="bottom" marginTop="20" /> <input type="label"
+				id="timeProcess" width="100%" height="20" value="10:00-12:00"
+				marginLeft="20" color="#797A7B" />
+		</div>
+
+		<div width="100%" height="10" backgroundColor="#F5F6F7"></div>
+	</div>
+	<div width="100%" height="100%" vAlign="bottom">
+		<div width="100%" height="50" marginBottom="0"
+			backgroundColor="#F0464B" onClick="deleteSchedule">
+			<input type="label" width="100%" height="100%" hAlign="center"
+				vAlign="middle" value="删除事件" color="#ffffff" fontSize="18" />
+		</div>
+	</div>
+</body>
+<script>
+	if (Emp.isIOS) {
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+
+	var remArgs;//记录当前数据；
+
+	$M.page.addEvent("onLoad", function(args) {
+
+		///log("args===="+Utils.jsonToString(args));
+		remArgs = args;
+		var weekDay = new Date(args.sDate.substring(0, 10)).getDay();
+		theme.setValue(args.theme);
+
+		location.setValue(args.location);
+		sDate.setValue(args.year + "年" + args.month + "月" + args.day + "日"
+				+ " " + getChinaWeek(weekDay));
+		timeProcess.setValue(args.sDate.substring(11) + "--"
+				+ args.eDate.substring(11));
+	});
+
+	function goBack() {
+		$M.page.goBack();
+	}
+
+	function goEdit() {
+
+		$M.page.goTo("/schedule/changeSchedule.html", remArgs, true);
+	}
+
+	var timeZone = new Emp.TimeZone();//手机本地日历
+
+	//日程信息
+	var schedulePre = new $M.Preferences();
+
+	schedulePre.open('workbench');
+	var loginId = schedulePre.get('userid');
+	var scheduleKey = "scheduleInfo_" + loginId;
+
+	schedulePre.open('scheduleInfo');
+	var scheduleInfo = schedulePre.get(scheduleKey);
+
+	var scheduleArr = [];
+
+	function deleteSchedule() {
+		//删除日程
+		var ajaxData = {};
+		ajaxData.id = remArgs.id;
+		AjaxUtil.submit("/com.primeton.pmbusiness.schedule.schedulecomponent.deleteScheduleRecord.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(text) {
+			log(text);
+			toast("删除成功");
+		}, function(err, msg) {
+			log(err + "--" + msg);
+		});
+		//
+		for (var i = 0; i < scheduleInfo.length; i++) {
+			if (isObjectValueEqual(scheduleInfo[i], remArgs)) {
+				continue;
+			} else {
+				scheduleArr.push(scheduleInfo[i]);
+			}
+		}
+		schedulePre.put(scheduleKey, scheduleArr);
+		//log("\n\n====="+Utils.jsonToString(schedulePre.get("scheduleInfo")));
+
+		var timeZoneInfo = {
+			"title" : remArgs.theme,
+			"eventLoaction" : remArgs.location,
+			"description" : remArgs.content,
+			"startTime" : remArgs.sDate,
+			"endTime" : remArgs.eDate,
+		}
+
+		timeZone.removeContactEvent(timeZoneInfo, function() {
+			log("移除本地日程成功！");
+			$M.page.goBack({
+				"isRefresh" : "true"
+			}, "/schedule/scheduleHome.html");
+		}, function() {
+			alert("移除本地日程失败！");
+		});
+	}
+
+	function getChinaWeek(weekDay) {
+		if (weekDay == 1) {
+			return "星期一";
+		} else if (weekDay == 2) {
+			return "星期二";
+		} else if (weekDay == 3) {
+			return "星期三";
+		} else if (weekDay == 4) {
+			return "星期四";
+		} else if (weekDay == 5) {
+			return "星期五";
+		} else if (weekDay == 6) {
+			return "星期六";
+		} else {
+			return "星期天";
+		}
+	}
+
+	function isObjectValueEqual(a, b) {
+		//a.length<b.length
+		var aProps = Object.getOwnPropertyNames(a);
+		var bProps = Object.getOwnPropertyNames(b);
+
+		for (var i = 0; i < aProps.length; i++) {
+			var propName = aProps[i];
+
+			if (a[propName] !== b[propName]) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+</script>
+</html>

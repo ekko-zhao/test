@@ -1,0 +1,37 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div width="100%" height="100%" layout="VBox" >
+	<div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3" >
+		<div width="80" height="100%" id="leftDiv" vAlign="middle"  onPressUp="goBack">
+			<div width="10" height="100%"/>
+			<img src="/linkman/back.png" width="11" height="18"/>
+			<div width="4" height="100%"/>
+			<input type="label" value="联系人"  fontSize="18" color="#ffffff" />
+		</div>
+		
+		<input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" value="通讯录" />
+		<div width="80" height="100%" id="rightDiv" vAlign="middle">
+		</div>
+	</div>
+	<div width="100%" height="100%" hAlign="center" vAlign="middle" >
+		<input type="label" value="我是私人聊天页面！！！" color="#ff00ff" fontBold="true" />
+	</div>
+</div>
+	
+</body>
+<script> 
+if(Emp.isIOS){
+	nav.setHeight(60);
+	nav.setPaddingTop(8);
+}
+$M.page.addEvent('onLoad', function(param){
+	titleInfo.setValue(param.nickName);
+});
+function goBack() {
+	$M.page.goBack();
+}
+</script>
+</html>

@@ -1,0 +1,52 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>	
+</body>
+<script>
+	var skin_fondcolor ;
+	var skin_fondcolor_gray ;
+	var skin_fondcolor_white ;
+	skin_fondcolor = "#0b78e3";
+    skin_fondcolor_gray = "#707070";
+    skin_fondcolor_white = "#ffffff";
+	var preference1 = new $M.Preferences();
+	preference1.open('workbench');
+	if(preference1.get("skins") != null)
+      {
+        if(preference1.get("skins")=="1"){
+           $M.Portal.setCurrentSkinId("default");
+           skin_fondcolor = "#0b78e3";
+           skin_fondcolor_gray = "#707070";
+           skin_fondcolor_white = "#ffffff";
+        }else if(preference1.get("skins")=="2"){
+          $M.Portal.setCurrentSkinId("green");
+          skin_fondcolor = "#00c09d";
+          skin_fondcolor_gray = "#707070";
+          skin_fondcolor_white = "#ffffff";
+        }else if(preference1.get("skins")=="3"){
+          $M.Portal.setCurrentSkinId("gray");
+          skin_fondcolor = "#bfbfbf";
+           skin_fondcolor_gray = "#707070";
+           skin_fondcolor_white = "#ffffff";
+        }else if(preference1.get("skins")=="4"){
+          $M.Portal.setCurrentSkinId("red");
+          skin_fondcolor = "#FF4500";
+          skin_fondcolor_gray = "#707070";
+          skin_fondcolor_white = "#ffffff";
+        }else{
+        	$M.Portal.setCurrentSkinId("default");
+	         skin_fondcolor = "#0b78e3";
+	         skin_fondcolor_gray = "#707070";
+	         skin_fondcolor_white = "#ffffff";
+        }
+      }else{
+         preference1.put('skins',"1");
+         $M.Portal.setCurrentSkinId("default");
+         skin_fondcolor = "#0b78e3";
+         skin_fondcolor_gray = "#707070";
+         skin_fondcolor_white = "#ffffff";
+	  } 
+</script>
+</html>

@@ -1,0 +1,17 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+</body>
+<script>
+var items = [
+		{'approvalid':'0002','approvalpeople':'邵博', 'title':'邵博的请假', 'department':'产品测试部','leavetype':'路途假','startdate':'2017-02-16','enddate':'2017-02-17','leavedays':'2','leaverease':'在路上','submittime':'16:30','state':'1'},
+		{'approvalid':'0001','approvalpeople':'王立群', 'title':'王立群的请假','department':'移动产品部','leavetype':'事假','startdate':'2017-02-16','enddate':'2017-02-17','leavedays':'2','leaverease':'私事','submittime':'16:30','state':'1'},
+		{'approvalid':'0002','approvalpeople':'邵博', 'title':'邵博的请假', 'department':'产品测试部','leavetype':'路途假','startdate':'2017-02-16','enddate':'2017-02-17','leavedays':'2','leaverease':'在路上','submittime':'16:30','state':'0'},
+		{'approvalid':'0003','approvalpeople':'李润', 'title':'李润的请假','department':'移动产品部','leavetype':'病假','startdate':'2017-02-16','enddate':'2017-02-17','leavedays':'2','leaverease':'私事','submittime':'16:30','state':'2'},
+		{'approvalid':'0004','approvalpeople':'黄家伟', 'title':'黄家伟的请假', 'department':'软件产品部','leavetype':'路途假','startdate':'2017-02-16','enddate':'2017-02-17','leavedays':'5','leaverease':'在路上','submittime':'16:30','state':'0'},
+
+	];
+</script>
+</html>

@@ -1,0 +1,398 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>添加会议</title>
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+	<!-- **************导航视图******************* -->
+	<div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3">
+		<div width="80" height="100%" id="leftDiv" vAlign="middle" onClick="goBack" >
+			<img src="/meeting/back.png" width="13" height="20" marginLeft="20" ></img>
+		</div>
+		<input type="label" id="title" value="会议室列表" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18"/>
+		<div width="80" height="100%" id="rightDiv" vAlign="middle" hAlign="center"  onClick="chooseCity" >
+			<input type="label" value="上海" id="city" fontSize="14" color="#ffffff" />
+		</div>
+	</div>
+	<!-- 会议列表 -->
+	<div width="100%" height="100%">
+		<listview id="listview" width="100%" height="100%">
+			<template>
+				<div width="100%" height="60" layout="VBox" >
+					<div width="100%" height="100%" vAlign="middle" hAlign="center">
+						<div width="80" height="100%" hAlign="center" vAlign="middle" >
+							<img src="/meeting/occupied.png" width="40" height="40">
+							</img>
+						</div>
+						<div width="100%" height="100%" paddingTop="5" paddingBottom="5" layout="VBox" >
+							<div height="25" width="100%" vAlign="middle" >
+								<label fontSize="15" width="100" tag="roomname" marginRight="3" ></label>
+								<div width="40" height="20" backgroundColor="#5387d4" borderColor="#5387d4" borderWidth="1" cornerRadius="9" hAlign="center" vAlign="middle">
+									<label fontSize="12" value="" tag="city" color="#ffffff" ></label>
+								</div>
+								<div width="5" height="100%"/>
+								<div width="24" height="20" id="isfullstate" tag="isfullstate" display="false" backgroundColor="#f85e5e" borderColor="#f85e5e" borderWidth="1" cornerRadius="9" hAlign="center" vAlign="middle">
+									<div width="2" height="100%"/>
+									<label fontSize="12" value="满 " color="#ffffff" hAlign="center" vAlign="middle" width="20" ></label>
+								</div>
+							</div>
+							<div  width="100%" height="25">
+								<input type="label" value="可容纳人数:" fontSize="13" color="#c4c4c4" />
+								<input type="label" value="" tag="contain" fontSize="13" color="#c4c4c4" marginLeft="5" />
+							</div>
+						</div>
+						<div width="35" height="100%" hAlign="center" vAlign="middle" >
+							<img src="/aboutme/arrow_right.png" width="10" height="16" />
+						</div>
+					</div>
+					<div width="100%" height="1" backgroundColor="#e4e4e4"></div>
+				</div>
+			</template>
+		</listview>
+	</div>
+	
+	<div id="dialog" position="relative" top="800" >
+		<div width="360" height="640" layout="VBox" backgroundColor="#ffffff">
+			<div width="100%" height="30"></div>
+			<div id="titleControl" width="100%" height="50" vAlign="middle" >
+				<div width="10" height="100%"></div>
+				<input type="label" value="关闭" color="#a7a7a7" fontSize="12" width="30" height="100%" onClick="clearSearch" />
+				
+				<div width="10" height="100%"></div>
+				<input id="searchControl" type="search" returnType="search" height="40" width="100%" emptyText="输入城市名" fontSize="14" />
+				<div width="10" height="100%"></div>
+			</div>
+			<div width="100%" height="10"></div>
+			<div width="100%" height="1px" backgroundColor="#d9d9d9" ></div>
+			<div width="100%" height="40" vAlign="middle" marginLeft="20" >
+				<input id="gpsCity" type="label" value="" />
+				<input type="label" value="GPS定位" fontSize="14" color="#999999" marginLeft="20"/>
+			</div>
+			<div width="100%" height="1px" backgroundColor="#d9d9d9" ></div>
+			<div id="mainPanel" width="100%" height="100%" layout="VBox" hAlign="center" backgroundColor="#f0f0f0" >
+				<div width="100%" height="10"></div>
+				<div width="100%" height="25">
+					<div width="5" height="100%"></div>
+					<input type="label" value="历史访问城市" color="#a7a7a7" fontSize="14" />
+				</div>
+				<div width="100%" height="10"></div>
+				<div id="historyCityPanel" width="100%" height="40">
+					<div width="10" height="100%"></div>
+					
+				</div>
+				<div width="100%" height="10"></div>
+				<div width="100%" height="25">
+					<div width="10" height="100%"></div>
+					<input type="label" value="所有城市" id="test" color="#a7a7a7"  fontSize="14" />
+				</div>
+				<div id="allCityPanel" width="100%" height="100%" layout="VBox">
+					<div width="100%" height="5"></div>
+				</div>
+			</div>
+			<div id="searchPanel" width="100%" height="100%" layout="VBox" hAlign="center" display="false">
+				<listview id="searchListView" width="100%" height="100%" dividerVisible="true" dividerColor="#D9D9D9" >
+					<template>
+						<div width="100%" height="70" layout="VBox">
+							<input type="label" value="" />
+						</div>
+					</template> 
+				</listview>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	
+	if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+ 	function goBack(){
+ 		$M.page.goBack();
+ 	}
+ 
+ 	var meetingItems = new Array();
+ 	var chooseday;
+ 	var meetingdate;
+ 	var fromPage;
+	var ajax = new $M.Ajax();
+	$M.page.addEvent("onLoad",function(args){
+		chooseday = args.date;
+		
+		
+		if(args.from){
+			fromPage = args.from;
+		}
+		
+		meetingdate = chooseday.substring(0,4)+"-"+chooseday.substring(4,6)+"-"+chooseday.substring(6);
+		var citystr = '上海';
+		
+		Utils.locate({onSuccess:function(position){
+				Utils.getAddress(position,function(address){
+					if(address.indexOf("市") > 0 ){
+						citystr = address.substring(address.indexOf("市")-2,address.indexOf("市"));
+					    city.setValue(citystr);
+					    initCityPanel(citystr);
+					    getfullstate(citystr);
+					}
+				});
+				
+			},onFailure:function(){
+				log("定位失败");
+				initCityPanel("定位失败");
+			}
+		});
+		getallCity();
+	});
+	
+	$M.page.addEvent("onBack",function(args){
+		getfullstate(city.getValue());
+	});
+	
+	isfullstate.setAttrAdapter([ {
+		value : '1',
+		display:'true'
+	}, {
+		value : '0',
+		display : 'false'
+	} ]);
+	
+	
+	var citys;
+	var MeetingcityArr = [];
+	
+	function getallCity(){
+		ajax.setAction('/com.primeton.pmbusiness.meetingroom.mworkmeetingroombiz.getCitys.biz.ext');
+		ajax.add('access_token',ACCESS_TOKEN);
+		ajax.onSuccess(function(args){
+			var result = Utils.stringToJson(args);
+			citys = result.citys;
+			for(var i = 0;i<citys.length;i++){
+				MeetingcityArr.push(citys[i].city);
+			}
+		});
+		ajax.onFailure(function(errCode, errMsg){
+
+		});
+		ajax.submit();
+	}
+	
+	var orderdata = [];
+	
+	function getfullstate(position){
+		var ajax = new Emp.Ajax();
+		ajax.setAction('/com.primeton.pmbusiness.meetingroom.mworkmeetingroombiz.getDayState.biz.ext');
+		ajax.add('access_token',ACCESS_TOKEN);
+		ajax.addParam({'name':'meetingdate','value':meetingdate});
+		ajax.addParam({'name':'city','value': city.getValue()});
+			
+		ajax.onSuccess(function(args) {
+			
+			var resultjson = Utils.stringToJson((args));
+			var orders = resultjson.records;
+			for(var m = 0;m<orders.length;m++){
+				var str_meeting = orders[m].meetingroomid;
+				if(orders[m].isfull=="true")
+				orderdata.push(str_meeting);
+			} 
+			getRoombyCity(position);
+		});
+		
+		ajax.onFailure(function(code, msg) {
+			log(code+'====='+msg);
+		});
+
+		ajax.submit();
+	}
+
+	
+	function getRoombyCity(position){
+		ajax.setAction('/com.primeton.pmbusiness.meetingroom.mworkmeetingroombiz.getAllMeetingrooms.biz.ext');
+		ajax.add('access_token',ACCESS_TOKEN);
+		if(position!=null&&MeetingcityArr.toString().indexOf(position)>-1){
+			ajax.addParam({'name' : 'city','value' : position});
+		}
+		ajax.onSuccess(function(args){
+			var result = Utils.stringToJson(args);
+			meetingItems = new Array();
+			for(var i=0;i<result.records.length;i++){
+				var item = {};
+				item.id = result.records[i].id;
+				for(var j=0;j<orderdata.length;j++){
+					if(result.records[i].id==orderdata[j]){
+						item.isfullstate="1";
+						break;
+					}else{
+						item.isfullstate="0";
+					}
+				}
+				item.roomname = result.records[i].roomname;
+				item.city =  result.records[i].city;
+				item.contain =  result.records[i].contain;	
+				meetingItems.push(item);
+			}
+			
+			listview.setItems(meetingItems);
+			listview.reloadData();
+		});
+		ajax.onFailure(function(errCode, errMsg){
+
+		});
+		ajax.submit();
+	
+	}
+
+	listview.addEvent("onItemClick", function(row, tag, data){
+		if(fromPage==null){
+			$M.page.goTo("/meeting/orderDetail.html", {"date":meetingdate,"data":data}, false);
+		}else{
+			Emp.page.goBack({'from':fromPage,"date":meetingdate,'data':data}, '/meeting/addMeeting.html');
+		}
+	});
+	
+	function chooseCity(){
+		dialog.setTop(0);
+	}
+	
+	function clearSearch() {
+		System.hideKeyboard();
+		dialog.setTop(800);
+	}
+
+
+/**
+ * 初始化城市面板
+ * 1.定位城市
+ * 2.历史城市
+ * 3.所有城市
+ */
+function initCityPanel(param){
+	//1.定位城市
+	gpsCity.setValue(param);
+	
+	//2.历史城市
+	var historyCityArr = getHistoryCity();
+	if(historyCityArr!=null){
+		var MAXLEN = historyCityArr.length>3?3:historyCityArr.length;
+		for(var i=0; i<MAXLEN; i++){
+			var myDiv = new $M.Panel({"width":"106", "height":"40","hAlign":"center", "vAlign":"middle", "backgroundColor":"#ffffff", "borderColor":"#e7e7e7", "borderWidth":"1px", "cornerRadius":"3"});
+			var myLabel = new $M.Label();
+			myLabel.setValue(historyCityArr[i]);
+			myLabel.setFontSize(14);
+			myDiv.add(myLabel);
+			
+			var myDiv2 = new $M.Panel({"width":"10", "height":"40"})
+			historyCityPanel.add(myDiv);
+			historyCityPanel.add(myDiv2);
+			
+			
+			//div绑定tag
+			myDiv.setTag(historyCityArr[i]);
+			//添加响应事件
+			myDiv.addEvent("onClick", function(){
+				//TODO 响应事件
+				var tag = this.getTag();
+				dialog.setTop(800);
+				city.setValue(tag);
+				saveHistoryCity(tag);
+				getfullstate(tag);
+			});
+		}
+	}
+
+	//3.所有城市
+	var allCityArr = getAllCityArr();
+	if(allCityArr!=null){
+		for(var i=0; i<allCityArr.length;){
+			var rowDiv = new $M.Panel({"width":"100%", "height":"50", "vAlign":"middle"});
+			var myDiv3 = new $M.Panel({"width":"10", "height":"40"});
+			rowDiv.add(myDiv3);
+	 
+			for(var j=0; j<3; j++){
+				var myDiv =  new $M.Panel({"width":"106", "height":"40","hAlign":"center", "vAlign":"middle", "backgroundColor":"#ffffff", "borderColor":"#e7e7e7", "borderWidth":"1px", "cornerRadius":"3"});
+
+				myDiv.addEvent("onClick",function(){
+// 					dialog.close();
+					dialog.setTop(800);
+					getfullstate(allCityArr[0]);
+					city.setValue(allCityArr[0]);
+				});
+
+				var myLabel = new $M.Label();
+				var oncity= allCityArr[i];
+				myLabel.setValue(oncity);
+				myLabel.setFontSize(14);
+				myDiv.add(myLabel);
+				
+				
+				//div绑定tag
+				myDiv.setTag(allCityArr[i]);
+				//添加响应事件
+				myDiv.addEvent("onClick", function(){
+					//TODO 响应事件
+					var tag = this.getTag();
+					dialog.setTop(800);
+					city.setValue(tag);
+					saveHistoryCity(tag);
+					getfullstate(tag);
+				});
+				
+				
+				var myDiv2 = new $M.Panel({"width":"10", "height":"40"})
+				rowDiv.add(myDiv);
+				rowDiv.add(myDiv2);	
+
+				i++;
+				if(i==allCityArr.length)
+					break;			
+			}
+			allCityPanel.add(rowDiv);
+			
+
+		}
+	}
+}
+
+/**
+ * 获取城市信息
+ */
+function getAllCityArr(){
+	//TODO 根据来源获取
+	var CityArr = MeetingcityArr;
+	return CityArr;
+}
+
+/**
+ * 读取历史数据
+ */
+function getHistoryCity(){
+	var tempitem = database.query("select * from citys order by Citycount desc limit 3");
+	var historyCityArr = new Array();
+	for(var i= 0;i<tempitem.length;i++){
+		historyCityArr.push(tempitem[i].Cityname);
+	}
+	return historyCityArr;
+
+}
+
+/**
+ * 保存历史数据
+ * 策略：只保存最近3项
+ * 保存方式：
+ */ 
+function saveHistoryCity(choosecity){
+	var tempItem = database.query("select * from citys where Cityname=\'"+choosecity+'\'');
+	if(tempItem =='' || tempItem === undefined){		
+		database.excute('insert into citys (Cityname,Citycount) values(' +
+					'\''+choosecity+'\',1)');
+		log("addcity");
+	}else{ 
+		database.excute('update citys set Citycount=Citycount+1 where Cityname=\''+choosecity+'\'');
+		log("updatecity");
+	}
+}
+</script>
+</html>

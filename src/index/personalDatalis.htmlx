@@ -1,0 +1,164 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<script>
+	$M.includeFile("/common/commonUtils.html");
+	$M.includeFile("/email/commonPre.html");
+ 	</script>
+</head>
+<body>
+<div width="100%" height="100%" backgroundColor="#f8f8f8" layout="VBox" hAlign="center" >
+	<!-- 标题栏 -->
+	<div id="nav" width="100%" height="50" vAlign="middle"
+		class="emp-nav-backgroundColor">
+		<div width="80" height="100%" id="leftDiv" vAlign="middle"
+			onPressUp="goBack">
+			<div width="10" height="100%" />
+			<img src="/linkman/back.png" width="11" height="18" />
+			<div width="4" height="100%" />
+			<input type="label" value="我的" fontSize="18" color="#ffffff" />
+		</div>
+		<input type="label" id="titleInfo" width="100%" height="100%"
+			hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18"
+			value="个人信息" />
+		<div width="80" height="100%" id="rightDiv" vAlign="middle"></div>
+	</div>
+	<!-- 详细 姓名-->
+	<div width="100%" height="9"></div>
+	  <div width="340" height="70" borderWidth="1px" borderColor="#ededed"  backgroundColor="#ffffff" layout="VBox">
+		<div width="100%" height="70" vAlign="middle"  >
+			<div width="20" height="100%"></div>			
+			
+				<input type="label" fontSize="18"  value="用户"  /> 
+			
+			<div width="100%" height="100%"></div>	
+			<input type="label" fontSize="18" color="#393a3b" value=""  id="name"/>
+			<div width="40" height="100%"></div>	  
+		</div>
+		</div>
+	<!-- 详细 部门-->
+	<div width="340" height="70" borderWidth="1px" borderColor="#ededed"  backgroundColor="#ffffff" layout="VBox">
+		<div width="100%" height="70" vAlign="middle"  >
+			<div width="20" height="100%"></div>					
+				<input type="label" fontSize="18"  value="部门"  /> 
+			<div width="100%" height="100%"></div>	
+			<input type="label" fontSize="18" color="#393a3b" value=" "  id="orgname"/>
+			<div width="40" height="100%"></div>	  
+		</div>
+		</div>
+	<!-- 详细  电话-->
+	<div width="340" height="70" borderWidth="1px" borderColor="#ededed"  backgroundColor="#ffffff" layout="VBox">
+		<div width="100%" height="70" vAlign="middle"  >
+			<div width="20" height="100%"></div>					
+				<input type="label" fontSize="18"  value="电话"  /> 
+			<div width="100%" height="100%"></div>	
+			<input type="label" fontSize="18" color="#393a3b" value=" "  id="otel" display="true" />
+<!--			<input type="number" value="" height="50" width="100%" fontSize="18" color="#393a3b" display="false"  id="showOtel" returnType = "done" length="11" />-->
+			<div width="40" height="100%">
+<!--			 <img src="/images/app.png" width="20" height="20"  marginTop="26" marginLeft="10" onClick="alterOtel" />-->
+			</div>
+		</div>
+		</div>
+		<!-- 详细 邮箱 -->		
+	<div width="340" height="70" borderWidth="1px" borderColor="#ededed"  backgroundColor="#ffffff" layout="VBox">
+		<div width="100%" height="70" vAlign="middle"  >
+			<div width="20" height="100%"></div>					
+				<input type="label" fontSize="18"  value="邮箱"  /> 
+			<div width="100%" height="100%"></div>
+			<input type="label" fontSize="18" color="#393a3b" value=" "  id="oemail" display="true" />
+<!--			<input type="text" value="" height="50"  width="100%" fontSize="18" color="#393a3b" display="false"  id="showOemail" returnType = "done"/>-->
+			<div width="40" height="100%">
+		<!--	 <img src="/images/app.png" width="20" height="20"  marginTop="26" marginLeft="10"  onClick="alterOemail" />-->
+			</div>	  
+		</div>
+		</div>	
+	<div width="100%" height="10" />
+	<div width="100%" height="60" layout="HBox"  display="false"  id="showButton" >
+<!--	    <input type="button" value="确定"  height="100%" width="100%" onClick="OkFn" />  
+	    <input type="button" value="取消" height="100%" width="100%"  onClick="cancel" />-->
+      </div>
+ </div> 
+        
+</body>
+<script> 
+	if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+	function goBack(){
+		$M.page.goBack();
+	}
+  $M.page.addEvent("onLoad", function(){
+	if (CURRENT_USER.nodeName != null) {
+			name.setValue(CURRENT_USER.nodeName);
+		} else {
+			name.setValue(preference.get('userid'));
+		}
+	
+	if (CURRENT_USER.orgname != null) {
+			orgname.setValue(CURRENT_USER.orgname);
+		} else {
+			orgname.setValue("");
+		}	
+    if (CURRENT_USER.mobileno != null) {
+			otel.setValue(CURRENT_USER.mobileno);
+		} else {
+			otel.setValue("");
+		}	
+	
+	if (CURRENT_USER.oemail != null) {
+		oemail.setValue(CURRENT_USER.oemail);
+	} else {
+		oemail.setValue("");
+	}
+});
+	
+	/*
+	//修改电话
+	function alterOtel(){
+	  showButton.setDisplay(true);
+	  showOtel.setDisplay(true);
+	  otel.setDisplay(false);
+	 showOtel.setValue(otel.getValue());
+	 showOemail.setValue(oemail.getValue());
+	}
+	//修改邮箱
+	function alterOemail(){ 
+	  showButton.setDisplay(true);
+	  showOemail.setDisplay(true);
+	  oemail.setDisplay(false); 
+	 showOtel.setValue(otel.getValue());
+	 showOemail.setValue(oemail.getValue());
+	}
+	//确定按钮
+	function OkFn(){
+ 		var ajax = new $M.Ajax();
+		ajax.setAction('/com.primeton.pmbusiness.contacts.coframeComponent.updateEmployee.biz.ext');
+		ajax.add('userid', preference.get('userid'));
+		ajax.add('access_token', ACCESS_TOKEN);
+		ajax.add("showOtel", showOtel.getValue());
+		ajax.add("showOemail", showOemail.getValue());
+		ajax.onSuccess(function(args) {
+	     log(args);  
+		});
+		ajax.onFailure(function(errCode, errMsg) {
+			Utils.toast("修改失败");
+		});
+	  ajax.submit();   
+	  showButton.setDisplay(false);
+	  showOtel.setDisplay(false);
+	  otel.setDisplay(true);
+	  showOemail.setDisplay(false);
+	  oemail.setDisplay(true); 
+	}
+	//取消按钮
+	function cancel(){
+	  showButton.setDisplay(false);
+	  showOtel.setDisplay(false);
+	  otel.setDisplay(true);
+	  showOemail.setDisplay(false);
+	  oemail.setDisplay(true);
+	}	
+	*/
+</script>
+</html>

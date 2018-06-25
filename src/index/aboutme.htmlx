@@ -1,0 +1,270 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+	$M.includeFile("/email/commonPre.html");
+	$M.includeFile("/update/updateDialog.html");
+	$M.includeFile("/chat/commonchat.html");
+</script>
+<title>设置</title>
+<body>
+<div width="100%" height="100%" backgroundColor="#f8f8f8" layout="VBox" hAlign="center" >
+	<!-- 标题栏 -->
+<!--  	<div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3"> -->
+<!-- 		<div width="80" height="100%" id="leftDiv" vAlign="middle" />				 -->
+<!-- 		<div width="100%" height="100%"  hAlign="center" vAlign="middle">			 	 -->
+<!-- 			<input type="label" id="title" width="-2" height="100%" color="#FFFFFF" fontSize="20" value=""/> -->
+<!-- 		</div> -->
+<!-- 		<div width="80" height="100%" id="rightDiv" vAlign="middle" /> -->
+<!-- 	</div> -->
+	<div width="100%" height="9"></div>
+	<div width="340" height="70" borderWidth="1px" borderColor="#ededed" cornerRadius="5" backgroundColor="#ffffff" layout="VBox">
+		<div width="100%" height="70" vAlign="middle"  onClick="gotoPersonal" >
+			<div width="20" height="100%"></div>			
+			<div width="50" height="50" backgroundImage="/aboutme/bluecircle.png" hAlign="center" vAlign="middle" >
+				<input type="label" fontSize="18" color="#ffffff" value="" id="abbr" /> 
+			</div>
+			<div width="10" height="100%"></div>	
+			<input type="label" fontSize="18" color="#393a3b" value=" " id="username" />
+			<div width="100%" height="100%"></div>
+			<div width="35" height="100%" vAlign="middle">
+				<img src="/aboutme/arrow_right.png" width="10" height="16" />
+			</div>
+		</div>
+		<!-- 
+		<div width="100%" height="1px" backgroundColor="#d9d9d9" ></div>		 
+		<div width="100%" height="100%" vAlign="middle">
+			<div width="25" height="100%"></div>
+			<input type="label" fontSize="18" color="#393a3b" value="职位信息" />
+			<div width="100%" height="100%"></div>
+			<div width="30" height="100%" vAlign="middle">
+				<img src="/aboutme/arrow_right.png" width="10" height="16" />
+			</div>
+		</div>
+		-->
+	</div>
+	<div width="100%" height="13"></div>
+	<div width="340" height="174" borderWidth="1px" borderColor="#ededed" cornerRadius="5" backgroundColor="#ffffff" layout="VBox">
+		<div width="100%" height="100%" vAlign="middle" onClick="gotoAbout" >
+			<div width="25" height="100%"></div>
+			<input type="label" fontSize="18" color="#393a3b" value="关于" />
+			<div width="100%" height="100%"></div>
+			<div width="35" height="100%" vAlign="middle">
+				<img src="/aboutme/arrow_right.png" width="10" height="16" />
+			</div>
+		</div>
+		<div width="100%" height="1px" backgroundColor="#d9d9d9" ></div>
+		<div width="100%" height="100%" vAlign="middle" onClick="gosetpwd" >
+			<div width="25" height="100%"></div>
+			<input type="label" fontSize="18" color="#393a3b" value="设置手势密码" />
+			<div width="100%" height="100%"></div>
+			<div width="35" height="100%" vAlign="middle">
+				<img src="/aboutme/arrow_right.png" width="10" height="16" />
+			</div>
+		</div>
+		<div width="100%" height="1px" backgroundColor="#d9d9d9" ></div>
+		<div width="100%" height="100%" vAlign="middle" onClick="gotoUpdatePSW" >
+			<div width="25" height="100%"></div>
+			<input type="label" fontSize="18" color="#393a3b" value="修改密码" />
+			<div width="100%" height="100%"></div>
+			<div width="35" height="100%" vAlign="middle">
+				<img src="/aboutme/arrow_right.png" width="10" height="16" />
+			</div>
+		</div>
+		<div width="100%" height="1px" backgroundColor="#d9d9d9"  ></div>
+		<div width="100%" height="100%" vAlign="middle"  onClick="appskin" >
+			<div width="25" height="100%"></div>
+			<input type="label" fontSize="18" color="#393a3b" value="设置风格" />
+			<div width="100%" height="100%"></div>
+			<div width="35" height="100%" vAlign="middle">
+				<img src="/aboutme/arrow_right.png" width="10" height="16" />
+			</div>
+		</div>
+<!-- 		<div width="100%" height="1px" backgroundColor="#d9d9d9" ></div> -->
+<!--  		<div width="100%" height="100%" vAlign="middle" onClick="gosetAI" > -->
+<!-- 			<div width="25" height="100%"></div> -->
+<!-- 			<input type="label" fontSize="18" color="#393a3b" value="设置AI助手" /> -->
+<!-- 			<div width="100%" height="100%"></div> -->
+<!-- 			<div width="35" height="100%" vAlign="middle"> -->
+<!-- 				<img src="/aboutme/arrow_right.png" width="10" height="16" /> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+	</div>
+	<div width="100%" height="13"></div>
+	<div width="340" height="144" borderWidth="1px" borderColor="#ededed" cornerRadius="5" backgroundColor="#ffffff" layout="VBox">
+		<!--<div width="100%" height="100%" vAlign="middle">
+			<div width="25" height="100%"></div>
+			<input type="label" fontSize="18" color="#393a3b" value="意见反馈" />
+			<div width="100%" height="100%"></div>
+			<div width="35" height="100%" vAlign="middle">
+				<img src="/aboutme/arrow_right.png" width="10" height="16" />
+			</div>
+		</div>-->
+		
+<!-- 		<div width="100%" height="1px" backgroundColor="#d9d9d9" ></div> -->
+		<div width="100%" height="100%" vAlign="middle" onClick="clearCache">
+			<div width="25" height="100%"></div>
+			<input type="label" fontSize="18" color="#393a3b" value="清除缓存" />
+		</div>
+		<div width="100%" height="1px" backgroundColor="#d9d9d9" ></div>
+		<div width="100%" height="100%" vAlign="middle" onClick="appUpdate">
+			<div width="25" height="100%"></div>
+			<input type="label" fontSize="18" color="#393a3b" value="检查更新" />
+		</div>
+		<div width="100%" height="1px" backgroundColor="#d9d9d9" ></div>
+		<div width="100%" height="100%" vAlign="middle" onClick="logout">
+			<div width="25" height="100%"></div>
+			<input type="label" fontSize="18" color="#393a3b" value="退出登录" />
+		</div>
+	</div>
+	
+	<!--<div width="100%" height="13"></div>
+	<div width="340" height="48" borderWidth="1px" vAlign="middle" borderColor="#ededed" cornerRadius="5" backgroundColor="#ffffff">
+		<div width="25" height="100%"></div>
+		<input type="label" fontSize="18" color="#393a3b" value="邀请好友下载" />
+		<div width="100%" height="100%"></div>
+		<div width="35" height="100%" vAlign="middle">
+			<img src="/aboutme/share.png" width="21" height="19"/>
+		</div>
+	</div>-->
+</div>
+</body>
+<script>
+// if(Emp.isIOS){
+// 	nav.setHeight(60);
+// 	nav.setPaddingTop(8);
+// }
+// titleInfo.setValue("我的");
+$M.page.addEvent("onLoad", function(){
+	if(CURRENT_USER.nodeName != null){
+		username.setValue(CURRENT_USER.nodeName);
+	}else{
+		username.setValue(preference.get('userid'));
+	} 
+	var aa = username.getValue();
+	abbr.setValue(aa.substring(aa.length-1));
+
+});
+
+function clearCache(){
+	var result = $M.FileUtil.deleteFile("sd://unity/linkman/");
+	if(result==true||result=="true"||result==1){ //删除文件夹下所有内容	
+		toast("清除成功");
+	}else{
+		toast("无缓存内容");
+	}
+}
+
+function logout(){
+	var data = {};
+	data.userid = preference.get("userid");
+	data.msgtoken = Utils.getMessageToken();
+	AjaxUtil.submit("/com.primeton.pmbusiness.push.pushComponent.deleteTmworkUser.biz.ext", data, AjaxUtil.TYPE_POST, function(args){
+		outData();
+		chat.logout(function(r){log('out'+r);}); 
+	}, function(){
+		toast("网络问题，注销失败！");
+		outData();
+	});
+}
+
+function outData() {
+	mailpreference.put("userid",'');
+	mailpreference.put("mailPwd",' ');
+	preference.put('loginstate',"out");
+	preference.put('company', ' ');
+	preference.put('CURRENT_USER','');
+	$M.page.goTo('/login.html', {}, true);
+}
+
+function gotoAbout(){
+	$M.page.goTo("/index/aboutpy.html", {}, false);
+}
+
+function gosetpwd(){
+	if(preference.get('gesturepwd')==null||preference.get('gesturepwd')==''||preference.get('gesturepwd')=='undefined'){
+		$M.page.goTo('/index/gesturepwd.html', {}, false);
+	}else{
+		$M.page.goTo('/index/openpwd.html', {}, false);
+	}
+}
+
+function gotoUpdatePSW(){
+	$M.page.goTo('/index/updatepsw.html', null, false);
+}
+
+function appskin() {
+	$M.page.goTo('/index/APPSkin.html', null, false);
+}
+
+function gosetAI(){
+	$M.page.goTo('/mysetting/openAI.html', {}, false);
+}
+function gotoPersonal(){
+	$M.page.goTo("/index/personalDatalis.html", {},false);
+}
+	function appUpdate(){
+		
+    	var patchVersion = "";
+    	var apps = $M.Portal.getAllApps();
+	   	for(var i=0;i<apps.length;i++){
+	   		if(apps[i].appId=="com.primeton.mwork"){
+	   			patchVersion = apps[i].patchVersion;
+	   		}
+	   	}
+        //应用检查更新
+		initor.hasUpdatableApp(function(result,appInfo) {
+			if (result == true) {
+				var updateContent = appInfo[0];
+				
+				var patchArr = patchVersion.split(".");
+  				var curBaseline = parseInt(patchArr[0]);
+  				
+  				var newVersion = updateContent.patch;
+  				var newPatchArr = newVersion.split(".");
+  				var newBaseline = parseInt(newPatchArr[0]);				
+ 		  		if(curBaseline<newBaseline){
+ 		  			title.removeAll();
+ 		  			content.removeAll();
+ 		  			updateInfo.version = updateContent.version;
+ 		  			updateInfo.content = "请前往应用商店下载最新版本";
+ 		  			setData();
+		    		setViews(true);
+		    		update();
+ 		  			addRightAppStoreUpdate();
+ 		  		}else{
+ 		  			if(updateContent.releasePolicy=="1"){
+	 		  			title.removeAll();
+						content.removeAll();
+					    updateInfo.version=updateContent.version;
+					    updateInfo.content=updateContent.remark;  
+					    setData();
+					    setViews(true);
+					  	update();
+	 		  			addRightClick0();
+	 		  		}else{
+	 		  			title.removeAll();
+						content.removeAll();
+					    updateInfo.version=updateContent.version;
+					    updateInfo.content=updateContent.remark;  
+					    setData();
+					    setViews(false);
+					  	update();
+					  	addRightClick0();
+					  	addLeftClick0();
+	 		  		}
+ 		  		}
+			} else {
+				toast("无可更新应用");
+			}
+		}, function() {
+			toast("检查应用更新失败");
+		});    
+    }
+
+
+</script>
+
+</html>

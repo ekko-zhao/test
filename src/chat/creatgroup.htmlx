@@ -1,0 +1,79 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+	<div id="nav" width="100%" height="50" vAlign="middle"
+		class="emp-nav-backgroundColor">
+		<div width="80" height="100%" id="leftDiv" vAlign="middle"
+			onClick="goBack">
+			<img src="/meeting/back.png" width="13" height="20" marginLeft="20"></img>
+		</div>
+		<input type="label" id="title" value="建立群组" width="100%" height="100%"
+			hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" />
+		<div width="80" height="100%" id="rightDiv" vAlign="middle"
+			hAlign="center">
+		</div>
+	</div>
+	<div width="100%" height="150" vAlign="middle" hAlign="center" >
+		<div width="70" height="70" vAlign="middle" hAlign="center" class="emp-nav-backgroundColor" borderWidth="1" borderColor="#ffffff" cornerRadius="35" >
+			<img src="/chat/hand1.png" width="50" height="50"  />
+		</div>
+		
+	</div>
+	<div width="100%" height="70" vAlign="middle" hAlign="center" layout="VBox" >
+		<input  type="text" id="groupname" value="" height="50" width="200" emptyText="请输入群名" backgroundColor="#ffffff" length="20" />
+		<div width="200" height="1" backgroundColor="#000000" ></div>
+	</div>
+	<div width="100%" height="50"  vAlign="middle" hAlign="center" class="emp-nav-backgroundColor" borderWidth="1" borderColor="#ffffff" cornerRadius="5"  marginLeft="50"  marginRight="50" marginTop="20" onClick="next" >
+		<input type="label" value="下一步" color="#ffffff" fontSize="20"  />
+	</div>
+</body>
+<script> 
+//处理状态栏
+if ($M.isIOS) {
+	nav.setHeight(60);
+	nav.setPaddingTop(8);
+	Utils.setStatusBarStyle("light");
+}
+function goBack() {
+		$M.page.goBack();
+}
+function next() {
+	var name = groupname.getValue();
+	QueryContacts();
+}
+function QueryContacts() {
+	var name = groupname.getValue();
+	if(name == ""){
+		toast("群名不能为空！");
+		return;
+	}
+	var ajaxData = {};
+		ajaxData.nodeId = "";
+		ajaxData.nodeType = "ROOT";
+		ajaxData.userLevel=CURRENT_USER.degree;
+		ajaxData.queryRule='';
+		ajaxData.orgSeq='';
+		ajaxData.pageBegin= '';
+		ajaxData.pageCount='';
+		AjaxUtil.submit("/com.primeton.pmbusiness.contacts.coframeComponent.newQueryContacts.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(args){
+ 			var result = Utils.stringToJson(args);
+ 			var item ={};
+	 		item.titlelabel = result.treenodes[0].nodeName;
+	 		item.nodeId = result.treenodes[0].nodeId;
+			item.nodeType = result.treenodes[0].nodeType;
+	 		item.logo="2";
+			item.template="parent";
+			item.gname = groupname.getValue();
+			item.key = "2";
+			$M.page.goTo("/chat/addPerson.html", item, false);
+		}, function(){
+			log("机构树加载失败！");
+		});
+}
+</script>
+</html>

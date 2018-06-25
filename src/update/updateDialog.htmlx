@@ -1,0 +1,132 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+   <template>
+   	 <div id="ct1" backgroundColor="#ffffff" vAlign="middle" hAlign="center" borderColor="#ffffff" borderWidth="1px" cornerRadius="10px" >
+      <div layout="VBox" width="100%">
+   	  	<div id="contentArea" layout="VBox" overflow="y" height="740px"  width="100%">
+			<div id="title" layout="VBox" width="100%"  vAlign="middle" hAlign="center" height="80">
+				<input type="label" fontBold="true" fontSize="20" value="升级提醒"/>
+			</div>
+			<div id="content" width="100%" height="100%" layout="VBox" >
+			</div>
+      	</div> 
+      	<div id="btnArea"  width="100%">
+      		<div id="btnDiv" layout="HBox"  height="100%">
+    			<div id="cancelDiv" height="100%"  width="100%">
+    	 			<input id="cancelBtn" type="button" value="以后再说"  backgroundColor="#EEF1F6" />
+  	  			</div>
+				<input type="label" backgroundColor="#C5C5C5" width="2px" height="100%" value=""/>
+    			<div  height="100%" width="100%"> 
+    	 		 	<input id="downloadBtn" type="button" value="立即安装" color="#22CAB1" backgroundColor="#EEF1F6" />
+    			</div>
+	  		</div>        	
+    	</div>  
+	  </div>
+    </div>
+   
+   </template>
+<dialog id="dialog" canceledOnTouchOutside="false" canceledOnBackkeyPress="false">
+   
+  </dialog>
+</body>
+<script>
+	var updateInfo={
+		version:"",
+		content:[]
+	}
+	var initor = new $M.Init();
+	//左键取消时间
+	function cancel0(){
+		dialog.close();
+	}
+	function updateApp0(){
+		dialog.close();
+		showProgress('正在更新...');
+		initor.appUpdate(function() {
+			log('welcome', '更新应用结束');
+			dismissProgress();
+			$M.page.goTo('/welcome.html',null,true);
+		}, function() {
+			toast('更新失败');
+		});
+	}
+function setViews(isForce){
+	var width=360*0.8;
+	var height=640*0.6;
+	ct1.setWidth(width);   
+	ct1.setHeight(height);
+	contentArea.setHeight(height*0.9); 
+	btnArea.setHeight(height*0.1);
+	cancelBtn.setWidth(width*0.5);
+	downloadBtn.setWidth(width*0.5); 
+	if(isForce){
+		btnDiv.remove(cancelDiv);
+		downloadBtn.setWidth(width); 
+	}
+}
+function setData(){
+	  var versionLabel = new Emp.Label({"id":"_input_19059937","value":""});
+	  var titleBar = new Emp.Label({"fontBold":"true","fontSize":"20","id":"_input_33491338","value":"升级提醒"});
+	  updateInfo.version = updateInfo.version==null?'最新版':updateInfo.version;
+	  versionLabel.setValue("欢迎升级企业移动平台"+updateInfo.version);
+	  title.add(titleBar);
+	  title.add(versionLabel);
+	  if(updateInfo.content==null){
+	      return;
+	  }
+  	  var temp = new Emp.Label({"marginRight":"15","id":"_input_22854980","singleLine":"false","value":"","marginLeft":"15","width":"260"});
+  	  temp.setValue(updateInfo.content);
+  	  content.add(temp);
+}
+function update(){
+	dialog.setView(ct1); 
+	dialog.show();
+} 
+function addLeftClick(){
+	cancelBtn.addEvent('onClick',cancel);
+}
+function addLeftClick0(){
+	cancelBtn.addEvent('onClick',cancel0);
+}
+function addRightClick(){
+  downloadBtn.addEvent('onClick',updateApp);
+}
+function addRightClick0(){
+  downloadBtn.addEvent('onClick',updateApp0);
+}
+function addRightAppStoreUpdate(){
+	 downloadBtn.addEvent('onClick',updateAppStore);
+}
+
+function updateAppStore(){
+	var clientConfig = $M.Portal.getClientConfig();
+	var appADS = clientConfig.appServerAddress;
+	if($M.isIOS){
+		//正式环境https://mobile.chinasws.com/apps/mwork/client.html
+		//测试环境https://mobile.chinasws.com/apps/mwork_test/client.html
+		//通过域名判断跳转地址
+		if(appADS.indexOf('com')<0){
+			Utils.browser("https://mobile.chinasws.com/apps/mwork_test/client.html");
+			System.exit();
+		}else{
+			Utils.browser("https://mobile.chinasws.com/apps/mwork/client.html");
+			System.exit();
+		}
+		
+	}else{
+		//正式环境https://mobile.chinasws.com/apps/mwork/client.html
+		//测试环境https://mobile.chinasws.com/apps/mwork_test/client.html
+		if(appADS.indexOf('com')<0){
+			Utils.browser("https://mobile.chinasws.com/apps/mwork_test/client.html");
+		}else{
+			Utils.browser("https://mobile.chinasws.com/apps/mwork/client.html");
+		}
+		
+	}
+	
+}
+</script>
+</html>

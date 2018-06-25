@@ -1,0 +1,43 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+</body>
+<script>
+<!-- div_cus从底部向上平移到中心，停顿两秒，再平移到底部 -->
+	function div_animation(div_gray,div_cus) {
+		var translateAnimation1 = new $M.TranslateAnimation({
+			fromX : 0,
+			toX : 0,
+			fromY : 400,
+			toY : 0,
+			duration : 500
+		});
+		var translateAnimation2 = new $M.TranslateAnimation({
+			fromX : 0,
+			toX : 0,
+			fromY : 0,
+			toY : 400,
+			duration : 500
+		});
+		setTimeout(function() {
+			div_gray.setDisplay(true);
+			div_cus.setDisplay(true);
+			div_cus.clearAnimation();
+			div_cus.addAnimation(translateAnimation1);
+			div_cus.startAnimation();
+		}, 1000);
+		setTimeout(function() {
+			div_cus.clearAnimation();
+			div_cus.addAnimation(translateAnimation2);
+			div_cus.startAnimation();
+		}, 3500);
+		setTimeout(function() {
+			div_cus.clearAnimation();
+			div_cus.setDisplay(false);
+			div_gray.setDisplay(false);
+		}, 4000);
+	}
+</script>
+</html>

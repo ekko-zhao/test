@@ -1,0 +1,290 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+	$M.includeFile("/chat/commonchat.html");
+</script>
+<body>
+	<div id="nav" width="100%" height="50" vAlign="middle"
+		class="emp-nav-backgroundColor">
+		<div width="80" height="100%" id="leftDiv" vAlign="middle"
+			onClick="goBack">
+			<img src="/meeting/back.png" width="13" height="20" marginLeft="20"></img>
+		</div>
+		<input type="label" id="title" value="群资料" width="100%" height="100%"
+			hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" />
+		<div width="80" height="100%" id="rightDiv" vAlign="middle"
+			hAlign="center"  >
+			
+		</div>
+	</div>
+	<div width="100%" height="50" vAlign="middle" onClick="showPerson" >
+		<input type="label" value="群名称:" fontSize="20" marginLeft="10" />
+		<input type="label" value="" id="gname" marginLeft="5" width="100%" height="100%" />
+		<input id="personc" type="label" value="2" fontSize="20"  />
+		<div width="40" height="100%" hAlign="center" vAlign="middle" >
+			<img  width="20" height="20" src="/linkman/right.png" />
+		</div>
+	</div>
+	<div width="100%" height="1px" backgroundColor="#e8e6e8"></div>
+	<div width="100%" height="40" vAlign="middle" >
+		<input type="label" value="群人员" fontSize="20" marginLeft="10"/>
+	</div>
+	<div width="100%" height="250" layout="VBox" >
+		<div width="100%" height="100%"  >
+			<div id="handDiv0" width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center" >
+				<div id="handImg0" width="50" height="50" backgroundImage="/linkman/ciracle2.png" vAlign="middle" hAlign="center" >
+					<input id="handImgText0" type="label" value="测" color="#ffffff"  fontSize="24" />
+				</div>
+				<input id="handtext0" type="label" value="测测测" fontSize="16" height="20" />
+			</div>
+			<div id="handDiv1" width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center" >
+				<div id="handImg1" width="50" height="50" backgroundImage="/linkman/ciracle2.png" vAlign="middle" hAlign="center" >
+					<input id="handImgText1" type="label" value="测" color="#ffffff"  fontSize="24" />
+				</div>
+				<input id="handtext1" type="label" value="label" fontSize="16" height="20"/>
+			</div>
+			<div id="handDiv2" width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center" >
+				<div id="handImg2" width="50" height="50" backgroundImage="/linkman/ciracle2.png" vAlign="middle" hAlign="center" >
+					<input id="handImgText2" type="label" value="测" color="#ffffff"  fontSize="24" />
+				</div>
+				<input id="handtext2" type="label" value="label" fontSize="16" height="20"/>
+			</div>
+			<div id="handDiv3" width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center" >
+				<div id="handImg3" width="50" height="50" backgroundImage="/linkman/ciracle2.png" vAlign="middle" hAlign="center" >
+					<input id="handImgText3" type="label" value="测" color="#ffffff"  fontSize="24" />
+				</div>
+				<input id="handtext3" type="label" value="label" fontSize="16" height="20"/>
+			</div>
+		</div>
+		<div width="100%" height="100%">
+			<div id="handDiv4" width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center" >
+				<div id="handImg4" width="50" height="50" backgroundImage="/linkman/ciracle2.png" vAlign="middle" hAlign="center" >
+					<input id="handImgText4" type="label" value="测" color="#ffffff"  fontSize="24" />
+				</div>
+				<input id="handtext4" type="label" value="label" fontSize="16" height="20"/>
+			</div>
+			<div id="handDiv5" width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center" >
+				<div id="handImg5" width="50" height="50" backgroundImage="/linkman/ciracle2.png" vAlign="middle" hAlign="center" >
+					<input id="handImgText5" type="label" value="测" color="#ffffff"  fontSize="24" />
+				</div>
+				<input id="handtext5" type="label" value="label" fontSize="16" height="20"/>
+			</div>
+			<div id="handDiv6" width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center" >
+				<div id="handImg6" width="50" height="50" backgroundImage="/linkman/ciracle2.png" vAlign="middle" hAlign="center" >
+					<input id="handImgText6" type="label" value="测" color="#ffffff"  fontSize="24" />
+				</div>
+				<input id="handtext6" type="label" value="label" fontSize="16" height="20"/>
+			</div>
+			<div id="handDiv7" width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center" >
+				<div id="handImg7" width="50" height="50" backgroundImage="/linkman/ciracle2.png" vAlign="middle" hAlign="center" >
+					<input id="handImgText7" type="label" value="测" color="#ffffff"  fontSize="24" />
+				</div>
+				<input id="handtext7" type="label" value="label" fontSize="16" height="20"/>
+			</div>
+		</div>
+		<div width="100%" height="100%">
+			<div id="handDiv8" width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center" >
+				<div id="handImg8" width="50" height="50" backgroundImage="/linkman/ciracle2.png" vAlign="middle" hAlign="center" >
+					<input id="handImgText8" type="label" value="测" color="#ffffff"  fontSize="24" />
+				</div>
+				<input id="handtext8" type="label" value="label" fontSize="16" height="20"/>
+			</div>
+			<div id="handDiv9" width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center" >
+				<div id="handImg9" width="50" height="50" backgroundImage="/linkman/ciracle2.png" vAlign="middle" hAlign="center" >
+					<input id="handImgText9" type="label" value="测" color="#ffffff"  fontSize="24" />
+				</div>
+				<input id="handtext9" type="label" value="label" fontSize="16" height="20"/>
+			</div>
+			<div id="handDiv10" width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center" >
+				<div id="handImg10" width="50" height="50" backgroundImage="/linkman/ciracle2.png" vAlign="middle" hAlign="center" >
+					<input id="handImgText10" type="label" value="测" color="#ffffff"  fontSize="24" />
+				</div>
+				<input id="handtext10" type="label" value="添加人员" fontSize="16" height="20"/>
+			</div>
+			<div id="handDiv11" width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center" >
+				<div id="handImg11" width="50" height="50" backgroundImage="/linkman/ciracle2.png" vAlign="middle" hAlign="center" >
+					<input id="handImgText11" type="label" value="" color="#ffffff"  fontSize="24" />
+				</div>
+				<input id="handtext11" type="label" value="" fontSize="16" height="20"/>
+			</div>
+		</div>
+	</div>
+	<div width="100%" height="1px" backgroundColor="#e8e6e8"></div>
+	<div width="100%" height="50" />
+	<div width="100%" height="50" layout="VBox"    id="showButton" vAlign="middle" hAlign="center" onClick="deleteGroup" >
+	   <div width="100%" height="1px" backgroundColor="#e8e6e8"></div>
+	   <input type="label" value="解散群组" fontSize="24" color="#ff0000"  height="100%" />
+	   <div width="100%" height="1px" backgroundColor="#e8e6e8"></div>
+    </div>
+    
+    
+</body>
+<script> 
+	$M.page.addEvent('onLoad', loadData);
+	if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+	var userList = "[]"; 
+	var gID;
+	var myGroup;
+	function loadData(args){
+		gname.setValue(args.name);
+		gID = args.gID;
+		myGroup = args.myGroup;
+		if(myGroup != "Y"){
+			showButton.setDisplay(false);
+		}
+		chat.getAllMembersInGroup({'gID':gID},function(r){log(r)
+			var data = Utils.stringToJson(r);
+			userList = data.userList;
+		personc.setValue(userList.length);
+		if(userList.length <10){
+			for(var i=0;i<userList.length;i++){
+				var mun = parseInt(Math.random()*4+1)
+				var name = userList[i].name;
+				eval('handImg'+i+'.setBackgroundImage("/linkman/ciracle'+mun+'.png")');
+				eval('handImgText'+i+'.setValue("'+name.substring(0,1)+'")');
+				eval('handtext'+i+'.setValue("'+name+'")');
+				eval('handDiv'+i+'.addEvent("onClick",function (){gotoPersonInfo("'+userList[i].userID+'"); })');
+			}
+			if(myGroup == "Y"){
+				var k1 = userList.length;
+				var mun = parseInt(Math.random()*4+1);
+				eval('handImg'+k1+'.setBackgroundImage("/linkman/ciracle'+mun+'.png")');
+				eval('handImgText'+k1+'.setValue("+")');
+				eval('handtext'+k1+'.setValue("添加人员")');
+				eval('handDiv'+k1+'.addEvent("onClick",function (){addPerson(); })');
+				var k2 = userList.length+1;
+				var mun = parseInt(Math.random()*4+1);
+				eval('handImg'+k2+'.setBackgroundImage("/linkman/ciracle'+mun+'.png")');
+				eval('handImgText'+k2+'.setValue("-")');
+				eval('handtext'+k2+'.setValue("删除人员")');
+				eval('handDiv'+k2+'.addEvent("onClick",function (){deletePerson(); })');
+				for(var i=userList.length+2;i<12;i++){
+					eval('handImg'+i+'.setDisplay(false);');
+					eval('handtext'+i+'.setDisplay(false);');
+				}
+			}else{
+				var k1 = userList.length;
+				var mun = parseInt(Math.random()*4+1);
+				eval('handImg'+k1+'.setBackgroundImage("/linkman/ciracle'+mun+'.png")');
+				eval('handImgText'+k1+'.setValue("+")');
+				eval('handtext'+k1+'.setValue("添加人员")');
+				eval('handDiv'+k1+'.addEvent("onClick",function (){addPerson(); })');
+				for(var i=userList.length+1;i<12;i++){
+					eval('handImg'+i+'.setDisplay(false);');
+					eval('handtext'+i+'.setDisplay(false);');
+				}
+			}
+		}else{
+				if(myGroup == "Y"){
+					for(var i=0;i<10;i++){
+						var mun = parseInt(Math.random()*4+1)
+						var name = userList[i].name;
+						eval('handImg'+i+'.setBackgroundImage("/linkman/ciracle'+mun+'.png")');
+						eval('handImgText'+i+'.setValue("'+name.substring(0,1)+'")');
+						eval('handtext'+i+'.setValue("'+name+'")');
+						eval('handDiv'+i+'.addEvent("onClick",function (){gotoPersonInfo("'+userList[i].userID+'"); })');
+					}
+					var mun = parseInt(Math.random()*4+1)
+					eval('handImg10.setBackgroundImage("/linkman/ciracle'+mun+'.png")');
+					eval('handImgText10.setValue("+")');
+					eval('handtext10.setValue("添加人员")');
+					eval('handDiv10.addEvent("onClick",function (){addPerson(); })');
+					var k2 = 11;
+					var mun = parseInt(Math.random()*4+1)
+					eval('handImg'+k2+'.setBackgroundImage("/linkman/ciracle'+mun+'.png")');
+					eval('handImgText'+k2+'.setValue("-")');
+					eval('handtext'+k2+'.setValue("删除人员")');
+					eval('handDiv'+k2+'.addEvent("onClick",function (){deletePerson(); })');
+				}else{
+					for(var i=0;i<11;i++){
+					var mun = parseInt(Math.random()*4+1)
+					var name = userList[i].name;
+					eval('handImg'+i+'.setBackgroundImage("/linkman/ciracle'+mun+'.png")');
+					eval('handImgText'+i+'.setValue("'+name.substring(0,1)+'")');
+					eval('handtext'+i+'.setValue("'+name+'")');
+					eval('handDiv'+i+'.addEvent("onClick",function (){gotoPersonInfo("'+userList[i].userID+'"); })');
+					}
+					var mun = parseInt(Math.random()*4+1)
+					eval('handImg11.setBackgroundImage("/linkman/ciracle'+mun+'.png")');
+					eval('handImgText11.setValue("+")');
+					eval('handtext11.setValue("添加人员")');
+					eval('handDiv11.addEvent("onClick",function (){addPerson(); })');
+				}	
+		}
+		});
+	}
+	function goBack() {
+		$M.page.goBack();
+	}
+	//增加人员
+	function addPerson() {
+		var ajaxData = {};
+		ajaxData.nodeId = "";
+		ajaxData.nodeType = "ROOT";
+		ajaxData.userLevel=CURRENT_USER.degree;
+		ajaxData.queryRule='';
+		ajaxData.orgSeq='';
+		ajaxData.pageBegin= '';
+		ajaxData.pageCount='';
+		AjaxUtil.submit("/com.primeton.pmbusiness.contacts.coframeComponent.newQueryContacts.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(args){
+ 			var result = Utils.stringToJson(args);
+ 			var item ={};
+	 		item.titlelabel = result.treenodes[0].nodeName;
+	 		item.nodeId = result.treenodes[0].nodeId;
+			item.nodeType = result.treenodes[0].nodeType;
+	 		item.logo="2";
+			item.template="parent";
+			item.key = "1";
+			item.userList =Utils.jsonToString(selectList());
+			item.gID = gID;
+			$M.page.goTo("/chat/addPerson.html", item, false);
+		}, function(){
+			log("机构树加载失败！")
+		}); 
+	}
+	//筛选人员
+	function selectList() {
+		var useridList =[];
+		for(var i=0;i<userList.length;i++){
+			useridList.push(userList[i].userID);
+		}
+		return useridList;
+	}
+	//删除人员
+	function deletePerson() {
+		var temp = {};
+		temp.gID = gID;
+		temp.userList = userList;
+		temp.key = "D";
+		$M.page.goTo('/chat/deletePerson.html', temp, false);
+	}
+//只查看所有人员
+function showPerson() {
+	var temp = {};
+	temp.gID = gID;
+	temp.userList = userList;
+	temp.key = "S";
+	$M.page.goTo('/chat/deletePerson.html', temp, false);
+}	
+//获取每个人的详细信息
+function gotoPersonInfo(userid) {
+	$M.page.goTo("/chat/personInfo.html", userid, false);
+	
+}
+//解散群组
+function deleteGroup() {
+	confirm("是否解散群组？", function () {
+		chat.breakGroup({'gID':gID},function(r){toast("解散成功");$M.page.goBack({}, '/index.html')});
+	}, function () {
+		
+	});
+}
+
+</script>
+</html>

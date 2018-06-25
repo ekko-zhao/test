@@ -1,0 +1,204 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+	<div width="100%" height="100%" layout="VBox" backgroundColor="#f8f8f8">
+		<div id="nav" width="100%" height="50" vAlign="middle"
+			backgroundColor="#0b78e3">
+			<div width="80" height="100%" id="leftDiv" vAlign="middle"
+				onPressUp="goBack">
+				<div width="10" height="100%" />
+				<img src="/linkman/back.png" width="11" height="18" />
+				<div width="4" height="100%" />
+				<input type="label" value="审批" fontSize="18" color="#ffffff" />
+			</div>
+
+			<input type="label" id="titleInfo" width="100%" height="100%"
+				hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="20"
+				value="请假" />
+			<div width="80" height="100%" id="rightDiv" vAlign="middle"
+				hAlign="center"></div>
+		</div>
+		<div width="100%" height="100%" layout="VBox" overflow="y">
+			<div width="100%" height="40" backgroundColor="#dddddd"
+				vAlign="middle" display="true">
+				<input type="label" value="温馨提示：您的年假天数还剩2天~" marginLeft="10"
+					fontSize="14" />
+			</div>
+			<div width="100%" height="45" backgroundColor="#ffffff"
+				vAlign="middle">
+				<div width="10" height="100%"></div>
+				<input type="label" value="请假类型" fontSize="16" />
+				<div width="10" height="100%"></div>
+				<select id="select_type" backgroundColor="#ffffff" width="120">
+					<option text="事假" value="事假" />
+					<option text="病假" value="病假" />
+					<option text="年假" value="年假" />
+					<option text="调休" value="调休" />
+					<option text="婚假" value="婚假" />
+					<option text="产假" value="产假" />
+					<option text="陪产假" value="陪产假" />
+					<option text="路途假" value="路途假" />
+					<option text="其他" value="其他" />
+				</select>
+				<div width="100%" height="100%"></div>
+				<img src="/common/arrow_select.png" width="16" height="10" />
+				<div width="20" height="100%"></div>
+			</div>
+			<div width="100%" height="1px" backgroundColor="#e5e5e5"></div>
+			<div width="100%" height="10"></div>
+			<div width="100%" height="1px" backgroundColor="#e5e5e5"></div>
+			<div width="100%" height="45" backgroundColor="#ffffff"
+				vAlign="middle">
+				<div width="10" height="100%"></div>
+				<input type="label" value="开始时间" fontSize="16" />
+				<div width="100%" height="100%"></div>
+				<input id="start" type="date" dateMode="date"
+					displayFormat="yyyy-MM-dd" fontSize="14" backgroundColor="#ffffff" />
+			</div>
+			<div width="100%" height="1px" backgroundColor="#e5e5e5"></div>
+			<div width="100%" height="45" backgroundColor="#ffffff"
+				vAlign="middle">
+				<div width="10" height="100%"></div>
+				<input type="label" value="结束时间" fontSize="16" />
+				<div width="100%" height="100%"></div>
+				<input id="end" type="date" dateMode="date"
+					displayFormat="yyyy-MM-dd" fontSize="14" backgroundColor="#ffffff" />
+			</div>
+			<div width="100%" height="1px" backgroundColor="#e5e5e5"></div>
+			<div width="100%" height="10"></div>
+			<div width="100%" height="1px" backgroundColor="#e5e5e5"></div>
+			<div width="100%" height="45" backgroundColor="#ffffff"
+				vAlign="middle">
+				<div width="10" height="100%"></div>
+				<input type="label" value="请假天数" fontSize="16" />
+				<div width="10" height="100%"></div>
+				<input id="days" type="number" width="100%"
+					backgroundColor="#ffffff" emptyText="请输入请假天数(必填)" fontSize="14"
+					emptyTextColor="#cccccc" />
+				<div width="20" height="100%"></div>
+			</div>
+			<div width="100%" height="1px" backgroundColor="#e5e5e5"></div>
+			<div width="100%" height="10"></div>
+			<div width="100%" height="1px" backgroundColor="#e5e5e5"></div>
+			<div width="100%" height="90" backgroundColor="#ffffff">
+				<div width="10" height="100%"></div>
+				<input type="label" value="请假事由" fontSize="16" marginTop="10" />
+				<div width="10" height="100%"></div>
+				<input id="reason" width="100%" type="textarea" marginTop="10"
+					height="100%" backgroundColor="#ffffff" emptyText="请输入请假事由(必填)"
+					fontSize="14" emptyTextColor="#cccccc" />
+				<div width="20" height="100%"></div>
+			</div>
+			<div width="100%" height="1px" backgroundColor="#e5e5e5"></div>
+			<div width="100%" height="10"></div>
+			<div width="100%" height="1px" backgroundColor="#e5e5e5"></div>
+			<div width="100%" height="45" backgroundColor="#ffffff"
+				vAlign="middle">
+				<div width="10" height="100%"></div>
+				<input type="label" value="审批人" fontSize="16" />
+				<div width="20" height="100%"></div>
+				<div width="100%" height="100%">
+					<select id="select_leader" backgroundColor="#ffffff" width="100%">
+						<option text="汤金忠" value="汤汤" />
+						<option text="郝振明" value="郝大大" />
+						<option text="其他" value="汤汤" />
+					</select>
+				</div>
+				<div width="16" height="16" hAlign="center" vAlign="middle" position="relative" top='12' left='320'>
+					<img src="/common/arrow_select.png" width="16" height="10" />
+				</div>			
+				<div width="20" height="100%"></div>
+			</div>
+		</div>
+		<div width="100%" height="1px" backgroundColor="#e5e5e5"></div>
+		<div width="100%" height="50" backgroundColor="#0b78e3"
+			vAlign="middle" hAlign="center" onClick="goToBack">
+			<div width="320" height="40" backgroundColor="#0b78e3"
+				borderColor="#0b78e3" borderWidth="1px" cornerRadius="5"
+				vAlign="middle" hAlign="center">
+				<input type="label" value="提交" color="#ffffff" fontSize="16" />
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	if (Emp.isIOS) {
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+
+	$M.page.addEvent("onLoad", function(params) {
+		log(Utils.jsonToString(params));
+		if (params.length>0) {
+			select_type.setValue(params.type);
+			start.setValue(params.start);
+			end.setValue(params.end);
+			days.setValue(params.days);
+			reason.setValue(params.reason);
+			select_leader.setValue(params.leader);
+		}
+	});
+
+	function goBack() {
+		$M.page.goBack();
+	}
+
+	var isClick = false;
+	function goToBack() {
+		if (isClick) {
+			return;
+		}
+		isClick = true;
+		showProgress();
+
+		if (days.getValue() == "") {
+			Utils.toast("请输入请假天数");
+			dismissProgress();
+			isClick = false;
+			return;
+		}
+		if (reason.getValue() == "") {
+			Utils.toast("请输入请假事由");
+			dismissProgress();
+			isClick = false;
+			return;
+		}
+		
+		var ajaxData = {};
+		ajaxData.userid = CURRENT_USER.nodeId;
+		ajaxData.type = select_type.getValue();
+
+		if (start.getValue() == null) {
+			ajax.add('start', new Date().getTime());
+		} else {
+			ajax.add('start', new Date(start.getValue()).getTime());
+		}
+
+		if (start.getValue() == null) {
+			ajaxData.end = new Date().getTime();
+		} else {
+			ajaxData.end = new Date(end.getValue()).getTime();
+		}
+
+		ajaxData.days = days.getValue();
+		ajaxData.reason = reason.getValue();
+		ajaxData.leader = select_leader.getValue();
+		AjaxUtil.submit('/com.primeton.pmbusiness.leave.leaveComponent.addLeaveRecord.biz.ext', ajaxData, AjaxUtil.TYPE_POST, function(args) {
+			log('------------' + args);
+			dismissProgress();
+			var result = util.stringToJson(args);
+			Utils.toast("请假成功(*^∇^*)♪");
+			goBack();
+		}, function(errCode, errMsg) {
+			dismissProgress();
+			alert("请假失败");
+			isClick = false;
+		});
+	}
+</script>
+</html>

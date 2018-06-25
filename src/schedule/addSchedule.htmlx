@@ -1,0 +1,291 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Hello World</title>
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+	<div id="nav" width="100%" height="50" vAlign="middle"
+		class="emp-nav-backgroundColor">
+		<div width="100%" height="100%" id="leftDiv" vAlign="middle">
+			<input type="label" width="100%" height="100%" value="取消"
+				fontSize="19" color="#ffffff" marginLeft="20" onClick="makeCancel" />
+		</div>
+		<input type="label" id="title" value="新建日程" width="100%" height="100%"
+			hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="22" />
+		<div width="100%" height="100%" id="rightDiv" vAlign="middle"
+			hAlign="right">
+			<input type="label" width="100%" height="100%" value="确定"
+				fontSize="19" color="#ffffff" hAlign="right" marginRight="20"
+				onClick="makeSure" />
+		</div>
+	</div>
+
+	<div width="100%" height="100%" layout="VBox" backgroundColor="#F6F7F9">
+		<div width="100%" height="100" layout="VBox" backgroundColor="#ffffff">
+			<div width="100%" height="100%">
+				<div width="100%" height="100%" marginRight="-10">
+					<input type="text" id="themeInfo" emptyText="主题" width="100%"
+						height="100%" marginTop="2" marginBottom="2"
+						backgroundColor="#ffffff" />
+				</div>
+			</div>
+			<div width="100%" height="1" backgroundColor="#EBECED"></div>
+			<div width="100%" height="100%">
+				<div width="100%" height="100%" marginRight="-10">
+					<input type="text" id="locationInfo" emptyText="地点" width="100%"
+						height="100%" marginTop="2" marginBottom="2"
+						backgroundColor="#ffffff" />
+				</div>
+			</div>
+		</div>
+		<div width="100%" height="1" backgroundColor="#D0D1D2"></div>
+		<div width="100%" height="1" backgroundColor="#D0D1D2" marginTop="20"></div>
+		<div width="100%" height="150" backgroundColor="#ffffff" layout="VBox">
+			<div width="100%" height="100%">
+				<div width="100%" height="100%">
+					<input type="label" width="100%" height="100%" value="全天事件"
+						marginLeft="20" fontSize="20" />
+				</div>
+				<div id="wholeday" width="100%" height="100%" hAlign="right"
+					vAlign="middle" marginRight="20"></div>
+			</div>
+			<div width="100%" height="1" backgroundColor="#EBECED"></div>
+			<div width="100%" height="100%">
+				<div width="100%" height="100%">
+					<input type="label" width="100%" height="100%" value="开始时间"
+						marginLeft="20" fontSize="20" />
+				</div>
+				<div width="100%" height="100%" hAlign="right">
+					<input id="startDate" type="date" dateMode="datetime"
+						displayFormat="yyyy-MM-dd HH:mm" name="date"
+						value="2017-01-01 10:00" width="190" backgroundColor="#ffffff"
+						marginRight="-40" />
+				</div>
+			</div>
+			<div width="100%" height="1" backgroundColor="#EBECED"></div>
+			<div width="100%" height="100%">
+				<div width="100%" height="100%">
+					<input type="label" width="100%" height="100%" value="结束时间"
+						marginLeft="20" fontSize="20" />
+				</div>
+				<div width="100%" height="100%" hAlign="right">
+					<input id="endDate" type="date" dateMode="datetime"
+						displayFormat="yyyy-MM-dd HH:mm" name="date"
+						value="2017-01-01 10:00" width="190" backgroundColor="#ffffff"
+						marginRight="-40" />
+				</div>
+			</div>
+		</div>
+		<div width="100%" height="1" backgroundColor="#EBECED"></div>
+		<div width="100%" height="1" backgroundColor="#EBECED" marginTop="20"></div>
+		<div width="100%" height="100%" backgroundColor="#ffffff">
+			<textarea id="contentInfo" width="100%" height="100%" emptyText="内容"
+				emptyTextColor="#8B8C8D" backgroundColor="#ffffff">
+		</textarea>
+		</div>
+	</div>
+</body>
+<script>
+	if (Emp.isIOS) {
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+		startDate.setDisplayFormat("yyyy-MM-dd HH:mm");
+		endDate.setDisplayFormat("yyyy-MM-dd HH:mm");
+	} else {
+		startDate.setDisplayFormat("yyyy-MM-dd hh:mm");
+		endDate.setDisplayFormat("yyyy-MM-dd hh:mm");
+	}
+
+	//日程信息
+	var schedulePre = new $M.Preferences();
+
+	schedulePre.open('workbench');
+	var loginId = schedulePre.get('userid');
+	var scheduleKey = "scheduleInfo_" + loginId;
+
+	schedulePre.open('scheduleInfo');
+	var scheduleInfo = schedulePre.get(scheduleKey);
+	log("scheduleInfo==" + Utils.jsonToString(scheduleInfo));
+
+	var currenDate;
+	$M.page.addEvent("onLoad", function(args) {
+
+		log("***" + args.date + "");
+		//args 为时间
+
+		currenDate = args.date.substring(0, 4) + "-"
+				+ args.date.substring(4, 6) + "-" + args.date.substring(6, 8);
+		startDate.setValue(currenDate + " 10:00");
+		endDate.setValue(currenDate + " 10:00");
+		//switchButton.setSwitchStatus(true);
+	});
+
+	var isWholeDay = "false";//默认取消全天
+	//切换按钮
+	var switchButton = new $M.SwitchButton({
+		height : "30",
+		width : "50"
+	});
+
+	wholeday.add(switchButton);
+
+	/*
+	 * 全天按钮切换事件
+	 * 选中 清空结束时间，并设置为不可选
+	 * 不选中 结束时间可选
+	 */
+
+	switchButton.addEvent('onChange', function(o, n) {
+		log("=====YES");
+		if (isWholeDay == "false") {
+			isWholeDay = "true";
+			log("===true");
+			startDate.setValue(currenDate + " 00:00");
+			endDate.setValue(currenDate + " 23:59");
+			startDate.setDisabled(true);
+			endDate.setDisabled(true);
+		} else {
+			log("===false");
+			isWholeDay = "false";
+			startDate.setValue(currenDate + " 10:00");
+			endDate.setValue(currenDate + " 10:00");
+			startDate.setDisabled(false);
+			endDate.setDisabled(false);
+		}
+	});
+
+	//取消返回
+	function makeCancel() {
+		$M.page.goBack();
+	}
+
+	var timeZone = new Emp.TimeZone();//手机本地日历
+
+	//确定添加
+	function makeSure() {
+
+		//信息为空的判断
+		if (themeInfo.getValue() == "" || locationInfo.getValue() == ""
+				|| contentInfo.getValue() == "") {
+			alert("信息请填写完整！");
+			return;
+		}
+
+		if (startDate.getValue() >= endDate.getValue()) {
+			alert("开始是按应该小于结束时间！");
+			return;
+		}
+
+		/*
+			theme:主题
+			location:地点
+			content:内容
+			isWholeDay:是否是全天事件
+			sDate:开始时间
+			eDate：结束时间
+			
+			year:事件年份
+			month:事件月份
+			day:事件天份
+			
+		 */
+		// var scheduleArr=new Array();
+		var scheduleDetial = {
+			"year" : startDate.getValue().substring(0, 4),
+			"month" : startDate.getValue().substring(5, 7),
+			"day" : startDate.getValue().substring(8, 10),
+
+			"theme" : themeInfo.getValue(),
+			"location" : locationInfo.getValue(),
+			"content" : contentInfo.getValue(),
+			"isWholeDay" : isWholeDay,
+			"sDate" : startDate.getValue(),
+			"eDate" : endDate.getValue(),
+		};
+
+		scheduleInfo.push(scheduleDetial);
+
+		schedulePre.put(scheduleKey, scheduleInfo);
+
+		var date1 = new Date();
+		date1.setFullYear(startDate.getValue().substring(0, 4), startDate
+				.getValue().substring(5, 7), startDate.getValue().substring(8,
+				10));
+		date1.setHours(startDate.getValue().substring(11, 13), startDate
+				.getValue().substring(14), 0, 0);
+		var date2 = new Date();
+		date2.setFullYear(endDate.getValue().substring(0, 4), endDate
+				.getValue().substring(5, 7), endDate.getValue()
+				.substring(8, 10));
+		date2.setHours(endDate.getValue().substring(11, 13), endDate.getValue()
+				.substring(14), 0, 0);
+
+		var date3 = date2.getTime() - date1.getTime(); //时间差的毫秒数
+
+		//计算相差分钟数
+		var minutes = Math.floor(date3 / (60 * 1000));
+
+		//alert("minutes=="+minutes);
+
+		var timeZoneInfo = {
+			"title" : themeInfo.getValue(),
+			"eventLoaction" : locationInfo.getValue(),
+			"description" : contentInfo.getValue(),
+			"startTime" : startDate.getValue(),
+			"endTime" : endDate.getValue(),
+			"minutes" : minutes
+		}
+		if(Utils.isNetworkAvailable()){
+			timeZone
+					.saveContactEvent(
+							timeZoneInfo,
+							function() {
+								showProgress("");
+								
+									/*
+									 */
+									var ajaxData = {};
+									ajaxData.userid = preference.get('userid');
+									ajaxData.subject = themeInfo.getValue();
+									ajaxData.location = locationInfo.getValue();
+									ajaxData.start = startDate.getValue();
+									ajaxData.end = endDate.getValue();
+									ajaxData.content = contentInfo.getValue();
+									AjaxUtil.submit("/com.primeton.pmbusiness.schedule.schedulecomponent.saveScheduleRecord.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(text) {
+										log(text);
+										log("本地日历添加成功！");
+										setTimeout(function() {
+											dismissProgress();
+											toast("保存成功");
+											$M.page.goBack({
+												"isRefresh" : "true"
+											}, "/schedule/scheduleHome.html");
+										}, 500);
+									}, function(errCode, msg) {
+										log(errCode + "``" + msg);
+										dismissProgress();
+											toast("保存失败");
+									});
+								
+							}, function() {
+								alert("本地日历添加失败！");
+							});
+		}else{
+			dismissProgress();
+			toast('当前网络不可用');
+		}
+	}
+</script>
+</html>
+
+
+
+
+
+
+
+
+

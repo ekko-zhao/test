@@ -1,0 +1,283 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div width="100%" height="100%" layout="VBox" >
+	<div id="nav" width="100%" height="50" vAlign="middle" class="emp-nav-backgroundColor">
+		<div width="100" height="100%" id="leftDiv" vAlign="middle"  onPressUp="goBack">
+			<div width="10" height="100%"/>
+			<img src="/linkman/back.png" width="11" height="18"/>
+			<div width="4" height="100%"/>
+			<input type="label" value="联系人"  fontSize="18" color="#ffffff" />
+		</div>
+			
+		<input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="20" value="手机通讯录" />
+		<div width="100" height="100%" id="rightDiv" vAlign="middle">
+		</div>
+	</div>
+		<!-- 搜索框 -->
+	<div width="100%" height="1px" backgroundColor="#999999"></div>
+	<div width="100%" height="40" vAlign="middle" backgroundColor="#ffffff">
+		<div width="100%" marginLeft="10" marginRight="10" backgroundColor="#F2F2F2" vAlign="middle" cornerRadius="5" borderColor="#f2f2f2" borderWidth="1px" >
+			<img src="/linkman/icon_title_bar_search.png" width="13" height="13" marginLeft="5" />
+			<input type="text" fontSize="15" id="search" returnType="search"
+				height="27" width="100%" emptyText="搜索" backgroundColor="#F2F2F2" paddingLeft="5" />
+			<div width="27" height="27" id="cancelSearch" visibility="false" onClick="clearSearch" vAlign="middle">
+				<img src="/common/cancel.png" width="20" height="20" marginRight="5" />
+			</div>
+		</div>
+	</div> 
+	<div width="100%" height="1px" backgroundColor="#999999"></div>
+	<div width="100%" height="100%" id="listParent" > 
+		<listview id="listview" width="100%" height="100%" enableSideBar="true" onItemClick="clickItem">
+		</listview>
+	</div>
+		
+	<template>
+	<div width="100%" layout="VBox" id="tmp">
+		<!-- 设置分类标题 A  B...显示样式 -->
+		<div width="100%" height="30" vAlign="middle" tag="sortTextDiv" id="sortTextDiv" display="false" backgroundColor="#F0F0F5">
+			<input type="label" fontSize="16" tag="sortText" color="#000000" marginLeft="15" />
+		</div>
+		<!-- 列表模板 -->
+		<div width="100%" height="54" layout="HBox" vAlign="middle">
+			<div width="10" height="100%"></div>
+			<div width="40" height="40" backgroundImage="/linkman/ciracle1.png" id="circle" tag="circle" hAlign="center" vAlign="middle" marginLeft="5" >
+				<input type="label" fontSize="16" color="#ffffff" value="" tag="lastname"/>
+			</div>
+			<div width="100%" height="100%" vAlign="middle" marginLeft="13" layout="VBox" >
+				<div width="100%" height="100%"></div>
+				<input type="label" fontSize="18" color="#393a3b" tag="name" />
+				<input type="label" fontSize="14" tag="phone" color="#999999" />
+				<div width="100%" height="100%"></div>
+				
+			</div>
+			<div width="60" height="100%" vAlign="middle" tag="message">
+				<img src="/linkman/cMess.png" width="26" height="26"  marginLeft="30"/>
+			</div>
+			<div width="60" height="100%"  vAlign="middle" hAlign="center"  tag="phoneCall">
+				<img src="/linkman/cCall.png" width="26" height="26"/>
+			</div>
+		</div>
+		<div width="100%" height="1px" backgroundColor="#D9D9D9" marginLeft="68"/> 
+	</div>
+	
+	</template>
+</div>	
+</body>
+<script> 
+//处理状态栏
+	if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+	listview.setTemplate(tmp);
+
+	$M.page.addEvent("onLoad", function() {
+		getData();
+	});
+	
+	circle.setAttrAdapter([ {
+		value : '0',
+		backgroundImage : '/linkman/ciracle1.png'
+	}, {
+		value : '1',
+		backgroundImage : '/linkman/ciracle2.png'
+	},{
+		value : '2',
+		backgroundImage : '/linkman/ciracle3.png'	
+	},{
+		value : '3',
+		backgroundImage : '/linkman/ciracle4.png'
+	
+	}]);
+
+	sortTextDiv.setAttrAdapter([ {
+		value : '',
+		display : 'false'
+	}, {
+		value : 'other',
+		display : 'true'
+	} ]);
+	
+	if (Emp.isIOS) {//IOS针对其特殊实现
+	var indexBar = new $M.IndexBar({
+		width : '20',
+		height : '100%',
+		marginLeft : '-20',
+		marginBottom : '15',
+		marginTop : '15'
+	});
+	indexBar.addEvent("onSideScroll", function(arg) {
+		listview.setSelection(arg);
+	});
+	listParent.add(indexBar);
+} else {
+	var indexBar = new $M.IndexBar({
+		width : '20',
+		height : '490',
+		marginLeft : '-20',
+		marginBottom : '15',
+		marginTop : '15'
+	});
+	indexBar.addEvent("onSideScroll", function(arg) {
+		listview.setSelection(arg);
+	});
+	listParent.add(indexBar);
+}
+	search.addEvent("onChange",function(o,n){
+	if(n==''){
+		cancelSearch.setVisibility(false);
+	}else{
+		cancelSearch.setVisibility(true);
+	}
+	});
+	search.addEvent("onKeyDown",function(type){
+		var searchitems = new Array();
+		if(type=='return'){
+			System.hideKeyboard();
+			if(search.getValue().trim()==""){
+				return;
+				getData();
+			}
+			else{
+				Contacts.findByName(search.getValue().trim(),function(args){
+// 				log("按姓名模糊查询到的联系人信息:"+Utils.jsonToString(args));
+				for(var i =0;i<args.length;i++){
+				var item = {};
+				item.circle = i%4;
+				if(args[i].lastName!="" && args[i].lastName!=null && args[i].lastName!=undefined){
+					item.lastname = args[i].lastName.substring(args[i].lastName.length-1);
+				}else if(args[i].firstName != null && args[i].firstName !="" && args[i].firstName!=undefined){
+					item.lastname = args[i].firstName.substring(args[i].firstName.length-1);
+				}else if(args[i].nickName != null && args[i].nickName !="" && args[i].nickName!=undefined){
+					item.lastname = args[i].nickName.substring(args[i].nickName.length-1);
+				}else if(args[i].companyName != null && args[i].companyName !="" && args[i].companyName!=undefined){
+					item.lastname = args[i].companyName.substring(args[i].companyName.length-1);
+				}else if(args[i].phone.phone0 != null && args[i].phone.phone0 !="" && args[i].phone.phone0!=undefined){
+					item.lastname = args[i].phone.phone0.substring(args[i].phone.phone0.length-1);
+				}else{
+					item.lastname = "";
+				}
+				
+				if(args[i].lastName!="" && args[i].lastName!=null && args[i].lastName!=undefined){//lastname存在
+					if(args[i].firstName != null && args[i].firstName !="" && args[i].firstName!=undefined){//firstname存在
+						item.name = args[i].lastName + args[i].firstName;
+					}else{//firstname不存在
+						item.name = args[i].lastName;
+					}
+				}else{//lastname不存在
+					if(args[i].firstName != null && args[i].firstName !="" && args[i].firstName!=undefined){//firstname存在
+						item.name = args[i].firstName;
+					}else{//firstname不存在
+						if(args[i].nickName != null && args[i].nickName !="" && args[i].nickName!=undefined){
+							item.name = args[i].nickName;
+						}else if(args[i].companyName != null && args[i].companyName !="" && args[i].companyName!=undefined){
+							item.name = args[i].companyName;
+						}else if(args[i].phone.phone0 != null && args[i].phone.phone0 !="" && args[i].phone.phone0!=undefined){
+							item.name = args[i].phone.phone0;
+						}else{
+							item.name = "";
+						}
+					}
+				}
+				
+				
+				if(args[i].phone.phone0 != null && args[i].phone.phone0 !="" && args[i].phone.phone0!=undefined){
+					item.phone = args[i].phone.phone0;
+				}else{
+					item.phone = "";
+				}
+				searchitems.push(item);		
+			}
+			listview.setItems(searchitems);
+			listview.reloadData();
+			});
+			}
+		}
+	});
+	function clearSearch() {
+		search.setValue("");
+		getData();
+	}	
+
+	function getData(){
+		var items = new Array();
+		Contacts.findAll(function (args){
+			log("args"+Utils.jsonToString(args));
+			for(var i =0;i<args.length;i++){
+				var item = {};
+				item.circle = i%4;
+				if(args[i].lastName!="" && args[i].lastName!=null && args[i].lastName!=undefined){
+					item.lastname = args[i].lastName.substring(args[i].lastName.length-1);
+				}else if(args[i].firstName != null && args[i].firstName !="" && args[i].firstName!=undefined){
+					item.lastname = args[i].firstName.substring(args[i].firstName.length-1);
+				}else if(args[i].nickName != null && args[i].nickName !="" && args[i].nickName!=undefined){
+					item.lastname = args[i].nickName.substring(args[i].nickName.length-1);
+				}else if(args[i].companyName != null && args[i].companyName !="" && args[i].companyName!=undefined){
+					item.lastname = args[i].companyName.substring(args[i].companyName.length-1);
+				}else if(args[i].phone.phone0 != null && args[i].phone.phone0 !="" && args[i].phone.phone0!=undefined){
+					item.lastname = args[i].phone.phone0.substring(args[i].phone.phone0.length-1);
+				}else{
+					item.lastname = "";
+				}
+				
+				if(args[i].lastName!="" && args[i].lastName!=null && args[i].lastName!=undefined){//lastname存在
+					if(args[i].firstName != null && args[i].firstName !="" && args[i].firstName!=undefined){//firstname存在
+						item.name = args[i].lastName + args[i].firstName;
+					}else{//firstname不存在
+						item.name = args[i].lastName;
+					}
+				}else{//lastname不存在
+					if(args[i].firstName != null && args[i].firstName !="" && args[i].firstName!=undefined){//firstname存在
+						item.name = args[i].firstName;
+					}else{//firstname不存在
+						if(args[i].nickName != null && args[i].nickName !="" && args[i].nickName!=undefined){
+							item.name = args[i].nickName;
+						}else if(args[i].companyName != null && args[i].companyName !="" && args[i].companyName!=undefined){
+							item.name = args[i].companyName;
+						}else if(args[i].phone.phone0 != null && args[i].phone.phone0 !="" && args[i].phone.phone0!=undefined){
+							item.name = args[i].phone.phone0;
+						}else{
+							item.name = "";
+						}
+					}
+				}
+				
+				
+				if(args[i].phone.phone0 != null && args[i].phone.phone0 !="" && args[i].phone.phone0!=undefined){
+					item.phone = args[i].phone.phone0;
+				}else{
+					item.phone = "";
+				}
+				items.push(item);				
+			}
+			listview.setItems(items);
+			listview.reloadData();
+		});
+
+	}
+	function goBack() {
+		$M.page.goBack();
+	}
+	
+	listview.setOnclickTags(['message','phoneCall']);
+	
+	function clickItem(row,tag,data){ 
+		if(tag == "message"){
+			if(data.phone==""||data.phone==null){		
+				toast("无电话号码");
+			}else{
+				Utils.openSystemSms(data.phone,""); //打开编辑短信面板
+			}
+		}else if(tag == "phoneCall"){
+			if(data.phone==""||data.phone==null){		
+				toast("无电话号码");
+			}else{
+				Utils.tel(data.phone); //拨打输入的电话
+			}
+		}
+	}
+</script>
+</html>

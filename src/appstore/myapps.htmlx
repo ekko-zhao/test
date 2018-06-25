@@ -1,0 +1,175 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+	$M.includeFile("/common/appMgr.html");
+</script>
+<body>
+	<div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3" >
+		<div width="80" height="100%" id="leftDiv" vAlign="middle" onClick="goBack">
+			<div width="10" height="100%"/>
+			<img src="/appstore/back.png" width="11" height="18"/>
+			<div width="4" height="100%"/>
+			<input type="label" value="返回"  fontSize="18" color="#ffffff" />
+		</div>
+		<input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="20" value="我的应用" />
+		<div width="80" height="100%" id="rightDiv" vAlign="middle" >
+		</div>
+	</div>	
+	<div width="100%" height="100%" backgroundColor="#f9f9f9" >
+		    <listview id="listview" width="100%" height="100%" onItemClick="clickItem" >
+			    <template>
+					<div width="100%" height="100" layout="VBox" vAlign="middle">
+						<div width="100%" height="10"></div>
+						<div width="100%" height="80" >		
+							<div width="15" height="100%"></div>
+							<div width="60" height="100%" layout="VBox" hAlign="center">
+								<div width="56" height="56" borderWidth="1" borderColor="#ffffff" cornerRadius="12" >	
+									<img width="56" height="56" tag="appicon0" />
+								</div>
+								<div width="100%" height="7"></div>
+								<input type="label" value="" fontSize="14" singleLine="true" width="60" hAlign="center" tag="name0"/>
+							</div>
+							<div width="30" height="100%"></div>							
+							<div width="60" height="100%" layout="VBox" hAlign="center">
+								<div width="56" height="56" borderWidth="1" borderColor="#ffffff" cornerRadius="12" >	
+									<img width="56" height="56" tag="appicon1" />
+								</div>
+								<div width="100%" height="7"></div>
+								<input type="label" value="" fontSize="14" singleLine="true" width="60" hAlign="center" tag="name1"/>
+							</div>					
+							<div width="30" height="100%"></div>
+							<div width="60" height="100%" layout="VBox" hAlign="center">
+								<div width="56" height="56" borderWidth="1" borderColor="#ffffff" cornerRadius="12" >	
+									<img width="56" height="56" tag="appicon2" />
+								</div>
+								<div width="100%" height="7"></div>
+								<input type="label" value="" fontSize="14" singleLine="true" width="60" hAlign="center" tag="name2"/>
+							</div>
+							<div width="30" height="100%"></div>
+							<div width="60" height="100%" layout="VBox" hAlign="center">
+								<div width="56" height="56" borderWidth="1" borderColor="#ffffff" cornerRadius="12" >	
+									<img width="56" height="56" tag="appicon3" />
+								</div>
+								<div width="100%" height="7"></div>	
+								<input type="label" value="" fontSize="14" singleLine="true" width="60" hAlign="center" tag="name3"/>
+							</div>		
+							<div width="15" height="100%"></div>
+						</div>
+						<div width="100%" height="100%"></div>
+						<div width="330" height="1px" backgroundColor="#D9D9D9" marginLeft="15" /> 
+					</div>
+				</template>	    	
+			</listview>
+	</div>
+</body>
+<script> 
+if(Emp.isIOS){
+	nav.setHeight(60);
+	nav.setPaddingTop(8);
+}
+
+function goBack(){
+	$M.page.goBack();
+}
+
+$M.page.addEvent('onBack', function(param){
+	$M.setCurrentAppId('com.primeton.appstore'); //解决从微应用中返回时黑屏
+});
+		
+listview.setOnclickTags(['appicon0', 'appicon1', 'appicon2', 'appicon3']);	
+
+Emp.page.addEvent("onLoad", function(params) {
+	loadData();
+});	
+
+function loadData(){
+	var items = [];
+	var installedAppList = AppManager.getInstalledAppList();		
+	if(installedAppList != null){
+		for(var i=0; i<installedAppList.length; i++){
+			var data = {};
+			for( j=0; j<4; j++){
+				if(installedAppList[i]!=null){
+					eval('data.appicon'+j+' = installedAppList['+i+'].icon');
+					eval('data.name'+j+' = installedAppList['+i+'].name');
+					eval('data.id'+j+' = installedAppList['+i+'].id');
+					eval('data.type'+j+' = installedAppList['+i+'].type');
+					eval('data.urlScheme'+j+' = installedAppList['+i+'].urlScheme');
+					eval('data.packageName'+j+' = installedAppList['+i+'].packageName');
+					eval('data.ativityName'+j+' = installedAppList['+i+'].ativityName');
+					eval('data.entryUrl'+j+' = installedAppList['+i+'].entryUrl');
+					if(j<3){
+						i++;
+					}
+				}
+				else{
+					break;
+				}
+			}
+			items.push(data);
+		}
+		listview.setItems(items);
+		listview.reloadData();
+	}
+
+}
+
+function failureFn(){
+	log('error');
+}
+
+function clickItem(row,tag,data){
+	if(tag == 'appicon0'){
+		var opendata = {};
+		opendata.id = data.id0;
+		opendata.name = data.name0;
+		opendata.type = data.type0;
+		opendata.urlScheme = data.urlScheme0;
+		opendata.packageName = data.packageName0;
+		opendata.activityName = data.activityName0;
+		opendata.entryUrl = data.entryUrl0;
+		var params = {};
+		params.param=null;
+		AppManager.startApp(opendata, params, failureFn);
+	} else if(tag == 'appicon1'){
+		var opendata = {};
+		opendata.id = data.id1;
+		opendata.name = data.name1;
+		opendata.type = data.type1;
+		opendata.urlScheme = data.urlScheme1;
+		opendata.packageName = data.packageName1;
+		opendata.activityName = data.activityName1;
+		opendata.entryUrl = data.entryUrl1;
+		var params = {};
+		params.param=null;
+		AppManager.startApp(opendata, params, failureFn);
+	} else if(tag == 'appicon2'){
+		var opendata = {};
+		opendata.id = data.id2;
+		opendata.name = data.name2;
+		opendata.type = data.type2;
+		opendata.urlScheme = data.urlScheme2;
+		opendata.packageName = data.packageName2;
+		opendata.activityName = data.activityName2;
+		opendata.entryUrl = data.entryUrl2;
+		var params = {};
+		params.param=null;
+		AppManager.startApp(opendata, params, failureFn);
+	} else if(tag == 'appicon3'){
+		var opendata = {};
+		opendata.id = data.id3;
+		opendata.name = data.name3;
+		opendata.type = data.type3;
+		opendata.urlScheme = data.urlScheme3;
+		opendata.packageName = data.packageName3;
+		opendata.activityName = data.activityName3;
+		opendata.entryUrl = data.entryUrl3;
+		var params = {};
+		params.param=null;
+		AppManager.startApp(opendata, params, failureFn);
+	}
+}
+</script>
+</html>

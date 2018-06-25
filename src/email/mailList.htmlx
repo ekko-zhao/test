@@ -1,0 +1,413 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<title>邮件列表</title>
+	<script>
+		$M.includeFile("/common/mailLists.html");
+	    Emp.includeFile("/email/commonPre.html"); 
+		$M.includeFile("/common/commonUtils.html");
+	</script>
+</head>
+<body>
+<div width="100%" height="100" vAlign="middle" hAlign="center" display="false" id="noMailDiv" >
+	<input type="label" value="还没有邮件呦～～" />
+</div>
+<!--  
+<div width="100%" height="40" vAlign="middle" hAlign="center" display="true" id="updateProgress" backgroundColor="#d9d9d9" >
+	<progress width="30" height="30"></progress>
+</div>
+-->
+<div width="100%" height="100%" layout="VBox" >
+	<listview id="mailListview" width="100%" height="100%" enablePullDown="true" enablePullUp="true">
+		<template>
+		<div width="100%" height="85" layout="VBox" >
+			<div layout="HBox" width="100%" height="84" vAlign="middle" >
+				<div layout="VBox"  hAlign="center" width="64" height="100%"  >
+					<div layout="HBox" marginTop="25" id="iconcolor" tag="iconcolor" width="38" height="38" backgroundImage="/email/c_blue.png" vAlign="middle" hAlign="center">
+						<input type="label" tag="tx" color="#ffffff" singleLine="true" fontSize="18" id="tx" adapterTag="iconcolor" />
+					</div>
+				</div>
+				<div width="290" height="100%" layout="VBox" >
+					<div width="100%" height="25" marginTop="10" vAlign="bottom" >
+						<!-- 未读或旗标 -->
+						<img width="10" height="10" tag="readImg" marginBottom="4" id="readImg" />
+						<div width="170" marginLeft="4" >
+							<input type="label" tag="fromUser" color="#000000" width="170" singleLine="true" fontSize="18" />
+						</div>
+						<div width="100%" height="100%"></div>
+						<div width="100" hAlign="right" >
+							<!-- 附件图片 -->
+							<img width="16" height="16" tag="attachImg" id="attachImg"  />
+							<div width="5" height="100%"></div>
+							<input type="label" tag="receiveDate" color="#cccccc" fontSize="12" />
+							<div width="5" height="100%"></div>
+						</div>
+					</div>
+					<div width="100%" height="20" vAlign="bottom" >
+						<input type="label" tag="subject" fontSize="16" color="#999999" singleLine="true" width="280" />
+					</div>
+					<div width="100%" height="20">
+						<input type="label" tag="contentAbstract" color="#999999" fontSize="12" singleLine="true" height="25" width="280" />
+					</div>
+				</div>	
+			</div>
+			<div width="100%" height="1px" backgroundColor="#D9D9D9" marginLeft="68" ></div>
+		</div>
+		</template>
+	</listview>
+</div>	
+<!-- 进度条-->
+<dialog id="processDialog" width="50" height="50" canceledOnTouchOutside="true">
+	<div width="50" height="50">
+		<progress width="50" height="50"></progress>
+	</div>
+</dialog>
+
+</body>
+<script>
+var currentFolder = "";
+var oldRow;
+var oldData;
+var data = [];
+var cacheData = new Array();
+var orData = new Array();
+var orDataIndex = 1;
+
+iconcolor.setAttrAdapter([
+	{value:'0', backgroundImage:'/email/c_darkblue.png'},
+	{value:'1', backgroundImage:'/email/c_green.png'},
+	{value:'2', backgroundImage:'/email/c_lightblue.png'},
+	{value:'3', backgroundImage:'/email/c_red.png'},
+	{value:'4', backgroundImage:'/email/c_orange.png'}
+]);
+
+tx.setAttrAdapter([
+	{value:'0', color:'#4a92ff'},
+	{value:'1', color:'#3bad84'},
+	{value:'2', color:'#4b9fe0'},
+	{value:'3', color:'#f76f63'},
+	{value:'4', color:'#fa9e1b'}
+]);
+
+readImg.setAttrAdapter([ {
+		value : '/email/img_mail_center_list_item_unread.png',
+		display:'true'
+	}, {
+		value : '/email/img_mail_center_list_item_read.png',
+		display : 'false'
+	} ]);
+	
+attachImg.setAttrAdapter([ {
+		value : '/email/img_mail_center_list_item_attach.png',
+		display:'true'
+	}, {
+		value : '',
+		display : 'false'
+	} ]);
+	
+//页面初始化
+$M.page.addEvent("onLoad", function(params){
+	currentFolder = $M.contextData.getValue("currentFolder");
+	
+	var db = $M.Database.openDatabase("mobile");
+	var del = "drop table maillist;"
+	//log(db.excute(del));
+	var sql = "create table if not exists maillist (" 
+	  + "id integer primary key,"
+	  + "mailid varchar(100),"
+	  + "userid varchar(70),"
+	  + "folder varchar(50),"
+	  + "recvdate datetime,"
+	  + "item text);";
+	
+	db.excute(sql);
+	
+	sql = 'select * from maillist where userid like ? and folder like ? order by recvdate desc;';
+	var params  = new Array();
+  	params.push(mailpreference.get("userid"));
+  	params.push(currentFolder);
+	var result = db.query(sql,params);
+	db.close();
+	if(result == null||result==""||result.length == 0){
+		processDialog.show();
+		listViewBinding(currentFolder,'',20,'');
+	}else{
+		//先显示缓存数据
+		log(result.length);
+		for(var i=0; i<result.length; i++){
+			cacheData.push(Utils.stringToJson(result[i].item));
+			orData.push(Utils.stringToJson(result[i].item));
+		}
+
+		mailListview.setItems(cacheData);
+		mailListview.reloadData();
+		//查找更新
+		updateProgress.setDisplay(true);
+		log(cacheData[0].messageID);
+		searchUpdate(currentFolder,cacheData[0].messageID,0,'top');
+	}
+	
+});
+	
+$M.page.addEvent("onBack", function(params){
+	var aaaa = mailListview.getItems();
+	aaaa[oldRow].statuspic = "/email/jjq.png";
+	aaaa[oldRow].isread = true;
+	mailListview.setItems(aaaa);
+	mailListview.reloadData();
+	return;
+	if(params==null){
+		//如果没有传入数据则不作任何操作，否则重新加载数据
+	}else{
+		processDialog.show();
+		//查询条件更改，则清空缓存
+		data = [];
+		listViewBinding();
+	}
+});
+var notOnLoad = true;
+//更新策略，下拉每次更新限制最新的20条；上拉刷新每次取20条
+mailListview.addEvent("onLoadMore", function(eventType) {
+	var mailid = mailListview.getItems();
+	if(mailid != null && mailid.length>0){
+		if(eventType=="pullUp"){
+			if(notOnLoad){
+				notOnLoad = false;
+				//先取本地取数据，本地没有到远程取
+				var haveCache = true;
+	
+				//选取本地数据
+				var startIndex = orDataIndex*20;
+				var listitems = orData.slice(startIndex,startIndex+20);
+				orDataIndex++;
+				log(Utils.jsonToString(orData));
+				if(listitems==""){
+					haveCache = false;
+				}
+				if(haveCache){
+					mailListview.appendItems(listitems, 'bottom');
+					mailListview.reloadData();
+					notOnLoad = true;
+				}else{
+					listViewBinding(currentFolder,mailid[mailid.length-1].messageID,20,'bottom');
+				}
+			}else{
+				mailListview.reloadData();
+			}
+		}else if(eventType=="pullDown"){
+			if(notOnLoad){
+				notOnLoad = false;
+				listViewBinding(currentFolder,mailid[0].messageID,0,'top');
+			}else{
+				mailListview.reloadData();
+			}
+		}	
+	 }else{
+	 	mailListview.reloadData();
+	 }
+});
+
+//用户点击某一元素时触发事件
+mailListview.addEvent("onItemClick", function(row, tag, data) {
+	oldRow = row;
+	oldData = data;
+	log(currentFolder);
+	//标记已读
+	var db = $M.Database.openDatabase("mobile");
+	var sql = 'update maillist set item=? where mailid like ? and userid like ? and folder like ?;';
+	for (var k = 0; k < cacheData.length; k++) {
+        var cur_mail = cacheData[k];
+        if (cur_mail.messageID == data.messageID) {
+        	cacheData[k].read = true;
+        	cacheData[k].readImg = "/email/img_mail_center_list_item_read.png";
+        	var params = new Array();
+		    params.push(Utils.jsonToString(cacheData[k]));
+		    log(Utils.jsonToString(cacheData[k]));	
+		    params.push(data.messageID);
+		    params.push(userid);
+		    params.push(currentFolder);
+		    log("update:"+db.excute(sql,params));
+    			
+            break;
+        }
+    }
+    db.close();
+    mailListview.setItems(cacheData);
+	mailListview.reloadData();	
+	
+	$M.page.goTo("/email/readMail.html",{"messageID":data.messageID,"subject":data.subject,"fromUser":data.fromUser,"to":data.to,"cc":data.cc,"bcc":data.bcc,"sentDate":data.sentDate,"currentFolder":currentFolder}, false);
+});
+
+var userid = mailpreference.get("userid");
+var mailpwd = mailpreference.get("mailPwd");
+
+function listViewBinding(folder,mailiid,count,add){	
+
+	var ajaxData = {};
+	ajaxData.userName = userid;
+	ajaxData.password = mailpwd;
+	ajaxData.folder = folder;
+	ajaxData.mailid = mailiid;
+	ajaxData.count = count;
+	AjaxUtil.submit("/com.primeton.pmbusiness.mail.emailComponent.listMails.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(result){
+    	log("wanglq++--"+result); 
+    	var data = Utils.stringToJson(result);
+    	var data2 = Utils.stringToJson(result);
+    	if(data.mails != null && data.mails.length >0){	
+	    	for(var i = 0;i<data.mails.length;i++){
+	    		data.mails[i].iconcolor = i%5;
+	    		data.mails[i].tx = data.mails[i].fromUser.substr(0,1);
+	    		data.mails[i].receiveDate = data.mails[i].receiveDate.substr(5,6);
+	    	}
+	    	if(add=="top"){
+    			mailListview.appendItems(data.mails, 'top');
+    			//处理cache			
+    			var bottomData = cacheData.concat();
+    			cacheData = data.mails.concat(bottomData);
+    			
+    		}else if(add=="bottom"){
+    			mailListview.appendItems(data.mails, 'bottom');
+    			//处理cache			
+    			var topData = cacheData.concat();
+    			cacheData = topData.concat(data.mails);			 			
+    		}else{
+    			mailListview.setItems(data.mails);
+    			cacheData = data.mails.concat();				
+    		}
+    		mailListview.reloadData();
+    		
+    		var msgIDArr = new Array();
+	     	for(var i = 0;i<data.mails.length;i++){
+	    		//插入数据库
+	    		var db = $M.Database.openDatabase("mobile");
+	    		var sql = "insert into maillist values(null,?,?,?,?,?);"
+	    		var params = new Array();
+	    		params.push(data.mails[i].messageID);
+	    		params.push(userid);
+	    		params.push(folder);
+	    		params.push(data2.mails[i].receiveDate);
+	    		params.push(Utils.jsonToString(data.mails[i]));
+	    		log("insert"+db.excute(sql,params));
+	    		db.close();
+	    		
+	    		msgIDArr.push(data.mails[i].messageID);	 		
+	    	}    	
+			
+	    	//获取摘要
+	    	getMailAbstract(msgIDArr, folder, userid);
+	    }else{
+			mailListview.reloadData();
+	    }
+		 processDialog.close();	
+		 notOnLoad = true;
+    },function(error){
+    	processDialog.close();
+    	Utils.toast("超时");
+    	notOnLoad = true;
+    });
+} 
+
+function searchUpdate(folder,mailiid,count,add){
+	var ajaxData = {};
+	ajaxData.userName = userid;
+	ajaxData.password = mailpwd;
+	ajaxData.folder = folder;
+	ajaxData.mailid = folder;
+	ajaxData.count = count;
+	AjaxUtil.submit("/com.primeton.pmbusiness.mail.emailComponent.listMails.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(result){
+    	log("wanglq??"+result); 
+    	var data = Utils.stringToJson(result);
+    	var data2 = Utils.stringToJson(result);
+    	if(data.mails != null && data.mails.length >0){
+	    	for(var i = 0;i<data.mails.length;i++){
+	    		data.mails[i].iconcolor = i%5;
+	    		data.mails[i].tx = data.mails[i].fromUser.substr(0,1);
+	    		data.mails[i].receiveDate = data.mails[i].receiveDate.substr(5,6);    		
+	    	}
+	    	if(add=="top"){
+    			mailListview.appendItems(data.mails, 'top');
+    			//处理cache 			
+    			var bottomData = cacheData.concat();
+    			cacheData = data.mails.concat(bottomData);
+    			
+    		}
+    		mailListview.reloadData(); 
+	       
+		    var msgIDArr = new Array();
+	     	for(var i = 0;i<data.mails.length;i++){
+	    		//插入数据库
+	    		var db = $M.Database.openDatabase("mobile");
+	    		var sql = "insert into maillist values(null,?,?,?,?,?);"
+	    		var params = new Array();
+	    		params.push(data.mails[i].messageID);
+	    		params.push(userid);
+	    		params.push(folder);
+	    		params.push(data2.mails[i].receiveDate);
+	    		params.push(Utils.jsonToString(data.mails[i]));
+	    		log("insert"+db.excute(sql,params));
+	    		db.close();
+	    		
+	    		msgIDArr.push(data.mails[i].messageID);	 		
+	    	}    	
+			
+	    	//获取摘要
+	    	getMailAbstract(msgIDArr, folder, userid);
+    	}else if(data.mails == null){
+	    }
+	    
+		updateProgress.setDisplay(false);
+		
+    },function(error){
+    	updateProgress.setDisplay(false);
+    	Utils.toast("超时");
+    });
+}
+
+//获取邮件摘要
+function getMailAbstract(msgIDArr, folder, userid){
+
+		var ajaxData = {};
+		ajaxData.msgIDArr = msgIDArr;
+		ajaxData.userName = userid;
+		ajaxData.password = mailpwd;
+		ajaxData.folder = folder;
+		AjaxUtil.submit("/com.primeton.pmbusiness.mail.emailComponent.getMailAbstract.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(result){
+	    	log("abstract--"+result); 
+	    	var data = Utils.stringToJson(result);
+	    	if(data.mails != null && data.mails.length >0){
+	    		//更新数据库
+			    var db = $M.Database.openDatabase("mobile");
+	    		for(var i = 0; i<data.mails.length; i++){			    	
+			    	var sql = 'update maillist set item=? where mailid like ? and userid like ? and folder like ?;';
+		    		
+			    	//更新数据
+			        for (var k = 0; k < cacheData.length; k++) {
+			            var cur_mail = cacheData[k];
+			            if (cur_mail.messageID == data.mails[i].messageID) {
+			                cacheData[k].contentAbstract = data.mails[i].contentAbstract;
+			                cacheData[k].attachImg = data.mails[i].attachImg;
+			    			cacheData[k].hasAttachment = data.mails[i].hasAttachment;
+			    			var params = new Array();
+					    	params.push(Utils.jsonToString(cacheData[k]));
+					    	log(Utils.jsonToString(cacheData[k]));	
+					    	params.push(data.mails[i].messageID);
+					    	params.push(userid);
+					    	params.push(folder);
+					    	log("update:"+db.excute(sql,params));
+			    			
+			                break;
+			            }
+			        }
+			        
+			    }
+			    db.close();
+	    		mailListview.setItems(cacheData);
+				mailListview.reloadData();	
+			}
+	    }, function(error){
+	    	log("55555--"+error);
+	    });
+}
+
+</script>
+</html>

@@ -1,0 +1,209 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<title>邮件列表</title>
+	<script>
+		$M.includeFile("/common/mailLists.html");
+		Emp.includeFile("/email/commonPre.html"); 
+		$M.includeFile("/common/commonUtils.html");
+	</script>
+</head>
+
+<body>
+<div width="100%" height="100%">
+	<listview id="mailListview" width="100%" height="100%" enablePullDown="true" enablePullUp="true">
+		<template>
+		<div width="100%" height="85" layout="VBox" >
+			<div layout="HBox" width="100%" height="84" vAlign="middle" >
+				<div layout="VBox" vAlign="middle" hAlign="center" width="72" height="72">
+					<div layout="HBox" id="iconcolor" tag="iconcolor" width="43" height="43" backgroundImage="/email/c_blue.png" vAlign="middle" hAlign="center">
+						<input type="label" tag="tx" color="#ffffff" singleLine="true" />
+					</div>
+				</div>
+				<div widht="100%" height="100%" layout="VBox" >
+					<div width="100%" height="25" marginTop="10" vAlign="bottom" >
+						<!-- 未读或旗标 -->
+<!-- 						<img width="12" height="12" tag="statuspic" marginBottom="4" visibility="true" /> -->
+						<div id="readPic" width="12" height="12" borderColor="#FFFFFF" borderWidth="1px" tag="statuspic"/>
+						<div width="170">
+							<input type="label" tag="send" color="#000000" width="170" singleLine="true" fontSize="16" />
+						</div>
+						<input type="label" tag="mailId" display="false" />
+						<input type="label" tag="status" display="false" />
+						<div width="100%" height="100%"></div>
+						<div width="100" hAlign="right" >
+							<!-- 附件图片 -->
+							<img width="16" height="16" id="filepic" tag="filepic" src="/email/img_mail_center_list_item_attach.png"  visibility="false"/>
+							<div width="5" height="100%"></div>
+							<input type="label" tag="mailDate" color="#cccccc" fontSize="12" />
+							<div width="5" height="100%"></div>
+						</div>
+					</div>
+					<div width="100%" height="20" vAlign="bottom" >
+						<input type="label" tag="subject" fontSize="14" color="#333333" singleLine="true" width="280" />
+					</div>
+					<div width="100%" height="20">
+						<input type="label" tag="content" color="#666666" fontSize="12" singleLine="true" height="25" width="280" />
+					</div>
+				</div>	
+			</div>
+			<div width="100%" height="2px" backgroundColor="#eaeaea" marginLeft="72" ></div>
+		</div>
+		</template>
+	</listview>
+</div>
+	
+<!-- 进度条-->
+<dialog id="processDialog" width="50" height="50" canceledOnTouchOutside="true" >
+	<div width="50" height="50">
+		<progress width="50" height="50"></progress>
+	</div>
+</dialog>
+
+</body>
+<script>
+var currentFolder = $M.contextData.getValue("currentFolder");
+
+var oldRow;
+var oldData;
+var data = [];
+var userid = preference.get("userid");
+var mailpwd = preference.get("mailPwd");
+readPic.setAttrAdapter([
+	{value:'other', backgroundColor:'#FFFFFF'},
+	{value:'1', backgroundColor:'#00FF00'},
+]);
+
+filepic.setAttrAdapter([
+	{value:'other', display:'false'},
+	{value:'1', display:'true'},
+]);
+
+iconcolor.setAttrAdapter([
+	{value:'0', backgroundImage:'/email/c_blue.png'},
+	{value:'1', backgroundImage:'/email/c_brown.png'},
+	{value:'2', backgroundImage:'/email/c_dblue.png'},
+	{value:'3', backgroundImage:'/email/c_green.png'},
+	{value:'4', backgroundImage:'/email/c_lblue.png'},
+	{value:'5', backgroundImage:'/email/c_purple.png'},
+	{value:'6', backgroundImage:'/email/c_qing.png'},
+	{value:'7', backgroundImage:'/email/c_red.png'}
+]);
+
+
+//页面初始化
+$M.page.addEvent("onLoad", function(params){
+	data = [];
+	listViewBinding();
+});
+	
+$M.page.addEvent("onBack", function(params){
+	var aaaa = mailListview.getItems();
+	aaaa[oldRow].statuspic = "/email/jjq.png";
+	aaaa[oldRow].isread = true;
+	mailListview.setItems(aaaa);
+	mailListview.reloadData();
+	return;
+	if(params==null){
+		//如果没有传入数据则不作任何操作，否则重新加载数据
+	}else{
+		processDialog.show();
+		//查询条件更改，则清空缓存
+		data = [];
+		listViewBinding();
+	}
+});
+
+
+//用户上下滑动触底翻页查询
+//更新策略，下拉每次更新限制最新的20条；上拉刷新每次取20条
+var mailPageIndex = 1;
+mailListview.addEvent("onLoadMore", function(eventType) {
+	if(eventType=="pullUp"){
+		//上拉加载更多时，当前页面编码加1
+		mailPageIndex++;
+	}else if(eventType=="pullDown"){
+		//下拉刷新时至显示最新的20条，故仍然为第一页
+	//	alert("mailPageIndex--");
+		if(mailPageIndex <= 1){
+			
+		}else{
+			mailPageIndex--;
+		}
+		data = [];
+	}	
+	mailListview.reloadData();
+	listViewBinding();
+});
+
+//用户点击某一元素时触发事件
+mailListview.addEvent("onItemClick", function(row, tag, data) {
+log("[邮件内容]", Utils.jsonToString(data))
+// 	oldRow = row;
+// 	oldData = data;
+// 	$M.page.goTo("/email/readMail.html", {"messageID":data.mailId, "subject":data.subject, "flag":"1"}, false);
+});
+
+
+function listViewBinding(){	
+	processDialog.show();
+	var ajaxData = {};
+	ajaxData.userName = userid;
+	ajaxData.password = pwd;
+	ajaxData.folder = 'INBOX';
+	ajaxData.mailid = '';
+	ajaxData.count = 20;
+	AjaxUtil.submit("/com.primeton.pmbusiness.mail.emailComponent.listMails.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(result){
+    	log("wanglq++--"+result); 
+    	var data = Utils.stringToJson(result);
+    	var array = new Array();
+    	for(var i = 0;i<data.mails.length;i++){
+    		var item = {};
+    		item.iconcolor = i%8;
+    		item.send = data.mails[i].fromUser.nickName;
+    		//item.tx = data.mails[i].fromUser.nickName.substr(0,1);
+    		if(data.mails[i].read==false || data.mails[i].read=='false'){
+    			item.statuspic = '1';
+    		}else{
+    			item.statuspic = '';
+    		}
+    		if(data.mails[i].subject.length>20){
+    			item.subject = data.mails[i].subject.substr(0,20)+"...";
+    		}else{
+    			item.subject = data.mails[i].subject;
+    		}    		
+    		/* if(data.mails[i].content.length>35){
+    			item.content = data.mails[i].content.substr(0,35)+"...";
+    		}else{
+    			item.content = data.mails[i].content;
+    		} */
+    		item.content = data.mails[i].content;
+    		if(data.mails[i].hasAttachment==true || data.mails[i].hasAttachment=='true'){
+    			item.filePic = '1';
+    		}else{
+    			//item.filePic = "1";
+    		}
+    		item.mailDate = data.mails[i].receiveDate.substr(5,6);	
+    		array.push(item);
+    	}
+    	mailListview.setItems(array);
+		mailListview.reloadData();
+		processDialog.close();
+    }, function(error){
+    	processDialog.close();
+    	Utils.toast("超时");
+    });
+}
+
+//去除HTML标签
+function removeHTMLTag(str){
+	if(str){
+	    str = str.replace(/<\/?[^>]*>/g,''); //去除HTML tag
+	    str = str.replace(/[ | ]*\n/g,'\n'); //去除行尾空白
+	    //str = str.replace(/\n[\s| | ]*\r/g,'\n'); //去除多余空行
+	    str=str.replace(/&nbsp;/ig,'');//去掉&nbsp;
+	    return str;
+    }
+}
+</script>
+</html>

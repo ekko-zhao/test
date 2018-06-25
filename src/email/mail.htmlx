@@ -1,0 +1,320 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<title>邮箱</title>
+	<script>
+		Emp.includeFile("/email/commonPre.html"); 
+		$M.includeFile("/common/commonUtils.html");
+	</script>
+</head>
+<body>
+<!-- 创建导航条 -->
+<div id="nav" width="100%" height="50" backgroundColor="#0b78e3" layout="HBox" >
+	<div width="100" height="100%" vAlign="middle" onClick="goBack" >
+   		<div width="10" height="100%"/>
+		<img src="/linkman/back.png" width="11" height="18"/>
+		<div width="4" height="100%"/>
+		<input type="label" value="工作台"  fontSize="18" color="#ffffff" />
+   	</div>
+   	<div width="100%" height="100%" hAlign="center" vAlign="middle" >
+	   	<div width="30" height="30" vAlign="middle" hAlign="center" display="false" id="updateProgress" >
+	   		<progress width="25" height="25"></progress>
+		</div>
+   		<input type="label" id="titleInfo" fontSize="20" color="#FFFFFF" value="收件箱"/>
+   	</div>
+	 
+	<div width="48" height="100%" vAlign="middle" hAlign="center" >
+   		<img src="/email/search.png" width="18" height="18" />
+   	</div>
+   	<div width="48" height="100%" vAlign="middle" hAlign="center" id="right_icon_div">
+		<img src="/email/icon_title_bar_folder.png" width="18" height="18" id="folderImg" />
+	</div>
+</div>
+
+<div id="contentDiv" width="100%" height="100%">
+<template>
+	<div id="myDiv" width="100%" height="100%" layout="HBox" hAlign="center" overflow="y" >
+		<!-- 主边视图 -->		
+		<div id="main" width="100%" height="100%">
+			<div width="100%" height="100%" id="leftDiv" position="relative" backgroundColor="#000000" opacity="0.7" display="false"></div> 
+			<slide id="slide" width="100%" height="100%" enableLoop="false" tipVisible="false" enableScroll="false">
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+				<slideurl url="/email/mailList.html" />
+			</slide>
+		</div>	
+		<!-- 右边视图 -->
+		<div width="253" height="100%" backgroundColor="#e1e1e1" top="55" id="rightMenuDiv" layout="VBox" marginLeft="107">
+			<div width="100%" height="60" backgroundColor="#ffffff" vAlign="middle" id="email_acount_setting">
+				<div width="14" height="100%"></div>
+				<img src="/email/img_mail_account.png" width="22" height="22" />
+				<div width="14" height="100%"></div>
+				<input type="label" id="email_account" fontSize="18" color="#999999" />
+			</div>
+			<div height="1px" width="100%" backgroundColor="#e5e5e5" marginLeft="50" ></div>
+			<listview id="folderList" width="253" height="100%" dividerVisible="false" > 
+				<template>
+					<div width="100%" height="50" layout="VBox" backgroundColor="#ffffff" id="temp1">
+						<div layout="HBox" height="100%" width="100%" hAlign="left" vAlign="middle" marginLeft="8">
+							<div width="35" height="100%" vAlign="middle" hAlign="center" >
+								<img tag="checkNode" width="20" height="20" />
+							</div>
+							<div width="100%" height="100%" vAlign="middle" >
+								<input type="label" tag="name" fontSize="18" color="#393a3b" marginLeft="8" />
+							</div>
+							<div width="35" height="100%" vAlign="middle" hAlign="center" marginRight="10">
+								<input type="label"  tag="newMsgCount" fontSize="14" color="#08ABF7" marginLeft="8" />
+							</div>
+						</div>
+						<div height="1px" width="100%" backgroundColor="#e5e5e5" marginLeft="50" ></div>
+					</div>
+				</template> 
+				<template>
+					<div width="100%" height="50" layout="VBox" backgroundColor="#ffffff" id="temp2">
+						<div layout="HBox" height="100%" width="100%" hAlign="left" vAlign="middle" marginLeft="8">
+							<div width="35" height="100%" vAlign="middle" hAlign="center" >
+								<img tag="checkNode" width="20" height="20" />
+							</div>
+							<div width="100%" height="100%" vAlign="middle" >
+								<input type="label" tag="name" fontSize="18" color="#393a3b" marginLeft="8" />
+							</div>
+							<div width="50" height="100%" vAlign="middle" hAlign="center" marginRight="10">
+								<input type="label"  tag="newMsgCount" fontSize="14" color="#08ABF7" marginLeft="8" />
+							</div>
+						</div>
+					</div>
+				</template> 
+			</listview>
+		</div>
+	</div>
+</template>
+</div>
+<div width="100%" height="46" layout="HBox" id="tab"  backgroundColor="#f9f9f9" >
+	<div width="100%" height="100%"/>
+	<div width="100%" height="100%" vAlign="middle" hAlign="center"  layout="VBox" onClick="toDO" >
+		<div width="100%" height="26" vAlign="middle" hAlign="center" >
+			<img src="/email/tab_todo_normal.png" width="21" height="21" id="jjcs" />
+		</div>
+		<input type="label" value="待办" color="#707070" fontSize="13" id="jjcsFont" />
+	</div>
+	<div width="100%" height="100%" vAlign="middle" hAlign="center" layout="VBox" onClick="writeEmail" >
+		<div width="100%" height="26" vAlign="middle" hAlign="center" >
+			<img src="/email/writeMail.png" width="21" height="21" id="hdzq" /> 
+		</div>
+		<input type="label" value="写邮件" color="#707070" fontSize="13" id="hdzqFont" />
+	</div>
+	<div width="100%" height="100%"/>
+</div>
+
+</body>
+<script>
+$M.page.addEvent("onBack",function() {
+	//返回时重新获取邮件文件夹的未读条数
+	initFolders();
+});
+
+folderList.setTemplates({'temp1':temp1, 'temp2':temp2});
+var currentFolder = $M.contextData.setValue("currentFolder","INBOX");
+//updateProgress.add(progress);
+function goBack(){
+	$M.page.goBack({}, '/index.html');
+	slideMenu.hideLeftDiv();
+	leftDiv.setDisplay(false);
+	flag=false;
+}
+var userid = mailpreference.get("userid");
+var mailpwd = mailpreference.get("mailPwd");
+
+//生成数据
+var screenSize = $M.getScreenSize();
+
+//屏幕尺寸转换
+var h = Utils.px2dp(screenSize.width);
+myDiv.setWidth(640);    
+                       
+//创建一个侧滑菜单视图
+var slideMenu = new Emp.SideMenu({
+    height:'100%',
+    width:'100%',
+    enableScroll:'true'
+});
+
+slideMenu.setScale("false");//设置是否需要缩放，如果设置为true,则为类似qq的效果(默认为false,默认效果不是缩放的)
+slideMenu.addMainDiv(main);//将主视图添加到sideMenu上面去
+slideMenu.addRightDiv(rightMenuDiv); //将右边的视图添加到sideMenu上面去
+
+//将sideMenu添加到页面上去
+contentDiv.add(slideMenu); 
+//Emp.page.add(slideMenu);
+var flag = false;
+ 
+//添加左边菜单按钮的点击事件 
+slideMenu.addEvent("SideMenuDidShowRightDiv",function() {
+	leftDiv.setDisplay(true); 
+	flag=true;
+	
+});
+
+slideMenu.addEvent("SideMenuDidHideRightDiv",function() {
+	leftDiv.setDisplay(false);
+	flag=false;
+});
+//视图中的内容需要在此加载
+$M.page.addEvent("onLoad",function(param) { 
+	slideMenu.hideLeftDiv();
+	email_account.setValue(userid);
+	//每次进入重置当前所选中的文件夹
+	initFolders();
+	if ($M.isIOS) {
+		$M.page.root.addEvent("onSwipeRight",function(params){
+		    Emp.page.goBack();
+		});
+	}    
+}); 
+
+leftDiv.addEvent("onClick",function(){
+	log("click");
+	if(flag){
+		slideMenu.hideRightDiv();
+
+	}else{
+		slideMenu.showRightDiv();  
+	}
+});
+
+right_icon_div.addEvent("onClick",function(){
+	if(flag){
+		slideMenu.hideRightDiv();
+
+	}else{
+		slideMenu.showRightDiv();  
+		
+	}
+});
+
+//TODO 邮箱应该定时刷新
+var isIOS = 0;
+if($M.isIOS){
+	nav.setHeight(60);
+	nav.setPaddingTop(10);
+	rightMenuDiv.setTop(60);
+	isIOS = 10;
+	folderList.setHeight(474);
+}
+
+
+
+//个人设置页
+email_acount_setting.addEvent("onClick", function(){
+	Emp.page.goTo("/email/mine.html", {}, false);
+});
+
+//默认邮件约定的 typeName 请不要修改；和后台判断绑定
+folderList.addEvent("onItemClick", function(row, tag, data) {
+	$M.contextData.setValue("currentFolder", data.urlName);
+	titleInfo.setValue(data.name);
+	slide.setSelectedIndex(row);
+	slideMenu.hideLeftDiv(); 
+	leftDiv.setDisplay(false);
+	flag=false;
+}); 
+
+
+function initFolders(){
+	var items = new Array();
+	
+	var ajaxData = {};
+	ajaxData.userName = userid;
+	ajaxData.password = mailpwd;
+	ajaxData.parent = '';
+	AjaxUtil.submit("/com.primeton.pmbusiness.mail.emailComponent.getFolders.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(result){
+    	var data = Utils.stringToJson(result);
+    	if(data.errCode!=0){
+    		Utils.toast(data.errMsg);
+    	}
+    	items.push({
+			name : "收件箱",
+			newMsgCount : data.folders[0].unReadCount,
+			urlName : "INBOX",
+			checkNode : "/email/mail_folder_type_inbox.png",
+			template:"temp1"
+		});
+		items.push({
+			name : "红旗邮件",
+			urlName : "FLAGED",
+			checkNode : "/email/mail_folder_type_flaged.png",
+			template:"temp1"
+		});
+		items.push({
+			name : "草稿箱",
+			urlName : "草稿箱",
+			checkNode : "/email/mail_folder_type_draft.png",
+			template:"temp1"
+		});
+		items.push({
+			name : "已发送",
+			urlName : "已发送",
+			checkNode : "/email/mail_folder_type_sent.png",
+			template:"temp1"
+		});
+		items.push({
+			name : "已删除",
+			urlName : "已删除",
+			checkNode : "/email/mail_folder_type_deleted.png",
+			template:"temp1"
+		}); 
+		items.push({
+			name : "垃圾邮件",
+			urlName : "垃圾邮件",
+			checkNode : "/email/mail_folder_type_spam.png",
+			template:"temp1"
+		});
+		data.folders.splice(0,1);
+		var i = 0;
+		for(;i<data.folders.length-1;i++){
+			data.folders[i].checkNode = "/email/mail_folder_type_custom.png";
+			data.folders[i].template="temp1";
+			items.push(data.folders[i]);
+		}	
+		data.folders[i].checkNode = "/email/mail_folder_type_custom.png";
+		data.folders[i].template="temp2";
+		items.push(data.folders[i]);	
+		log(Utils.jsonToString(items));
+		folderList.setItems(items);
+		folderList.reloadData();
+    }, function(error){
+    	log("wanglq"+error);
+    });   	
+}
+
+function writeEmail(){
+	Emp.page.goTo("/email/writeMail.html", {}, false);
+}
+
+function toDO(){
+	Emp.page.goTo("/email/toDo.html", {}, false);
+}
+</script>
+</html>

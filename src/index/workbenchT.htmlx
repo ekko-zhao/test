@@ -1,0 +1,529 @@
+<html>
+<head>
+	Code refactoring performed by ShaoBo.
+</head>
+<script>
+	$M.includeFile("/common/appMgr.html");
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+	<div width="100%" height="173">
+		<slide id="banner" tipVisible="true" tipTop="150"> 
+		</slide>
+	</div>
+	<div id="workbenchDiv" width="100%" height="100%" backgroundColor="#ffffff" layout="VBox">
+		<div id="workbenchPgs" width="100%" height="100%" vAlign="middle" hAlign="center" display="false" >
+			<progress width="50" height="50" />
+		</div>
+		
+	</div>
+	<dialog id="alertDialog" canceledOnTouchOutside="true">
+	<div id="div" layout="VBox" hAlign="center" width="300" height="264" 
+		backgroundImage="/meeting/bg_dialog.png">
+		<div width="100%" height="40" />
+		<input type="label" value="提示" />
+		<div width="100%" height="100%" />
+		<input type="label" value="想调整首页顺序？去“更多”进行编辑吧" hAlign="center" width="210" fontSize="18" 
+			color="#333333" />
+		<div width="100%" height="100%"></div>
+		<div width="220" height="1px" backgroundColor="#D9D9D9" />
+		<div width="220" height="50" vAlign="middle">
+			<input type="button" width="100%" height="35" value="取消" onClick="closeDialog" 
+				color="#4ca1fe" backgroundColor="#ffffff" fontSize="18" />
+			<div width="1px" height="100%" backgroundColor="#D9D9D9"></div>
+			<input type="button" width="100%" height="35" value="去编辑" onClick="goUpdateDialog" 
+				color="#4ca1fe" backgroundColor="#ffffff" fontSize="18" />
+		</div>
+		<div width="100%" height="32" />
+	</div>
+	</dialog>
+</body>
+<script>
+	if(Emp.isIOS){
+		workbenchDiv.setMarginBottom("-1");
+	}
+	
+	//标记变量
+	var noCache = false;//是否已有偏好缓存
+	
+	//UI控件变量
+	var workbenchShow;	//首页微应用区块
+	var cells = [];		//单个微应用块
+	var icons = [];		//应用图标 img
+	var points = [];	//更新红点 div
+	var appNames = [];	//应用名称 label
+	var marks = [];		//缓存标记
+	
+	//app列表数据
+	var cacheData;		//缓存情况
+	var installedList;	//本地已安装
+	var allList;		//所有有权限的
+	var updateList;		//更新
+	var homeData;		//主页缓存
+	var list = [];		//临时处理数据
+	var otherData = [];	//其它应用
+	
+	//其它
+	var userId;
+	
+	//life circle ------------
+	Emp.page.addEvent("onLoad", function(params) {
+		var pref = new $M.Preferences();
+		pref.open('workbench');
+		userId = pref.get('userid');
+		AppManager.USERID = userId;
+		homeData = preference.get(userId + "cacheHomeData");
+		installedList = AppManager.getInstalledAppList();
+		if (homeData == undefined) {
+			log("no homedata");
+			noCache = true;
+			initCache();
+			disposalData();
+		} else {
+			log("???????????"+Utils.jsonToString(homeData));
+			disposalData();
+		}
+		getNewsPicture();
+	});
+	
+	//返回刷新
+	Broadcast.receive("updateWorkBench", function(){
+		$M.setCurrentAppId('com.primeton.mwork');
+		homeData = copyArr(preference.get(userId + "cacheHomeData"));
+		installedList = AppManager.getInstalledAppList();
+		reloadData();
+	});
+	//life circle ============
+	
+	//初始化UI ------------------
+	workbenchShow = new $M.Panel({'width':'100%', 'height':'100%', 'backgroundColor':'#ffffff', 'layout':'VBox'});
+	for(var j=0; j<3; j++){
+		var row = new $M.Panel({'width':'100%', 'height':'100%'}); 
+		for(var k=0; k<4; k++){
+			var cell = createCell(j*4+k);
+			var divvcline = new $M.Panel({'width':'1px', 'height':'100%', 'backgroundColor':'#e5e5e5'});
+			row.add(divvcline);
+			row.add(cell);
+		}
+		workbenchShow.add(row);	
+		var divhzline = new $M.Panel({'width':'100%', 'height':'1px', 'backgroundColor':'#e5e5e5'});
+		workbenchShow.add(divhzline);		
+	}
+	workbenchDiv.add(workbenchShow);
+	//创建单元格
+	function createCell(index){
+		var cell = new $M.Panel({'width':'100%', 'height':'100%', 'backgroundColor':'#ffffff', 'hAlign':'center', 'vAlign':'middle', 'layout':'VBox'});
+		cells.push(cell);
+		var imgdiv = new $M.Panel({'width':'60', 'height':'45','vAlign':'bottom', 'hAlign':'center'});
+		var imgcorner = new $M.Panel({'width':'40', 'height':'40','vAlign':'bottom', 'hAlign':'center','borderColor':'#ffffff','borderWidth':'1px','cornerRadius':'12'});
+		var img = new $M.Image({'width':'40', 'height':'40'});
+		imgcorner.add(img);
+		icons.push(img);
+		imgdiv.add(imgcorner);
+		cell.add(imgdiv);
+		var divblank = new $M.Panel({'width':'100%', 'height':'6'});
+		cell.add(divblank);
+		var divBottom = new $M.Panel({'width':'100%', 'height':'22', 'vAlign':'middle', 'hAlign':'center'});
+		var label = new $M.Label({'color':'#333333', 'fontSize':'18'});
+		divBottom.add(label);
+		appNames.push(label);
+		cell.add(divBottom);
+		var point = new $M.Panel({'width':'10', 'height':'10', 'backgroundImage':'/images/redpoint.png','position':'relative','top':0,'left':35,'display':false});
+		imgdiv.add(point);
+		points.push(point);
+		var mark = new $M.Panel({'width':'15', 'height':'15', 'backgroundImage':'/images/upload.png','position':'relative','top':35,'left':45,'display':false});
+		imgdiv.add(mark);
+		marks.push(mark);
+		
+		
+		//添加点击事件
+		cell.addEvent("onClick",function(){
+			cellClick(index);
+		}); 
+		//添加长按事件
+		cell.addEvent("onClickHold", function(){
+			cellClickHold(index);
+		});
+		return cell;
+	}
+	//初始化UI =======================
+	
+	
+	//初始化首页列表缓存
+	function initCache() {
+		homeData = [];
+		var item = {'icon':'/menu/schedule.png','name':'日程管理','url':'/schedule/scheduleHome.html', 'appid':'', 'hasUpdate':'false','isOriginal':'true'};
+		homeData.push(item);
+		for (var i = 0; i < installedList.length; i++) {
+			var ins = installedList[i];
+			homeData.push(ins);
+		}
+	}
+	
+	//整理数据入口
+	function disposalData() {
+		if(Utils.isNetworkAvailable()){
+			getAllList();
+		}else{
+			filterWithInstalledList();
+			reloadData();
+		}
+	}
+	
+	//取出数据库缓存情况
+	function getCache() {
+		cacheData = {};
+		var db = $M.Database.openDatabase("microAppCache");
+		var sql = "select * from appsdata where userid = '" + userId + "'";
+  		var params  = new Array();
+		var result =db.query(sql,params);
+		log(Utils.jsonToString(result));
+		for (var i = 0; i < result.length; i++) {
+			var cache = result[i];
+			cacheData[cache.appid] = cache.cache;
+		}
+		db.close();
+	}
+	
+	//获取网络数据
+	function getAllList() {
+		AppManager.getAppList(getUpdateList,offLine);
+	}
+	
+	function getUpdateList(arg) {
+		allList = arg;
+		AppManager.getUpdateAppList(UpdateSfn,offLine);
+	}
+	
+	function UpdateSfn(arg) {
+		updateList = arg;
+		filterWithAll();
+		reloadData();
+	}
+	
+	//获取数据失败
+	function offLine(e) {
+		toast("网络问题，获取数据失败！\n"+e);
+		filterWithInstalledList();
+		reloadData();
+	}
+	
+	//是否已安装
+	function getIsInstalled(item) {
+		var isInstalled = false;
+		for (var j = 0; j < installedList.length; j++) {
+			var ins = installedList[j];
+			if (item.appid == ins.appid) {
+				isInstalled = true;
+				break;
+			}
+		}
+		return isInstalled;
+	}
+	
+	//与本地已安装列表取交集
+	function filterWithInstalledList() {
+		if (noCache) {	//无缓存且网络请求失败
+			alert("由于网络问题，首次登陆缓存初始化失败，请在正常网络环境下重启应用！");
+			return;
+		}
+	
+		list = [];
+		homeData = copyArr(homeData);
+		for (var i = 0; i < homeData.length; i++) {
+			var item = homeData[i];
+			if (item.isOriginal == "true") {
+				list.push(item);
+				continue;
+			} else if (getIsInstalled(item)) {
+				list.push(item);
+			}
+		}
+		finishedFilter();
+	}
+	
+	//与本地已安装和权限列表取交集 并 标记更新
+	function filterWithAll() {
+		list = [];
+		homeData = copyArr(homeData);
+		for (var i = 0; i < homeData.length; i++) {
+			var item = homeData[i];
+			if (item.isOriginal == "true") {
+				list.push(item);
+			} else if (getIsInstalled(item)) {
+				//标记更新
+				var hasUpdate = false;
+				for (var u = 0; u < updateList.length; u++) {
+					var upd = updateList[u];
+					if (item.appid == upd.id) {
+						hasUpdate = true;
+						break;
+					}
+				}
+				if (hasUpdate) {
+					item.hasUpdate = "true";
+					item.updateappinfo = Utils.jsonToString(upd);
+				} else {
+					item.hasUpdate = "false";
+				}
+				//权限筛选
+				for (var j = 0; j < allList.length; j++) {
+					var al = allList[j];
+					if (item.appid == al.id) {
+						if (noCache && list.length == 11) {	//无缓存 且 加入首页数量满11个
+							addOtherData(item);
+						} else {
+							list.push(item);
+						}
+						break;
+					}
+				}
+			}
+		}
+		log("filter:"+Utils.jsonToString(homeData));
+		finishedFilter();
+		noCache = false;
+	}
+	
+	//加入其它应用
+	function addOtherData(item) {
+		otherData.push(item);
+		preference.put(userId + "cacheOtherData", otherData);
+		log("add other")
+	}
+	
+	//完成数据筛选
+	function finishedFilter() {
+		homeData = list;
+		preference.put(userId + "cacheHomeData", homeData);
+	}
+	
+	//显示列表
+	function reloadData() {
+		getCache();
+		log("reload:"+Utils.jsonToString(homeData));
+		for (var i = 0; i < homeData.length; i++) {
+			var item = homeData[i];
+			icons[i].setSrc(item.icon);
+			appNames[i].setValue(item.name);
+			if (item.hasUpdate == 'true') {
+				points[i].setDisplay(true);
+			} else {
+				points[i].setDisplay(false);
+			}
+			if (cacheData[item.appid] > 0) {
+				marks[i].setDisplay(true);
+			} else {
+				marks[i].setDisplay(false);
+			}
+		}
+		icons[homeData.length].setSrc("/menu/moreapps.png");
+		appNames[homeData.length].setValue("更多应用");
+		points[homeData.length].setDisplay(false);
+		marks[homeData.length].setDisplay(false);
+		for (var j = homeData.length + 1; j < 12; j++) {
+			icons[j].setSrc("/menu/empty.png");
+			appNames[j].setValue("");
+			points[j].setDisplay(false);
+			marks[j].setDisplay(false);
+		}
+	}
+	
+	function copyArr(arr) {
+		var newArr = [];
+		for (var i = 0; i < arr.length; i++) {
+			var item = arr[i];
+			newArr.push(copyObj(item));
+		}
+		return newArr;
+	}
+	
+	function copyObj(obj) {
+		var newObj = {};
+		for ( var key in obj) {
+			newObj[key] = obj[key];
+		}
+		return newObj;
+	}
+	
+	//事件 --------------------------------
+	//单元格点击事件
+	
+	function cellClick(index){
+		if (index > homeData.length) {	//空白
+			return;
+		}
+		if (index == homeData.length) {	//更多
+			$M.page.goTo("/index/moreappsT.html");
+			return;
+		}
+				
+		if(homeData[index].isOriginal=='true'){
+			$M.page.goTo(homeData[index].url);
+		}else {
+			inspectUpdateList(homeData[index]);
+		}
+	}
+	/*
+	//事件 --------------------------------
+	//单元格点击事件
+	function cellClick(index){
+		if (index > homeData.length) {	//空白
+			return;
+		}
+		if (index == homeData.length) {	//更多
+			$M.page.goTo("/index/moreappsT.html");
+			return;
+		}
+		var params = {};
+		var token = preference.get('access_token');
+		params={'token':token};
+		
+		if(homeData[index].isOriginal=='true'){
+			$M.page.goTo(homeData[index].url);
+		}else {
+			if(homeData[index].hasUpdate=='true'){
+				log('更新应用:'+Utils.jsonToString(homeData[index].updateappinfo));
+				if(Utils.isNetworkAvailable()){			
+					confirm("更新"+homeData[index].name+" 应用",function(){
+						AppManager.installUpdate(Utils.stringToJson(homeData[index].updateappinfo), successFn, failureFn, loadingFn, '1');
+					},function(){
+						toast('取消更新');
+					});
+				}else{
+					toast('当前网络不可用');
+				}
+			}
+			else{
+				AppManager.startApp(homeData[index],params,failureFn);
+			}
+		}
+	}
+	*/
+	
+	//点击单元格时刻检查应用是否可以更新，回调时间5S
+	function inspectUpdateList(appList) {
+		AppManager.getUpdateAppList(function (arg) {
+			log("arg=="+Utils.jsonToString(arg));
+			log("appList=="+Utils.jsonToString(appList));
+			var updatainfo;
+			for(var i=0; i<arg.length;i++){
+				if(arg[i].id == appList.id){ 
+					appList.hasUpdate = "true";
+					updatainfo = arg[i];
+					break;
+				}
+			}
+			if(arg.length == 0){
+				updatainfo = "";
+			}
+			gotoApp(appList,updatainfo);
+		},function(arg){
+			gotoApp(appList,"");
+		});
+	}
+	//进入微应用，或者进行更新
+	function gotoApp(appdate,updatainfo) {
+		var params = {};
+		var token = preference.get('access_token');
+		params={'token':token};
+		if(appdate.hasUpdate =='true'){
+			if(Utils.isNetworkAvailable()){			
+				confirm("更新"+appdate.name+" 应用",function(){
+				AppManager.installUpdate(updatainfo, successFn, failureFn, loadingFn, '1');
+			},function(){
+				toast('取消更新');
+			});
+			}else{
+				toast('当前网络不可用');
+			}
+		}else{
+			statisticsAppInfo(userId,"",appdate.id,appdate.name,appdate.ver,"2");
+			AppManager.startApp(appdate,params,failureFn);
+		}
+	}
+	function failureFn(){
+		log('open fail');
+	}
+	
+	function successFn(){
+		toast('更新应用成功');
+		disposalData();
+	}
+	
+	function loadingFn(){
+	
+	}
+	//单元格长按事件
+	function cellClickHold(index){
+		alertDialog.show();
+	}
+	
+	function closeDialog(){
+		alertDialog.close();
+	}
+	
+	function goUpdateDialog(){
+		alertDialog.close();
+		$M.page.goTo("/index/moreappsT.html", {}, false);
+	}
+	
+	var arr = new Array();
+	//获取轮播图图片
+	function getNewsPicture() {
+		var ajaxData = {};
+		ajaxData.ispublish = 1;
+		AjaxUtil.submit('/com.primeton.components.web.fileupload.fileupload.queryNews.biz.ext', ajaxData, AjaxUtil.TYPE_POST, function(args) {
+			var newPic = Utils.stringToJson(args);
+			newPic = Utils.stringToJson(newPic.news);
+			if(Utils.jsonToString(newPic) == "[]"){
+				indexPicSum=1;
+				var newPage = new $M.Panel({'width':'100%', 'height':'165'});
+				newPage.setBackgroundImage("/common/nonews.png");
+				banner.add(newPage);
+			}else{
+				indexPicSum = newPic.length;
+				for(var i=0;i<newPic.length;i++){
+					var newPage = new $M.Panel({'width':'100%', 'height':'165'});
+					var newImg =  new $M.Image({'id':'newImg','src':'/images/loading.png','width':'100%','height':'100%','tag':newPic[i].newsid});
+					arr.push(newImg);
+					newPage.add(newImg);
+					banner.add(newPage);
+					onLondNewsImg(newPic[i].newsid)
+				}
+			}
+		}, function(errCode, errMsg) {
+			alert("网络连接错误！")
+		});
+	}
+	//下载图片
+	function onLondNewsImg(newsid) {
+		var ajaxData = {};
+		ajaxData.newsId = newsid;
+		AjaxUtil.submit('/com.primeton.components.web.fileupload.fileupload.queryImgNews.biz.ext', ajaxData, AjaxUtil.TYPE_POST, function(args) {
+			var newPic = Utils.stringToJson(args);
+			newPic = Utils.stringToJson(newPic.news);
+			for(i=0;i<arr.length;i++){
+				if(arr[i].getTag() == newPic[0].fileId){
+					var oldImgstr = newPic[0].fileData;
+					var newImgStr = oldImgstr.replace(/\s/g,'');
+					var imgStr = "base64://"+newImgStr;
+					arr[i].setSrc(imgStr);
+				}
+			}
+			
+			
+		}, function(errCode, errMsg) {
+			alert("网络连接错误！")
+		});
+	}
+	var indexPicSum = 0;
+	var indexPic = 0;
+	//通过定时器和求余操作实现轮播效果
+	var timerID = setInterval(function(){
+		indexPic++;
+		var i = indexPic%indexPicSum;
+		banner.setSelectedIndex(i);
+	}, 3000);
+</script>
+</html>

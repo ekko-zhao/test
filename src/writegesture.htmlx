@@ -1,0 +1,110 @@
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+
+<div layout="VBox" width="100%" height="100%" hAlign="center" >
+	<div width="100%" height="65"/>
+	<div width="100" height="100" cornerRadius="51" borderWidth="2" borderColor="#d44545" hAlign="center" vAlign="middle" id="abbr" >
+		<input type="label" fontSize="22" color="#000000" value="" id="username" />
+	</div>
+	<div width="100%" height="20"/>
+	<div width="100%" height="50" hAlign="center" vAlign="middle">
+		<input type="label" value="请绘制手势密码"/>
+	</div>
+	<div width="100%" height="20"/>
+	<div id="GestureDiv" hAlign="center" width="100%" />
+</div>
+
+</body>
+<script>
+
+	var loginId = preference.get('userid');
+	var loginPwd = preference.get('password');
+	var msg = new Emp.MessageService();
+	
+
+$M.page.addEvent("onLoad", function(arge){
+	if(CURRENT_USER.nodeName != null){
+		username.setValue(CURRENT_USER.nodeName);
+	}else{
+		username.setValue(preference.get('userid'));
+	}
+	var aa = username.getValue();
+	abbr.setValue(aa.substring(aa.length-1));
+});
+	
+//生成数据
+var firstPwd = '';
+var gp=new $M.GesturePassword({"width":"100%", "height":"100%"});
+gp.setBigPointBackgroundColor("#ffffff");//设置大圆背景色
+gp.setBigPointHighlightColor("#ffffff");//设置大圆高亮背景色
+gp.setSmallPointBackgroundColor("#d44545");//设置小圆背景色
+gp.setSmallPointHighlightColor("#d44545");//设置小圆高亮背景色
+gp.setPointBorderBackgroundColor("#000000");//设置边框颜色 
+gp.setPointBorderHighlightColor("#000000");//设置边框高亮背景色
+gp.setLineWidth(2);
+	
+gp.addEvent("onFinished",function() {
+	var gespwd = preference.get('gesturepwd');
+	if(gp.getPassword()==gespwd) {
+//		getToken(loginId,loginPwd);
+		$M.page.goTo({'url':'/index.html',
+			'params':'',
+			'isDestroySelf': true,
+			'animation':'fade'
+		});
+	} else{
+		Utils.toast('手势密码不正确');
+		preference.put('password',' ');
+		$M.page.goTo({'url':'/login.html',
+			'params':'',
+			'isDestroySelf': true,
+			'animation':'fade'
+		});
+	}
+});
+
+// function getToken(userid, pmsecret){
+// 	var ajaxData = {};
+// 	ajaxData.userid = userid;
+// 	ajaxData.pmsecret = pmsecret;
+// 	ajaxData.imei = Utils.getImei();
+// 	ajaxData.msgtoken = Utils.getMessageToken();
+// 	AjaxUtil.submit('/pmtoken', ajaxData, AjaxUtil.TYPE_POST, function(args){
+// 			var info = Utils.stringToJson(args);
+// 			log(args);
+//  			if(info.errCode=="101"){			
+// 				Utils.toast(info.errMsg);
+// 			} else if(info.exception){
+// 				Utils.toast("用户接入失败、后台异常");
+// 			} else {
+// 				var access_token = info.access_token;
+// 				preference.put("access_token", access_token);
+// 				preference.put('userid', userid);
+// 				preference.put('password', pmsecret);
+// 				preference.put('loginstate','in');
+// 				ACCESS_TOKEN = access_token;
+
+// 				$M.page.goTo({'url':'/index.html',
+// 					'params':'',
+// 					'isDestroySelf': true,
+// 					'animation':'fade'
+// 				});
+// 			} 
+// 		}, function(errCode, errMsg){
+// 			//获取token失败
+// 			Utils.toast("无法连接后台");
+// 			log(errCode+" "+errMsg);
+// 		});
+// 	}
+
+GestureDiv.add(gp);
+
+</script>
+</html>

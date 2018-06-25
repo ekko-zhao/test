@@ -1,0 +1,502 @@
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>Hello World</title>
+</head>
+<body>
+	
+</body>
+<script> 
+var mailLists={
+    "msgs": [
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "12-08", 
+            "hasAttachment": false, 
+            "isread": false, 
+            "messageID": "<201512081116575682089@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "product_report", 
+                    "userName": "product_report@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "陈光耀", 
+                "userName": "chengy@primeton.com"
+            }, 
+            "subject": "陈光耀周报（2015/11/30~ 2015/12/6)"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "12-08", 
+            "hasAttachment": false, 
+            "isread": false, 
+            "messageID": "<201512081113220059427@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "product_report", 
+                    "userName": "product_report@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "陈光耀", 
+                "userName": "chengy@primeton.com"
+            }, 
+            "subject": "陈光耀周报（2015/11/30~ 2015/12/6)"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "12-08", 
+            "hasAttachment": false, 
+            "isread": true, 
+            "messageID": "<1903045930.275154.1449532876763.JavaMail.app@ltx1-app6454.prod.linkedin.com>", 
+            "receivers": [
+                {
+                    "nickName": "黄家伟", 
+                    "userName": "huangjw@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "领英", 
+                "userName": "notifications-noreply@linkedin.com"
+            }, 
+            "subject": "黄家伟，您有 2 位访客对您感兴趣、1 位联系人更换了工作和  2 位联系人更新了动态，快来看看吧"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "12-07", 
+            "hasAttachment": false, 
+            "isread": true, 
+            "messageID": "<1-0310-20151207195206-8727968-7785707099>", 
+            "receivers": [
+                {
+                    "nickName": "huangjw@primeton.com", 
+                    "userName": "huangjw@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "浦发银行信用卡中心", 
+                "userName": "estmtservice@eb.spdbccc.com.cn"
+            }, 
+            "subject": "浦发银行-信用卡电子账单"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "12-07", 
+            "hasAttachment": true, 
+            "isread": true, 
+            "messageID": "<201512071524249782442@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "\"huangjw\"", 
+                    "userName": "huangjw@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "tangjz", 
+                "userName": "tangjz@primeton.com"
+            }, 
+            "subject": "雅砻江POC"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "12-06", 
+            "hasAttachment": true, 
+            "isread": true, 
+            "messageID": "<2015120622510264854311@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "all", 
+                    "userName": "all@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "人力资源部", 
+                "userName": "hr-dept@primeton.com"
+            }, 
+            "subject": "Friday Sharing——为什么你需要具备对话型领导力"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": [
+                {
+                    "nickName": "tangjz", 
+                    "userName": "tangjz@primeton.com"
+                }, 
+                {
+                    "nickName": "liulei", 
+                    "userName": "liulei@primeton.com"
+                }, 
+                {
+                    "nickName": "luohao", 
+                    "userName": "luohao@primeton.com"
+                }, 
+                {
+                    "nickName": "luodl", 
+                    "userName": "luodl@primeton.com"
+                }, 
+                {
+                    "nickName": "liuxb", 
+                    "userName": "liuxb@primeton.com"
+                }, 
+                {
+                    "nickName": "陈金鑫", 
+                    "userName": "chenjx@primeton.com"
+                }, 
+                {
+                    "nickName": "wangjt", 
+                    "userName": "wangjt@primeton.com"
+                }, 
+                {
+                    "nickName": "wanglq", 
+                    "userName": "wanglq@primeton.com"
+                }
+            ], 
+            "content": null, 
+            "date": "12-03", 
+            "hasAttachment": true, 
+            "isread": true, 
+            "messageID": "<201512031434146599380@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "huangjw", 
+                    "userName": "huangjw@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "yangpeng@primeton.com", 
+                "userName": "yangpeng@primeton.com"
+            }, 
+            "subject": "回复: Re: Android版本的SlidePage控件异常"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "12-03", 
+            "hasAttachment": false, 
+            "isread": true, 
+            "messageID": "<201512031337587197730@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "\"yangpeng@primeton.com\"", 
+                    "userName": "yangpeng@primeton.com"
+                }, 
+                {
+                    "nickName": "\"huangjw\"", 
+                    "userName": "huangjw@primeton.com"
+                }, 
+                {
+                    "nickName": "\"liulei\"", 
+                    "userName": "liulei@primeton.com"
+                }, 
+                {
+                    "nickName": "\"luohao\"", 
+                    "userName": "luohao@primeton.com"
+                }, 
+                {
+                    "nickName": "\"luodl\"", 
+                    "userName": "luodl@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "tangjz", 
+                "userName": "tangjz@primeton.com"
+            }, 
+            "subject": "Re: Android版本的SlidePage控件异常"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "12-02", 
+            "hasAttachment": true, 
+            "isread": true, 
+            "messageID": "<c364a4.bbbc.151611a3799.Coremail.suchang@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "all", 
+                    "userName": "all@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "苏畅", 
+                "userName": "suchang@primeton.com"
+            }, 
+            "subject": "普元最新新闻——《普元出席电力信息化大会，助推“能源互联、融合创新”》"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "12-02", 
+            "hasAttachment": true, 
+            "isread": true, 
+            "messageID": "<201512020940180485803@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "huangjw", 
+                    "userName": "huangjw@primeton.com"
+                }, 
+                {
+                    "nickName": "tangjz", 
+                    "userName": "tangjz@primeton.com"
+                }, 
+                {
+                    "nickName": "liulei", 
+                    "userName": "liulei@primeton.com"
+                }, 
+                {
+                    "nickName": "luohao", 
+                    "userName": "luohao@primeton.com"
+                }, 
+                {
+                    "nickName": "luodl", 
+                    "userName": "luodl@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "yangpeng@primeton.com", 
+                "userName": "yangpeng@primeton.com"
+            }, 
+            "subject": "Android版本的SlidePage控件异常"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "12-02", 
+            "hasAttachment": true, 
+            "isread": true, 
+            "messageID": "<000c01d12ca0$5b181730$11484590$@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "all@primeton.com", 
+                    "userName": "all@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "人力资源部", 
+                "userName": "HR-dept@primeton.com"
+            }, 
+            "subject": "”当红主角，快快出现”2016普元年会微电影主角招募"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": [
+                {
+                    "nickName": "\"'yangyb'\"", 
+                    "userName": "yangyb@primeton.com"
+                }, 
+                {
+                    "nickName": "\"'chengyan'\"", 
+                    "userName": "chengyan@primeton.com"
+                }, 
+                {
+                    "nickName": "\"'Cherry'\"", 
+                    "userName": "chenling@primeton.com"
+                }
+            ], 
+            "content": null, 
+            "date": "11-27", 
+            "hasAttachment": true, 
+            "isread": true, 
+            "messageID": "<004001d128c0$58297980$087c6c80$@com>", 
+            "receivers": [
+                {
+                    "nickName": "dangyuan@primeton.com", 
+                    "userName": "dangyuan@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "徐璟", 
+                "userName": "xujing@primeton.com"
+            }, 
+            "subject": "2015年党费收缴计划，若有问题，请务必在下周一中午前提出"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": [
+                {
+                    "nickName": "chenling@primeton.com", 
+                    "userName": "chenling@primeton.com"
+                }
+            ], 
+            "content": null, 
+            "date": "11-27", 
+            "hasAttachment": true, 
+            "isread": true, 
+            "messageID": "<007e01d128b4$2fe535b0$8fafa110$@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "'黄家伟'", 
+                    "userName": "huangjw@primeton.com"
+                }, 
+                {
+                    "nickName": "\"'tangjz'\"", 
+                    "userName": "tangjz@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "chengming", 
+                "userName": "chengming@primeton.com"
+            }, 
+            "subject": "答复: 休假申请------黄家伟"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "11-25", 
+            "hasAttachment": true, 
+            "isread": true, 
+            "messageID": "<ADR400000186581100205655325849104DB0E100800011227C0C@apple.com>", 
+            "receivers": [
+                {
+                    "nickName": "huangjw@primeton.com", 
+                    "userName": "huangjw@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "APPLE STORE", 
+                "userName": "Do_not_reply@apple.com"
+            }, 
+            "subject": "E-invoice for your order #2607291153"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "11-25", 
+            "hasAttachment": false, 
+            "isread": true, 
+            "messageID": "<958912126.8215351448419836175.JavaMail.email.apple.com>", 
+            "receivers": [
+                {
+                    "nickName": "huangjw@primeton.com", 
+                    "userName": "huangjw@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "Apple Store", 
+                "userName": "shipping_notification@orders.apple.com"
+            }, 
+            "subject": "发货通知 W542311085"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "11-25", 
+            "hasAttachment": false, 
+            "isread": true, 
+            "messageID": "<36c4e260-2831-4076-984f-f13526c8753a@xtgap4s7mta1151.xt.local>", 
+            "receivers": [
+                {
+                    "nickName": "huangjw@primeton.com", 
+                    "userName": "huangjw@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "Hans Dockter", 
+                "userName": "hansd@gradle.com"
+            }, 
+            "subject": "Gradle Newsletter November"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "11-24", 
+            "hasAttachment": false, 
+            "isread": true, 
+            "messageID": "<4eb3f207.3a8c9.1513a0754d7.Coremail.huangjw@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "product_report", 
+                    "userName": "product_report@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "黄家伟", 
+                "userName": "huangjw@primeton.com"
+            }, 
+            "subject": "黄家伟周报（2015/11/16~2015/11/22）"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "11-23", 
+            "hasAttachment": true, 
+            "isread": true, 
+            "messageID": "<00b701d125c9$9118c970$b34a5c50$@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "'黄家伟'", 
+                    "userName": "huangjw@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "xu-jing", 
+                "userName": "xu-jing@primeton.com"
+            }, 
+            "subject": "关于我的党组织关系"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "11-17 09:11", 
+            "hasAttachment": true, 
+            "isread": true, 
+            "messageID": "<206D0E77-D614-4F1A-BD3E-FD5D4560A702@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "huangjw", 
+                    "userName": "huangjw@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "刘磊", 
+                "userName": "liulei@primeton.com"
+            }, 
+            "subject": "北京银行前台UI代码"
+        }, 
+        {
+            "attachmentName": null, 
+            "cc": null, 
+            "content": null, 
+            "date": "11-17", 
+            "hasAttachment": true, 
+            "isread": true, 
+            "messageID": "<201511170758438445176@primeton.com>", 
+            "receivers": [
+                {
+                    "nickName": "\"huangjw\"", 
+                    "userName": "huangjw@primeton.com"
+                }
+            ], 
+            "sentUser": {
+                "nickName": "tangjz", 
+                "userName": "tangjz@primeton.com"
+            }, 
+            "subject": "Fw: 移动流程框架源码"
+        }
+    ]
+};
+</script>
+</html>

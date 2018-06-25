@@ -1,0 +1,357 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<script>
+	//处理应答信息
+	function handleData(text) {
+		log('handleData--json--' + text);
+		// 		if (text.json == undefined) {
+		// 			alert('服务器错误')
+		// 			return;
+		// 		}
+		var json = Utils.stringToJson(text).json;
+		var status = json.status;
+		var message = json.message;
+		if (status == '0') {
+			// 			alert(message);
+		} else {
+			var data = json.data;
+			saveCuiHistory(data);
+			var cuiid = data.cuiid;
+			var cuiversion = data.cuiversion;
+			var itemdata = data.itemdata;
+			if (needUpdate(cuiid, cuiversion)) {
+				updateTemplate(cuiid, cuiversion, itemdata);
+			} else {
+				renderCusData(cuiid, itemdata);
+			}
+		}
+	};
+	//模板是否需要更新
+	function needUpdate(cuiid, cuiversion) {
+		// 		log(temps.hasOwnProperty(cuiid));
+		// 		if (temps.hasOwnProperty(cuiid)) {
+		// 			if (cuiversion == temps[cuiid].cuiversion) {
+		// 				return false;
+		// 			} else {
+		// 				return true;
+		// 			}
+		// 		} else {
+		// 			return true;
+		// 		}
+		return true;
+	};
+
+	//更新模板
+	function updateHistoryTemplate(cuiid, cuiversion, itemdata, index) {
+		var isEnd = false;
+		if (index == history_length) {
+			log(index + "=========" + history_length);
+			isEnd = true;
+		}
+
+		log('updateHistoryTemplate');
+		var ajax = new $M.Ajax();
+		ajax.setAction("/com.primeton.ai.cui.mobileai.getTemplate.biz.ext");
+		ajax.add('cuiid', cuiid);
+		// 		ajax.add('cuiversion', cuiversion);
+		ajax.add('access_token', ACCESS_TOKEN);
+		ajax.submit(function(text) {
+			log('updateTemplate result :::' + text);
+			handleTemplate(text);
+			if (isEnd) {
+				for (var i = 0; i < datas.length; i++) {
+					var data = datas[i];
+					//
+					var cuiid = data.cuiid;
+					var cuiversion = data.cuiversion;
+					var itemdata = Utils.stringToJson(data.itemdata);
+					renderHistoryData(cuiid, itemdata);
+				}
+				listview.setItems(items);
+				listview.reloadData();
+				dismissProgressDialog();
+			}
+			// 			renderHistoryData(cuiid, itemdata);
+		}, function(errorcode) {
+			alert("页面未找到");
+			log('errorcode' + errorcode);
+		})
+	};
+
+	//更新模板
+	function updateTemplate(cuiid, cuiversion, itemdata) {
+		log('updateTemplate');
+		var ajax = new $M.Ajax();
+		ajax.setAction("/com.primeton.ai.cui.mobileai.getTemplate.biz.ext");
+		ajax.add('cuiid', cuiid);
+		ajax.add('cuiversion', cuiversion);
+		ajax.add('access_token', ACCESS_TOKEN);
+		ajax.submit(function(text) {
+			handleTemplate(text);
+			renderCusData(cuiid, itemdata);
+		}, function(errorcode) {
+			alert("页面未找到");
+			log('errorcode' + errorcode);
+		})
+	};
+	//处理更新获得的模板:save并listview.addTemplate
+	function handleTemplate(text) {
+		// 		if (json.json == undefined) {
+		// 			alert('服务器错误')
+		// 			return;
+		// 		}
+		var json = Utils.stringToJson(text).json;
+		log("handleTemplate--json--" + text);
+		var status = json.status;
+		var message = json.message;
+		if (status == '0') {
+			// 			alert(message);
+		} else {
+			var data = json.data;
+			var cuiid = data.cuiid;
+			var cuiversion = data.cuiversion;
+			var template = data.template;
+			var actions = data.actions;
+			saveTemplate(template, cuiid, cuiversion, actions);
+			var template = eval(createTemplate(template));
+			listview.addTemplate(template, cuiid);
+		}
+	};
+	//渲染数据
+	function renderCusData(cuiid, itemdata) {
+		log("renderCusData");
+		itemdata.template = cuiid;
+		// 		log(cuiid + '`actions' + temps[cuiid].actions);
+		var actions = Utils.stringToJson(temps[cuiid].actions);
+		for ( var action in actions) {
+			itemdata[action] = actions[action].value;
+			var arr = new Array();
+			arr[0] = action;
+			// 			log('````````````' + arr.toString());
+			listview.addOnclickTags(arr);
+		}
+		items.push(itemdata);
+		listview.setItems(items);
+		listview.reloadData();
+		listview.setSelection(items.length);
+	}
+
+	//保存template到本地
+	function saveTemplate(template, cuiid, cuiversion, actions) {
+		var tmp = {};
+		tmp.template = template;
+		tmp.cuiid = cuiid;
+		tmp.cuiversion = cuiversion;
+		// 		for ( var act in actions) {
+		// 		}
+		tmp.actions = actions;
+		temps[cuiid] = tmp;
+		tempPre.put("templates", temps);
+	};
+	//创建完整的template
+	function createTemplate(tmp) {
+		var template = new Emp.Panel({
+			'id' : tmp.tempId,
+			'width' : '100%'
+		});
+		var _div_ = new Emp.Panel({
+			"marginLeft" : "10",
+			"vAlign" : "middle",
+			"width" : "50",
+			"height" : "100%"
+		});
+		var _avatar_ = new Emp.Image({
+			"src" : "/images/app.png",
+			"width" : "50",
+			"height" : "50"
+		});
+		_div_.add(_avatar_);
+		// 		var avatar = new Emp.Image({
+		// 			"src" : "/images/app.png",
+		// 			"width" : "50",
+		// 			"id" : "_img_1410191119",
+		// 			"height" : "50",
+		// 			"vAlign" : "middle",
+		// 			"marginTop" : "10",
+		// 			"marginBottom" : "10",
+		// 			"marginLeft" : "10",
+		// 			"marginRight" : "10"
+		// 		});
+		var div = eval(tmp);
+		// 		template.add(_div_);
+		template.add(div);
+		return div;
+	}
+
+	//点击事件
+	function clickItem(row, tag, data) {
+		if ((row + 1) < items.length) {
+			// 			alert("已失效");
+			return;
+		}
+		// 		alert('tag' + tag);
+		log('tag```' + tag);
+		if (temps.hasOwnProperty(data.template)) {
+			var temp = temps[data.template];
+			var actions = Utils.stringToJson(temp.actions);
+			if (actions.hasOwnProperty(tag)) {
+				eval(actions[tag].method);
+			}
+		}
+	}
+	//获取本地缓存的所有template
+	function getLocalTemplates() {
+		var templates = {};
+		for ( var tid in temps) {
+			var tempObj = eval(createTemplate(temps[tid].template));
+			log('getLocalTemplates');
+			listview.addTemplate(tempObj, tid);
+			var actions = Utils.stringToJson(temps[tid].actions);
+		}
+		return templates;
+	}
+	function saveCuiHistory(data) {
+		log("------------function saveCuiHistory");
+		var ajax = new $M.Ajax();
+		ajax.setAction("/com.primeton.ai.cui.cuihistory.saveCuiRecord.biz.ext");
+		ajax.add("access_token", ACCESS_TOKEN);
+		ajax.add("userid", CURRENT_USER.nodeId);
+		ajax.add("cuiid", data.cuiid);
+		ajax.add("cuiversion", data.cuiversion);
+		ajax.add("itemdata", Utils.jsonToString(data.itemdata));
+		ajax.onSuccess(function(text) {
+			log("saveCuiHistory,success------" + Utils.jsonToString(text));
+		});
+		ajax.onFailure(function(err) {
+			log("saveCuiHistory,failed-------" + err);
+		});
+		ajax.submit();
+	}
+
+	function loadMoreRecord() {
+		var pageindex = 1;
+		if (pageCond != null) {
+			log("pageCond@@@@@@@@@@@" + Utils.jsonToString(pageCond));
+			if (!pageCond.isLast) {
+				pageindex = pageCond.currentPage + 1;
+				loadHistoryRecord(pageindex);
+			} else {
+				pageindex = pageCond.currentPage;
+				toast("已经到顶了~");
+				listview.reloadData();
+				// 				return;
+			}
+		}
+	}
+
+	var datas;
+	var history_length;
+
+	function loadHistoryRecord(pageindex) {
+		log("loadHistoryRecord");
+		var ajax = new $M.Ajax();
+		ajax
+				.setAction("/com.primeton.ai.cui.cuihistory.getHistoryRecord.biz.ext");
+		ajax.add("access_token", ACCESS_TOKEN);
+		ajax.add("userid", CURRENT_USER.nodeId);
+		ajax.add("pageindex", pageindex);
+		var pagesize = 5;
+		ajax.add("pagesize", pagesize);
+		ajax.onSuccess(function(text) {
+			if (!Utils.stringToJson(text).hasOwnProperty("result")) {
+				dismissProgressDialog();
+				if (Utils.stringToJson(text).errCode == "102") {
+					alert("登陆超时！");
+				} else {
+					alert("加载失败！");
+				}
+				return;
+			}
+			log("loadHistoryRecord,success------" + text);
+			pageCond = Utils.stringToJson(text).pageCond;
+			datas = Utils.stringToJson(text).result;
+			history_length = datas.length;
+			log(Utils.jsonToString(datas));
+			if (datas.length == 0) {
+				// 				toast("无历史记录~");
+				dismissProgressDialog();
+			}
+			for (var i = 0; i < datas.length; i++) {
+				var data = datas[i];
+				//
+				var cuiid = data.cuiid;
+				var cuiversion = data.cuiversion;
+				var itemdata = Utils.stringToJson(data.itemdata);
+				updateHistoryTemplate(cuiid, cuiversion, itemdata, i + 1);
+				log("items.length---" + items.length);
+				//
+			}
+		});
+		ajax.onFailure(function(err) {
+			log("loadHistoryRecord,failed-------" + err);
+		});
+		ajax.submit();
+	}
+	function renderHistoryData(cuiid, itemdata) {
+		if (cuiid == "default_right") {
+			itemdata.template = cuiid;
+			items.unshift(itemdata);
+			return;
+		}
+		log("renderHistoryData---" + cuiid + Utils.jsonToString(itemdata));
+		itemdata.template = cuiid;
+		var actions = Utils.stringToJson(temps[cuiid].actions);
+		for ( var action in actions) {
+			itemdata[action] = actions[action].value;
+			var arr = new Array();
+			arr[0] = action;
+			listview.addOnclickTags(arr);
+		}
+		items.unshift(itemdata);
+		log(itemdata.template);
+		listview.setItems(items);
+		listview.reloadData();
+		log("pageCond.currentPage===" + pageCond.currentPage);
+		if (pageCond.currentPage == 1) {
+			listview.setSelection(items.length);
+		}
+		log('新增的itemdata```' + Utils.jsonToString(itemdata));
+	}
+	function clearHistory() {
+		showProgressDialog();
+		var ajax = new $M.Ajax();
+		ajax
+				.setAction("/com.primeton.ai.cui.cuihistory.clearAllHistory.biz.ext");
+		ajax.add("access_token", ACCESS_TOKEN);
+		ajax.add("userid", CURRENT_USER.nodeId);
+		ajax.onSuccess(function(text) {
+			log(Utils.jsonToString(text));
+			setTimeout(function() {
+				items = [];
+				listview.setItems(items);
+				listview.reloadData();
+				dismissProgressDialog();
+				toast("清除成功");
+			}, 200);
+		});
+		ajax.onFailure(function(errCode, errMsg) {
+			log(errCode + "``" + errMsg);
+			dismissProgressDialog();
+		});
+		ajax.submit();
+	}
+	function clearHistoryBtn() {
+		clearHistoryDialog.show();
+	}
+
+	function cancleCheckDialog() {
+		clearHistoryDialog.close();
+	}
+	function confirmCheckDialog() {
+		clearHistoryDialog.close();
+		clearHistory();
+	}
+</script>
+</html>

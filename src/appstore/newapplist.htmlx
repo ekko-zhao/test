@@ -1,0 +1,282 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+	$M.includeFile("/common/appMgr.html");
+</script>
+<body>
+<!-- 搜索框 -->
+<div width="100%" height="100%"  marginBottom="-1" layout="VBox" backgroundColor="#ffffff" >
+	<!-- 标题栏 -->
+	<div id="nav" width="100%" height="50" vAlign="middle" class="emp-nav-backgroundColor" >
+		<div width="80" height="100%" id="leftDiv" vAlign="middle" onClick="goBack">
+			<div width="10" height="100%"/>
+			<img src="/appstore/back.png" width="11" height="18"/>
+			<div width="4" height="100%"/>
+			<input type="label" value="返回"  fontSize="18" color="#ffffff" />
+		</div>
+		<input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="20" value="" />
+		<div width="80" height="100%" id="rightDiv" vAlign="middle" >
+		</div>
+	</div>	
+	
+	
+	<div width="100%" height="1px" backgroundColor="#e8e6e8"></div>
+	
+    <listview id="listview" width="100%" height="100%" onItemClick="clickItem">
+
+		<template>
+			<div width="100%" layout="VBox">
+				<div width="100%" height="80" layout="HBox" vAlign="middle">
+					<div width="100%" height="100%" vAlign="middle" tag="enter">
+						<div width="56" height="56" marginLeft="15" borderWidth="1" borderColor="#ffffff" cornerRadius="12" >
+							<img src="/images/app.png" width="56" height="56" tag="icon" />
+						</div>
+						<div width="100%" height="100%"  marginLeft="13" vAlign="middle" layout="VBox">
+							<input type="label" fontSize="18" tag="name" id="appname" singleLine="true"/>
+							<div width="100%" height="3"></div>
+							<div width="100%" height="13" tag="appstar" id="appstar" >
+								<div width="9" height="9" tag="star1" id="star1">
+								</div>
+								<div width="1" height="100%"></div>
+								<div width="9" height="9" tag="star2" id="star2">
+								</div>
+								<div width="1" height="100%"></div>
+								<div width="9" height="9" tag="star3" id="star3">
+								</div>
+								<div width="1" height="100%"></div>
+								<div width="9" height="9" tag="star4" id="star4">
+								</div>
+								<div width="1" height="100%"></div>
+								<div width="9" height="9" tag="star5" id="star5">
+								</div>
+								<input type="label" value="" color="#888888" fontSize="11" marginLeft="5" tag="totalcom"/>
+							</div>		
+							
+							<div width="100%" height="2"></div>
+							<input type="label" fontSize="12" tag="summary" id="appdescribe" color="#999999"/>
+						</div>
+					</div>
+					
+					<div width="40" height="25"  tag="loadbtn" id="loadbtn" marginLeft="10" borderWidth="1" borderColor="#0b78e3" cornerRadius="5" >
+	                	<div width="0" height="100%" backgroundColor="#8fc2f2" id="loading" tag="loading">                                    
+	                   </div>
+	                   <input type="label"  color="#0b78e3"  tag="isload" id="isload" position="relative"  vAlign="middle" hAlign="center" width="40" height="25" fontSize="14"/>                       
+	               </div>
+					
+	<!-- 				<div width="50" height="30" tag="loadbtn" id="loadbtn" vAlign="middle" hAlign="center" marginLeft="10" borderWidth="1" borderColor="#0b78e3" cornerRadius="5" backgroundColor="#0b78e3"> -->
+	<!-- 					<input type="label" value="下载" tag="isload" id="isload" color="#ffffff" fontSize="14" /> -->
+	<!-- 				</div> -->
+					
+					
+					<div width="15" height="100%"/>
+				</div>
+				<div width="100%" height="1px" backgroundColor="#D9D9D9" marginLeft="15" /> 
+			</div>
+		</template>
+	</listview>
+</div>
+</body>
+<script>
+	var appClass;
+	var isChange = false;
+	var hasupdateApps=new Array();
+	
+	if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+    
+    //下载进度条样式
+    var schedules = [];
+	for(var i=0; i<=40;i++){
+		var schedule = {};
+		schedule.value=i+'';
+		schedule.width=i+'';
+		schedules.push(schedule);
+	}
+	loading.setAttrAdapter(schedules);
+	
+    appstar.setAttrAdapter([{
+    	value : '1',
+    	displayv: 'true'
+    },{
+    	value : '0',
+    	display : 'false'
+    }]);
+    
+    star1.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star2.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star3.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star4.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star5.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	
+    listview.setOnclickTags(['loadbtn','enter']);
+	
+	function isUpdateSfn(hasupdateList){
+		for(var i=0; i<hasupdateList.length; i++){
+			hasupdateApps.push(hasupdateList[i]);
+		}
+		if(appClass == "need"){
+			AppManager.getNeedAppList(getDataSfn, getDataFfn);
+		}else{
+			AppManager.getNewAppList(getDataSfn, getDataFfn);
+		}
+	}
+	
+	function getDataFfn(e){ 
+		log("error:"+e);
+	}
+		
+	Emp.page.addEvent("onLoad", function(params) {
+		if(params!=null&&params!=""){
+			if(params.appClass == "need"){
+				titleInfo.setValue("新手必备");
+				appClass = "need";
+				loadData();
+			}else{
+				titleInfo.setValue("新品首发");
+				appClass = "new";
+				loadData();
+			}
+		}
+		
+	});	
+	
+	function goBack(){
+		$M.page.goBack();
+	}
+	
+	$M.page.addEvent('onBack', function(param){
+		$M.setCurrentAppId('com.primeton.mwork'); //解决从微应用中返回时黑屏
+		var isChange = $M.contextData.getValue("isChange2");
+		if(isChange==null||isChange==""){
+			loadData();
+			$M.contextData.setValue("isChange2", "false");
+		}else{
+			if(isChange=="true"){
+				loadData();
+				$M.contextData.setValue("isChange2", "false");
+			}else{
+					
+			}			
+		}
+	});
+	
+	function loadData(){
+		AppManager.getUpdateAppList(isUpdateSfn,getDataFfn);
+	}
+	
+	function getDataSfn(appList){
+		for(var i=0; i<appList.length; i++){
+			if(appList[i].commentParams!=null&&appList[i].commentParams!=""){
+				appList[i].appstar = '1';
+				var commentParams = Utils.stringToJson(appList[i].commentParams);
+				var avgScore = commentParams.avg;
+				appList[i].totalcom = "(" + commentParams.total + ")";
+				var j=1;
+				for(; j<=avgScore; j++){
+					eval("appList["+i+"].star"+j+"='1';");
+				}
+				for(; j<=5; j++){
+					eval("appList["+i+"].star"+j+"='0';");
+				}
+			}else{
+				appList[i].appstar = '0';
+			}
+			appList[i].isload="下载";
+			appList[i].loading='0';
+// 			var isInstall = AppManager.isInstalledApp(appList[i]);
+			var isInstall = AppManager.isThisAppInstalled(appList[i]);
+			if(isInstall==true){
+				appList[i].isload="打开"; 
+			}	
+	
+			for(var j=0;j<hasupdateApps.length;j++){
+				if(appList[i].id==hasupdateApps[j].id){
+					appList[i].isload="更新";
+					break;
+				}else{
+					continue;
+				}
+			}
+		}
+		
+		listview.setItems(appList);
+		listview.reloadData();
+	}
+	
+	function failureFn(){
+		log("fail"); 
+	}
+	
+	function successFn(){
+		log("success");
+	}
+	
+	function downloadSfn(){
+		$M.contextData.setValue("isChange1", "true");
+		$M.contextData.setValue("isChange2", "true");
+		loadData();
+	}
+
+	function loadingFn(a, b, data, row){		
+		var newItem1 = data;
+		newItem1.loading=parseInt(b/a*40);
+		log(row);
+		listview.updateItem(row, newItem1);
+		listview.reloadData();
+	}
+	
+	function clickItem(row,tag,data){
+		if(tag=="enter"){  
+			$M.page.goTo("/appstore/appdetail.html", data, false);
+		}else if(tag=="loadbtn"){
+			if(data.isload=="打开"){
+				var params ={};
+				params.param=null;
+				AppManager.startApp(data, params, failureFn);  
+			}
+			if(data.isload=="下载"){
+				AppManager.installApp(data, downloadSfn, failureFn, loadingFn, row);
+			}
+			if(data.isload=="更新"){
+				AppManager.installUpdate(data, downloadSfn, failureFn, loadingFn, row);
+			}
+		}
+	}
+	
+
+</script>
+</html>

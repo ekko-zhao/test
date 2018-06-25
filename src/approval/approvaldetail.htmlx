@@ -1,0 +1,316 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+	<div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3" >
+		<div width="80" height="100%" id="leftDiv" vAlign="middle" onClick="goBack">
+			<div width="10" height="100%"/>
+			<img src="/appstore/back.png" width="11" height="18"/>
+			<div width="4" height="100%"/>
+			<input type="label" value="返回"  fontSize="18" color="#ffffff" />
+		</div>
+		<input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="20" value="我审批的"/>
+		<div width="80" height="100%">
+ 		</div>
+	</div>
+	<div width="100%" height="100%" layout="VBox" hAlign="center" overflow="y" >
+		<div width="100%" height="40" backgroundColor="#dddddd" vAlign="middle" display="false" id="tipDiv" >
+			<input type="label" value="温馨提示：该员工本月请假次数过多，请及时给予关怀~" marginLeft="10" fontSize="14" />
+		</div>
+
+		<div width="100%" height="90" vAlign="middle" >
+			<div width="15" height="100%"/>
+			<div width="60" height="60" backgroundColor="#6B5EA2" cornerRadius="30" borderColor="#6B5EA2" borderWidth="1px" hAlign="center" vAlign="middle">
+				<input type="label" fontSize="16" tag="abbr" id="abbr" color="#ffffff" />
+			</div>
+			<div width="100%" height="100%" layout="VBox" marginLeft="15" >
+				<div width="100%" height="100%"/>
+				<input type="label" fontSize="16" value="" id="approvalpeople" color="#333333"/>
+				<div width="100%" height="5"/>
+				<input type="label" fontSize="14" value="" id="state" color="#e8a546"/>
+				<div width="100%" height="100%"/>
+			</div>
+			<div width="100%" height="100%"/>
+			<div width="83" height="68">
+				<img src="/approval/pass.png" width="83" height="68" id="ispass" />
+			</div>
+			<div width="15" height="100%"/>
+		</div>
+		<div width="100%" height="1px" backgroundColor="#555555" marginLeft="15" marginRight="15" />
+		<div width="100%" height="180" layout="VBox" vAlign="middle" marginLeft="15" >
+			<div width="100%" height="10"/>
+			<div width="100%" height="100%">
+				<input type="label" value="审批编号：" fontSize="14" color="#888888" />
+				<input type="label" value="" id="approvalid" fontSize="14" />
+			</div>
+			<div width="100%" height="100%">
+				<input type="label" value="所在部门：" fontSize="14" color="#666666" />
+				<input type="label" value="" id="department" fontSize="14" />
+			</div>
+			<div width="100%" height="100%">
+				<input type="label" value="请假类型：" fontSize="14" color="#666666" />
+				<input type="label" value="" id="approvaltype" fontSize="14" />
+			</div>
+			<div width="100%" height="100%">
+				<input type="label" value="开始时间：" fontSize="14" color="#666666" />
+				<input type="label" value="" id="startdate" fontSize="14" />
+			</div>
+			<div width="100%" height="100%">
+				<input type="label" value="结束时间：" fontSize="14" color="#666666" />
+				<input type="label" value="" id="enddate" fontSize="14" />
+			</div>
+			<div width="100%" height="100%">
+				<input type="label" value="请假天数：" fontSize="14" color="#666666" />
+				<input type="label" value="" id="leavedays" fontSize="14" />
+			</div>
+			<div width="100%" height="100%">
+				<input type="label" value="请假事由：" fontSize="14" color="#666666" />
+				<input type="label" value="" id="leavereason" fontSize="14" />
+			</div>
+			<div width="100%" height="10"/>
+		</div>
+		<div width="100%" height="1px" backgroundColor="#555555"/>
+		
+		<!-- 顺序 -->
+		<div width="100%" height="200"  layout="VBox" >
+			<div width="1px" height="10" backgroundColor="#333333" marginLeft="30"/>
+			<div width="100%" height="90">
+				<div width="50" height="90" layout="VBox" >
+					<div width="1px" height="10" backgroundColor="#333333" marginLeft="30"/>
+					<img src="/approval/down.png" width="20" height="20" marginLeft="20"/>
+					<div width="1px" height="60" backgroundColor="#333333" marginLeft="30"/>
+				</div>
+				<div width="100%" height="100%" layout="VBox" marginRight="20" >
+					<div width="100%" height="10"/>
+					<div width="100%" height="70" borderColor="#555555" borderWidth="1px" cornerRadius="5" hAlign="center" vAlign="middle" >
+						<div width="10" height="100%"/>
+						<div width="40" height="40" backgroundColor="#6B5EA2" cornerRadius="21" borderColor="#6B5EA2" borderWidth="1px" hAlign="center" vAlign="middle">
+							<input type="label" fontSize="16" id="abbr2" color="#ffffff" />
+						</div>
+						<div width="100%" height="100%" layout="VBox" marginLeft="15" >
+							<div width="100%" height="100%"/>
+							<input type="label" fontSize="16" value="" id="approvalpeople2" color="#333333"/>
+							<div width="100%" height="5"/>
+							<input type="label" fontSize="14" value="" id="state2" color="#17c295"/>
+							<div width="100%" height="100%"/>
+						</div>
+						<div width="20" height="100%"/>
+						<div width="100" height="100%" layout="VBox" >
+							<div width="100%" height="5"/>
+							<input type="label" value="" id="submitdate1" fontSize="12" color="#bbbbbb" />
+						</div>
+						<div width="10" height="100%"/>
+					</div>
+					<div width="100%" height="10"/>
+				</div>
+			</div>
+			
+			<!-- second -->
+			<div width="1px" height="10" backgroundColor="#333333" marginLeft="30"/>
+			<div width="100%" height="90">
+				<div width="50" height="90" layout="VBox" >
+					<div width="1px" height="10" backgroundColor="#333333" marginLeft="30"/>
+					<img src="/approval/down.png" width="20" height="20" marginLeft="20" id="isdown" />
+				</div>
+				<div width="100%" height="100%" layout="VBox" marginRight="20" >
+					<div width="100%" height="10"/>
+					<div width="100%" height="70" borderColor="#555555" borderWidth="1px" cornerRadius="5" hAlign="center" vAlign="middle" >
+						<div width="10" height="100%"/>
+						<div width="40" height="40" backgroundColor="#6B5EA2" cornerRadius="21" borderColor="#6B5EA2" borderWidth="1px" hAlign="center" vAlign="middle">
+							<input type="label" fontSize="16" id="abbr3" color="#ffffff" />
+						</div>
+						<div width="100%" height="100%" layout="VBox" marginLeft="15" >
+							<div width="100%" height="100%"/>
+							<input type="label" fontSize="16" value="" id="approvalpeople3" color="#333333"/>
+							<div width="100%" height="5"/>
+							<input type="label" fontSize="14" value="" id="state3" color="#17c295"/>
+							<div width="100%" height="100%"/>
+						</div>
+						<div width="20" height="100%"/>
+						<div width="100" height="100%" layout="VBox" >
+							<div width="100%" height="5"/>
+							<input type="label" value="" id="submitdate2"  fontSize="12" color="#bbbbbb" />
+						</div>
+						<div width="10" height="100%"/>
+					</div>
+					<div width="100%" height="10"/>
+				</div>
+			</div>
+			<!-- here over -->		
+		</div>
+		<div width="100%" height="20"/>
+		<div width="100%" height="60" id="isagreeDiv" display="false" >
+			<div width="30" height="100%"/>
+			<div width="120" height="40" backgroundColor="#0088e4" cornerRadius="4" borderColor="#0088e4" borderWidth="1" 
+				hAlign="center" vAlign="middle" onClick="agree">
+				<input type="label" width="100%" height="100%" value="同意" color="#FFFFFF" fontSize="16" backgroundColor="#0088e4" hAlign="center" />
+			</div>
+			<div width="100%" height="100%"/>
+			<div width="120" height="40" backgroundColor="#0088e4" cornerRadius="4" borderColor="#0088e4" borderWidth="1" 
+				hAlign="center" vAlign="middle" onClick="disagree">
+				<input type="label" width="100%" height="100%" value="拒绝" color="#FFFFFF" fontSize="16" backgroundColor="#0088e4" hAlign="center"/>
+			</div>
+			<div width="30" height="100%"/>
+		</div>
+	</div>
+</body>
+<script>
+	if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+	var data;
+	var d = new Date();
+	Emp.page.addEvent("onLoad", function(args) {
+		
+	data = args.data;	
+	if(args.fromPage=='approval'){
+		log('----'+Utils.jsonToString(args));
+		d.setTime(data.time);
+		var submit1 =d.format("yyyy-MM-dd hh:mm");
+		submitdate1.setValue(submit1);
+		if(data.time2==null||data.time2===undefined||data.time2==' '){
+			submitdate2.setValue(' ');
+		}else{
+			d.setTime(data.time2);
+			var submit2 =d.format("yyyy-MM-dd hh:mm");
+			submitdate2.setValue(submit2);
+		}
+		
+		titleInfo.setValue(data.title);
+		approvalpeople.setValue(data.approvalpeople);
+		state.setValue(data.state);
+		approvalpeople2.setValue(data.approvalpeople);		
+		state2.setValue('发起申请');
+		state3.setValue(data.state);
+		approvalid.setValue(data.id);
+		department.setValue(data.department);
+		approvaltype.setValue(data.type);
+		startdate.setValue(data.start);
+		enddate.setValue(data.end);
+		leavedays.setValue(data.days);
+		leavereason.setValue(data.reason);
+		abbr.setValue(data.abbr);
+		abbr2.setValue(data.abbr);
+		if(data.state=='审批通过'){
+			state.setValue('已完成');
+			state.setColor('#aaaaaa');
+			state2.setColor('#17c295');
+			ispass.setSrc('/approval/pass.png');
+		}else if(data.state=='审批未通过'){
+			state.setValue('已完成');
+			state.setColor('#aaaaaa');
+			state3.setColor('#ff0000');
+			ispass.setSrc('/approval/nopass.png');
+		}else{
+			state.setValue('待审批');
+			state.setColor('#e8a546');
+			state2.setColor('#17c295');
+			state3.setColor('#e8a546');
+			isdown.setSrc('/approval/todo.png');
+			ispass.setDisplay(false);
+			isagreeDiv.setDisplay(true);
+			tipDiv.setDisplay(true);
+		}
+		approvalpeople3.setValue('我');
+		abbr3.setValue(data.abbr);
+	}else if(args.fromPage=='propose'){
+		d.setTime(data.time);
+		var submit1 =d.format("yyyy-MM-dd hh:mm");
+		submitdate1.setValue(submit1);
+		
+		if(data.time2==null||data.time2===undefined||data.time2==' '){
+			submitdate2.setValue(' ');
+		}else{
+			d.setTime(data.time2);
+			var submit2 =d.format("yyyy-MM-dd hh:mm");
+			submitdate2.setValue(submit2);
+		}
+		
+		titleInfo.setValue(data.title);
+		approvalpeople.setValue('我的请假');
+		state.setValue(data.state);
+		approvalpeople2.setValue('我');		
+		state2.setValue('发起申请');
+		state3.setValue(data.state);
+		approvalid.setValue(data.id);
+		var departmentss = CURRENT_USER.orgname;
+		department.setValue(departmentss);
+		approvaltype.setValue(data.type);
+		startdate.setValue(data.start);
+		enddate.setValue(data.end);
+		leavedays.setValue(data.days);
+		leavereason.setValue(data.reason);
+		abbr.setValue(data.abbr);
+		abbr2.setValue(data.abbr);
+		if(data.state=='审批通过'){
+			state.setValue('已完成');
+			state.setColor('#aaaaaa');
+			state2.setColor('#17c295');
+			ispass.setSrc('/approval/pass.png');
+		}else if(data.state=='审批未通过'){
+			state.setValue('已完成');
+			state.setColor('#aaaaaa');
+			state3.setColor('#ff0000');
+			ispass.setSrc('/approval/nopass.png');
+		}else{
+			state.setValue('待审批');
+			state.setColor('#e8a546');
+			state2.setColor('#17c295');
+			state3.setColor('#e8a546');
+			isdown.setSrc('/approval/todo.png');
+			ispass.setDisplay(false);
+		}
+		var abbr_leader = data.leader.substring(data.leader.length-2); 
+		approvalpeople3.setValue(data.leader);
+		abbr3.setValue(abbr_leader);
+	
+	}else{
+	
+	}
+	});	
+		
+	function goBack(){
+		$M.page.goBack({'isagree':''});
+	}
+	
+	function agree(){
+		showProgress();
+		var ajaxData = {};
+		ajaxData.id = data.id;
+		ajaxData.ispass = '1';
+		AjaxUtil.submit('/com.primeton.pmbusiness.leave.leaveComponent.approvalLeave.biz.ext', ajaxData, AjaxUtil.TYPE_POST, function(args){
+			dismissProgress();
+			log("----returnData"+args);
+			var result = util.stringToJson(args);
+			$M.page.goBack({'isagree':'yes'});
+		}, function(errCode,errMsg){
+			Utils.toast('审批失败');
+			dismissProgress();
+		});
+
+	}
+	
+	function disagree(){
+		showProgress();
+		
+		var ajaxData = {};
+		ajaxData.id = data.id;
+		ajaxData.ispass = '2';
+		AjaxUtil.submit('/com.primeton.pmbusiness.leave.leaveComponent.approvalLeave.biz.ext', ajaxData, AjaxUtil.TYPE_POST, function(args){
+			dismissProgress();
+			log("----returnData"+args);
+			var result = util.stringToJson(args);
+			$M.page.goBack({'isagree':'no'});
+		}, function(errCode,errMsg){
+			Utils.toast('审批失败');
+			dismissProgress();
+		});
+
+	}
+</script>
+</html>

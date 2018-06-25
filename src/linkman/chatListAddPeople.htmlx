@@ -1,0 +1,349 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>所有人员通讯录</title>
+</head>
+<script>
+	
+</script>
+<body>
+<!-- 返回、选项菜单栏 -->
+<div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3" >
+	<div width="80" height="100%" id="leftDiv" vAlign="middle"  onPressUp="goBack">
+		<div width="10" height="100%"/>
+		<img src="/linkman/back.png" width="11" height="18"/>
+		<div width="4" height="100%"/>
+		
+	</div>
+	<input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" value="新建群组" />
+	<div width="80" height="100%" id="rightDiv" vAlign="middle" onClick="returnData" >
+		<div width="100%" height="100%"/>
+		<input type="label" value="确定"  fontSize="16" color="#ffffff" />
+		<div width="10" height="100%"/>
+	</div>
+</div>
+<!-- 搜索框 -->
+<div width="100%" height="100%" id="parent" marginBottom="-1" layout="VBox">
+	<div width="100%" height="40" vAlign="middle" backgroundColor="#F2F2F2">
+		<div width="100%" marginLeft="10" marginRight="10" backgroundColor="#ffffff" vAlign="middle">
+			<img src="/linkman/icon_title_bar_search.png" width="20" height="20" marginLeft="5" />
+			<input type="text" fontSize="15" id="_search" returnType="search"
+				height="27" width="100%" emptyText="请输入群组名称" backgroundColor="#ffffff" />
+			<div width="27" height="27" id="_cancelSearch" visibility="false" onClick="clearSearch" vAlign="middle">
+				<img src="/common/cancel.png" width="20" height="20" marginRight="5" />
+			</div>
+		</div>
+	</div>
+	<div width="100%" height="1" backgroundColor="#f4f4f4"></div>
+	<div width="100%" height="100%" id="listParent">
+		<listview id="listview" width="100%" height="100%" enableSideBar="true" enablePullDown="true" >
+		</listview>
+	</div>
+</div>
+
+<dialog id="dialog" canceledOnTouchOutside="true">
+    <div width="360" height="640" layout="VBox" vAlign="middle" hAlign="center" >
+		<progress width="40" height="40" ></progress>
+	</div>
+</dialog>
+
+<template>
+	<div width="100%" layout="VBox" id="tmp">
+		<!-- 设置分类标题 A  B...显示样式 -->
+		<div width="100%" height="30" vAlign="middle" tag="sortTextDiv" id="sortTextDiv" display="false" backgroundColor="#F0F0F5">
+			<input type="label" fontSize="16" tag="sortText" color="#000000" marginLeft="15" />
+		</div>
+		<!-- 列表模板 -->
+		<div width="100%" height="60" layout="HBox" vAlign="middle">
+			<div id="customertype" tag="customertype" width="40" height="40" marginLeft="15" backgroundImage="/linkman/favourite.png" />
+			<div width="100%" height="100%" vAlign="middle" marginLeft="10" layout="VBox" >
+				<div width="100%" height="100%" layout="HBox" vAlign="middle" >
+					<div width="100%" height="100%" layout="HBox" vAlign="middle" >
+						<input type="label" fontSize="18" tag="name" singleLine="true" width="70" />
+						<input type="label" fontSize="13" tag="emppositionname" color="#7c7c7c" width="100%" height="100%" />
+					</div>
+					<div width="100" height="60" vAlign="middle" tag="status">
+						<img tag="state" id="state" width="25" height="25" marginLeft="50" marginRight="10" />
+					</div>
+				</div>
+				<div width="100%" height="1" backgroundColor="#F4F4F4" />
+			</div>
+		</div>
+	</div>
+</template>
+
+
+</body>
+<script>
+var selectedPeople = "";
+var pageindex = 1;
+$M.page.addEvent("onLoad", function(data) {
+	//初始化选中状态
+	choose = {};
+	choose.row = new Array();
+	choose.name = new Array();
+	choose.mail = new Array();
+	choose.id = new Array();	
+	commonLoad(pageindex);
+});
+
+/**
+*
+* 显示右侧选项菜单
+*/
+function showOptions(){
+	alert("进行添加联系人操作");
+}
+
+var choose;
+
+//处理标题 
+titleInfo.setValue("选择群聊人员");
+
+//处理状态栏
+if ($M.isIOS) {
+	nav.setHeight(60);
+	nav.setPaddingTop(8);
+	Utils.setStatusBarStyle("light");
+}
+
+function goBack() {
+	$M.page.goBack();
+}
+
+if($M.isAndroid){
+	_search.addEvent("onClick",function(){
+		clickOther();
+	});
+}else{
+	_search.addEvent("onFocus",function(){
+		clickOther();
+	});
+}
+function clickOther(){
+
+}
+_search.addEvent("onChange",function(o,n){
+	if(n==''){
+		_cancelSearch.setVisibility(false);
+	}else{
+		_cancelSearch.setVisibility(true);
+	}
+});
+_search.addEvent("onKeyDown",function(type){
+	if(type=='return'){
+		System.hideKeyboard();
+		if(_search.getValue().trim()==""){
+			return;
+		}
+		commonLoad();
+	}
+});
+
+function clearSearch() {
+	_search.setValue("");
+	commonLoad();
+}	
+
+if (Emp.isIOS) {//IOS针对其特殊实现
+	var indexBar = new $M.IndexBar({
+		width : '20',
+		height : '100%',
+		marginLeft : '-20',
+		marginBottom : '15',
+		marginTop : '15'
+	});
+	indexBar.addEvent("onSideScroll", function(arg) {
+		listview.setSelection(arg);
+	});
+	listParent.add(indexBar);
+} else {
+	var indexBar = new $M.IndexBar({
+		width : '20',
+		height : '490',
+		marginLeft : '-20',
+		marginBottom : '15',
+		marginTop : '15'
+	});
+	indexBar.addEvent("onSideScroll", function(arg) {
+		listview.setSelection(arg);
+	});
+	listParent.add(indexBar);
+}
+
+
+/**
+ * customertype
+ * 2 个人男
+ * 1 个人女
+ * 0 机构客户
+ */
+customertype.setAttrAdapter([ {
+	value : '1',
+	backgroundImage : '/linkman/customerwomen.png'
+}, {
+	value : '2',
+	backgroundImage : '/linkman/customerman.png'
+}, {
+	value : '0',
+	backgroundImage : '/linkman/qiye.png'
+} ]);
+sortTextDiv.setAttrAdapter([ {
+	value : '',
+	display : 'false'
+}, {
+	value : 'other',
+	display : 'true'
+} ]);
+
+state.setAttrAdapter([ {
+		value : '0',
+		src : '/linkman/checkbox_unable.png'
+	}, {
+		value : '1',
+		src : '/linkman/checkbox_pressed.png'
+	} ]);
+
+listview.setTemplate(tmp);
+listview.setOnclickTags(['status']);
+	
+//监听下拉刷新和上拉加载
+listview.addEvent("onLoadMore", function(type) {
+	if (type == 'pullDown') {//下拉刷新数据
+		pageindex = 1;
+		commonLoad(pageindex);
+	} else {//上拉加载数据
+		var count = pageindex * 10;
+		if (_totalCount < count) {
+			listview.reloadData();
+			return;
+		}
+		pageindex = pageindex + 1;
+		commonLoad(pageindex);
+	}
+});
+
+listview.addEvent("onItemClick", function(row, tag, data) {
+	for(var i=0; i<items.length; i++){
+		//IndexBar会打乱顺序
+		if(items[i].empid == data.empid){
+			row = i;
+			break;
+		}
+	}
+	if(items[row].state == "0"){
+		items[row].state = "1";
+		selectedPeople = selectedPeople+data.name + ",";
+	}
+	else{
+		items[row].state = "0";
+		var newstring = selectedPeople.replace(data.name+",", "");
+		selectedPeople = newstring;
+	}
+	listview.setItems(items);
+	listview.reloadData();
+});
+
+	var items = [{
+		empid:'1652',
+		sortText:"other",
+		name:"谢华",
+		sextype:"1",
+		state:'0',
+		emppositionname:"移动工程师",
+	},{
+		empid:'1653',
+		sortText:"other",
+		state:'0',
+		name:"王立群",
+		sextype:"2",
+		emppositionname:"移动工程师",
+	},{
+		empid:'1654',
+		name:"李健康",
+		state:'0',
+		sextype:"1",
+		emppositionname:"HR",
+	},{
+		empid:'1655',
+		sortText:"other",
+		name:"余婧雯",
+		state:'0',
+		sextype:"2",
+		emppositionname:"移动工程师",
+	},{
+		empid:'1656',
+		sortText:"other",
+		state:'0',
+		name:"梁惠妃",
+		sextype:"2",
+		emppositionname:"移动工程师",
+	}];
+//公共请求数据
+function commonLoad(pagenum) {
+	dialog.show();
+	
+	setTimeout(function(){
+		dialog.close();
+	}, 1000);
+	listview.setItems(items);
+	listview.reloadData();
+	
+}
+
+//处理请求成功数据
+function dealData(data) {
+	var d = {};
+	for ( var a in data) {
+		if (a == 'customertype' && data[a] == '1') {//如果是个人客户,根据性别处理客户类型
+			if (data["gender"] == '女') {
+				d[a] = '1';
+			} else {
+				d[a] = '2';
+			}
+			continue;
+		}
+		d[a] = data[a];
+	}
+	d.name = data.sn != null ? data.sn : " ";
+	return d;
+}
+
+var _totalCount = 0;
+
+//刷新数据列表
+function refreshData(items) {
+	if (pageindex == 1) {
+		listview.setItems(items);
+		_totalCount = items.length;
+	} else {
+		var temp = listview.getItems();
+		temp = temp.concat(items);
+		listview.setItems(temp);
+		_totalCount = temp.length;
+	}
+	listview.reloadData();
+}
+
+function returnData(){
+	var chatIds = selectedPeople.split(",");
+	var finalChatIds = new Array();
+	for(var i=0; i<chatIds.length-1; i++){
+		if(chatIds[i]!=null && chatIds[i]!=""){
+			finalChatIds.push(chatIds[i]);
+		}
+	}
+	
+//	要把自己加进去
+//	finalChatIds.push(userInfo.userName);
+	alert(finalChatIds);
+	var groupName = _search.getValue();
+	if(groupName==null || groupName==""){
+		Utils.toast("请输入群组名称");
+		return;
+	}
+// 	var chat = new Emp.IM()
+// 	chat.createChatGroup(groupName, finalChatIds);
+}
+</script>
+</html>

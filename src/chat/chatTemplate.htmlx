@@ -1,0 +1,216 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div width="100%" height="100%" layout="VBox" >
+	<div id="nav" width="100%" height="50" vAlign="middle" class="emp-nav-backgroundColor" >
+	<div width="80" height="100%" id="leftDiv" vAlign="middle"  onPressUp="goBack" >
+		<div width="10" height="100%"/>
+		<img src="/linkman/back.png" width="11" height="18"/>
+		<div width="4" height="100%"/>
+		<input type="label" value=""  fontSize="18" color="#ffffff" />
+	</div>
+	<div width="100%" height="100%" id="groupDiv" display="false" >
+		<input type="label" id="grouptitle" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" value="" />
+	</div>
+	<div width="100%" height="100%" layout="VBox" id="userDiv" display="false">
+		<input type="label" id="titleInfo" width="100%" height="18" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" value="" marginTop="10" />
+		<input type="label" id="Userstaue" value="" width="100%" height="20" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="14"  />
+	</div>
+	<div width="80" height="100%" id="rightDiv" vAlign="middle">
+		<div width="80" height="100%" id="addPerson" vAlign="middle" hAlign="center" onClick="groupDatil" >
+			<img src="/chat/pepermange.png" height="30" width="30" />
+		</div>
+	</div>
+</div>
+	<listview id="listview" width="100%" height="100%" enablePullDown="true" onLoadMore="loadMore" onItemClick="showImage" >
+	
+	</listview>
+	<div width="100%" height="50" vAlign="middle" >
+		<img src="/chat/createImg.png" width="30" height="30" marginLeft="4" onClick="sendpic" />
+		<input type="text" id="sendtext" width="100%" height="36" marginLeft="4" marginRight="5" emptyText="请输入文字..." /> 
+		<div width="56" height="36" borderColor="#ffffff" borderWidth="1" cornerRadius="4" >
+			<input type="button" id="send" value="发送" height="36" onClick="sendmsg" color="#ffffff" class="emp-nav-backgroundColor" />
+		</div>
+	</div>
+	<div id="selview" width="100%" height="100%" position="relative" top="0" left="0" 
+			display="false" vAlign="bottom" hAlign="center" layout="VBox" >
+		<div width="100%" height="100%" backgroundColor="#000000" opacity="0.5" onClick="cancel" ></div>
+		<input type="label" width="100%" height="40" backgroundColor="#ffffff" value="拍照" onClick="take" hAlign="center" />
+		<div width="100%" height="1px" backgroundColor="#D9D9D9" ></div>
+		<input type="label" width="100%" height="40" backgroundColor="#ffffff" value="从相册选择" onClick="sel" hAlign="center" />
+		<div width="100%" height="1" backgroundColor="#121212" ></div>
+		<input type="label" width="100%" height="40" backgroundColor="#ffffff" value="取消" onClick="cancel" hAlign="center" color="#ff0000" />
+	</div>
+		<div id="showimage" width="360" height="650" position="relative" top="0" left="0" 
+			display="false" vAlign="bottom" hAlign="center" layout="VBox" backgroundColor="#000000" >
+		<img id="imgscr" width="360" height="620"  onClick="onclickImg" />
+	</div>
+</div>
+		<template>
+			<div id="rtext" width="100%" height="-2" hAlign="center" backgroundColor="#ffffff" >
+				<div width="340" height="-2" layout="VBox" >
+					<div width="100%" hAlign="center" >
+						<input type="label" height="24" width="100" tag="name" borderColor="#CCDEEF" fontSize="20" fontBold="true" />
+						<input type="label" height="24" width="100%" tag="date" fontSize="14"/>
+					</div>
+					<div width="290" height="-2" borderColor="#CCDEEF" borderWidth="1" cornerRadius="4" 
+							backgroundColor="#CCDEEF" marginLeft="10" hAlign="center" >
+						<input type="label" width="280" tag="text" marginTop="6" marginBottom="6" />
+					</div>
+				</div>				
+			</div>
+		</template>
+		<template>
+			<div id="stext" width="100%" height="-2" hAlign="center" backgroundColor="#ffffff">
+				<div width="340" height="-2" layout="VBox" >
+					<div width="100%" hAlign="center" >
+						<input type="label" height="24" width="100%" tag="date" hAlign="right" fontSize="14"/>
+						<input type="label" height="24" width="100" tag="name" borderColor="#CCDEEF" fontSize="20" fontBold="true" hAlign="right" />
+					</div>
+					<div width="290" height="-2" borderColor="#B9DCBE" borderWidth="1" cornerRadius="4" 
+							backgroundColor="#B9DCBE" marginLeft="40" hAlign="center" >
+						<input type="label" width="280" tag="text" marginTop="6" marginBottom="6" />
+					</div>
+				</div>
+				
+			</div>
+		</template>
+		<template>
+			<div id="rimg" width="100%" height="224" hAlign="center" backgroundColor="#ffffff">
+				<div width="340" height="224" layout="VBox" >
+					<div width="100%" hAlign="center" >
+						<input type="label" height="24" width="100" tag="name" borderColor="#CCDEEF" fontSize="20" fontBold="true" />
+						<input type="label" height="24" width="100%" tag="date" fontSize="14"/>
+					</div>
+					<div width="200" height="200" borderColor="#CCDEEF" borderWidth="1" cornerRadius="4" 
+							backgroundColor="#CCDEEF" marginLeft="10" hAlign="center" vAlign="middle" >
+						<img tag="img" width="188" height="188" />
+					</div>
+				</div>
+				
+			</div>
+		</template>
+		<template>
+			<div id="simg" width="100%" height="224" hAlign="center" backgroundColor="#ffffff">
+				<div width="340" height="224" layout="VBox" >
+					<div width="100%" hAlign="center" >
+						<input type="label" height="24" width="100%" tag="date" hAlign="right" fontSize="14"/>
+						<input type="label" height="24" width="100" tag="name" borderColor="#CCDEEF" fontSize="20" fontBold="true" hAlign="right" />
+					</div>
+					<div width="200" height="200" borderColor="#B9DCBE" borderWidth="1" cornerRadius="4" 
+							backgroundColor="#B9DCBE" marginLeft="130" hAlign="center" vAlign="middle" >
+						<img tag="img" width="188" height="188" />
+					</div>
+				</div>
+			</div>
+		</template>	
+</body>
+<script> 
+listview.setTemplates({"rtext":rtext,"stext":stext,"rimg":rimg,"simg":simg});
+function sendpic() {
+	selview.setDisplay(true);
+}
+if(Emp.isIOS){
+	nav.setHeight(60);
+	nav.setPaddingTop(8);
+	titleInfo.setMarginTop(15);
+}
+function take() {
+	selview.setDisplay(false);
+	Utils.startCamera('photo','','low',function(path){
+		sendImg(path);
+    });
+}
+function sel() {
+	selview.setDisplay(false);
+	Utils.selectCameraPhoto(function(path){
+		sendImg(path);
+	});
+}
+function cancel() {
+	selview.setDisplay(false);
+}
+sendtext.addEvent('onFocus', function(){
+	if (listview.getItems() != undefined) {
+		listview.setSelection(listview.getItems().length - 1);
+	}
+});
+	$M.page.addEvent('onKeyboardShow', function(param) {
+        listview.setSelection(listview.getItems().length - 1);
+       
+    });
+//     $M.page.addEvent('onKeyboardHide', function(param) {
+//         log('键盘消失'); 
+
+//     });
+
+function loadMessage(msgs,type) {
+	var first = items[0];
+	var lastMsg = msgs[msgs.length - 1];
+	for (var i = msgs.length; i > 0; i--) {
+		var msg = msgs[i - 1];
+		var item;
+		if (msg.from.userID == myID) {
+			if (msg.type == "text") {
+				item = {'template':'stext','name':myName,'text':msg.text,'time':msg.time};
+			} else {
+				item = {'template':'simg','name':myName,'img':"baimg://" + msg.mID,'time':msg.time}
+			}
+		} else {
+			if (msg.type == "text") {
+				item = {'template':'rtext','name':msg.from.name,'text':msg.text,'time':msg.time};
+			} else {
+				item = {'template':'rimg','name':msg.from.name,'img':"baimg://" + msg.mID,'time':msg.time}
+			}
+		}
+		var date = new Date(msg.time); 
+		item.date = date.format("yyyy-MM-dd hh:mm");
+		items.unshift(item);
+	}
+	listview.setItems(items);
+	listview.reloadData();
+	if(type == "1"){
+		log("111");
+		listview.setSelection((listview.getItems().length - 1));
+	}
+	
+}
+function reloadData() {
+	listview.setItems(items);
+	listview.reloadData();
+	listview.setSelection(listview.getItems().length - 1);
+}
+
+function loadMore(act) {
+	if (items.length > 0) {
+		chat.loadMessages({'time':items[0].time},function(r){
+			loadMessage(Utils.stringToJson(r),"2");
+		});
+	}
+}
+
+listview.addEvent("onScroll", function(){
+	System.hideKeyboard();
+});
+listview.setOnclickTags(['img']);
+function showImage(row,tag,data) {
+	if(tag == "img"){
+		imgscr.setSrc(data.img);
+		showimage.setDisplay(true);
+	}
+}
+function onclickImg() {
+	imgscr.setSrc("/chat/londingImg.gif");
+	showimage.setDisplay(false);
+}
+function groupDatil() {
+	var temp = {};
+	temp.gID = gID;
+	temp.name = name;
+	temp.myGroup = myGroup;
+	$M.page.goTo('/chat/groupDetail.html', temp, false);
+}
+</script>
+</html>

@@ -1,0 +1,241 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+	$M.includeFile("/common/appMgr.html");
+</script>
+<body>
+	<div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3" >
+		<div width="80" height="100%" id="leftDiv" vAlign="middle" onClick="goBack">
+			<div width="10" height="100%"/>
+			<img src="/appstore/back.png" width="11" height="18"/>
+			<div width="4" height="100%"/>
+			<input type="label" value="返回"  fontSize="18" color="#ffffff" />
+		</div>
+		<input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="20" value="应用管理"/>
+		<div width="80" height="100%" id="rightDiv" hAlign="center" onClick="goSetup" >
+ 			<input type="label" value="设置" width="100%" height="100%" color="#FFFFFF" fontSize="16" hAlign="center" />
+ 		</div> 
+	</div>
+	<div width="100%" height="100%" layout="VBox" hAlign="center">
+	<!--
+		<div width="100%" height="40" backgroundColor="#0b78e3" >
+			<div width="180" height="100%" layout="VBox" onClick="clickTab1" >
+				<input type="label" height="35" width="180" color="#ffffff" value="更新" fontSize="18" hAlign="center" />
+				<div width="100%" height="5" backgroundColor="#ffffff" id="statetab1">
+				</div>
+			</div>
+			<div width="180" height="100%" layout="VBox" onClick="clickTab2" >
+				<input type="label" height="35" width="180" color="#ffffff" value="卸载" fontSize="18" hAlign="center" />
+				<div width="100%" height="5" backgroundColor="#0b78e3" id="statetab2">
+				</div>
+			</div>
+		</div>
+	-->
+		<div width="100%" height="40" backgroundColor="#ffffff" hAlign="center" >
+			<div width="80" height="100%" layout="VBox" onClick="clickTab1" >
+				<input type="label" height="35" width="80" color="#0b78e3" value="更新" fontSize="18" hAlign="center" id="statelabel1"/>
+				<div width="100%" height="3" backgroundColor="#0b78e3" id="statetab1">
+				</div>
+			</div>
+			<div width="80" height="100%" layout="VBox" onClick="clickTab2" >
+				<input type="label" height="35" width="80" color="#999999" value="卸载" fontSize="18" hAlign="center" id="statelabel2"/>
+				<div width="100%" height="3" backgroundColor="#ffffff" id="statetab2">
+				</div>
+			</div>
+		</div>
+		
+		<slide id="managetab" enableLoop="false" enableScroll="false" tipVisible="false" >
+	   		<slidepage>
+		    	<listview id="update" width="100%" height="100%" onItemClick="clickItem">
+				</listview>
+		    </slidepage>
+	   		<slidepage>
+		    	<listview id="uninstall" width="100%" height="100%" onItemClick="clickItem">
+				</listview>
+		    </slidepage>
+		</slide>
+	</div>
+	
+	<div width="100%" height="60" layout="VBox" hAlign="center" id="btn_update" >
+		<div width="100%" height="10" />
+		<div width="300" height="35" vAlign="middle" hAlign="center" backgroundColor="#0b78e3" onClick="updateAllapps" >
+			<input type="label" fontSize="18" color="#ffffff" value="一键更新" />
+		</div>
+	</div>
+	
+	
+	<template id="uninstlist">
+		<div width="100%" layout="VBox">
+			<div width="100%" height="80" layout="HBox" vAlign="middle">
+				<div width="60" height="60" marginLeft="15" hAlign="center" vAlign="middle" borderWidth="1" borderColor="#ffffff" cornerRadius="12" >
+					<img src="/images/app.png" width="60" height="60" tag="icon" />
+				</div>
+				<div width="200" height="100%"  marginLeft="13" vAlign="middle" layout="VBox" tag="enter">
+					<input type="label" fontSize="18" tag="name" id="appname" singleLine="true"/>
+					<div width="100%" height="5"></div>
+					<input type="label" fontSize="12" tag="summary" id="appdescribe" color="#999999"/>
+				</div>
+				<div width="50" height="30" tag="uninstbtn" vAlign="middle" hAlign="center" marginLeft="10" borderWidth="1" borderColor="#0b78e3" cornerRadius="5" backgroundColor="#0b78e3">
+					<input type="label" value="卸载" id="isDelete" color="#ffffff" fontSize="14" />
+				</div>
+				<div width="15" height="100%"/>
+			</div>
+			<div width="100%" height="1px" backgroundColor="#D9D9D9" /> 
+		</div>
+	</template>
+</body>
+<script>
+	if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+      
+    var updateApps = new Array();
+    
+    function goSetup(){
+		$M.page.goTo('/appstore/setup.html', {}, false);
+	}
+    
+    update.setOnclickTags(['updatebtn']);
+    update.setTemplate(updatelist); 
+    uninstall.setOnclickTags(['uninstbtn']);
+    uninstall.setTemplate(uninstlist); 
+    
+    Emp.page.addEvent("onLoad", function() {	
+		managetab.setSelectedIndex(0);
+		dataLoad();
+	});	
+	
+	star1.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star2.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star3.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star4.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star5.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	
+	function getUpdateDataSfn(appList){
+		for(var i=0; i<appList.length; i++){
+			if(appList[i].commentParams!=null&&appList[i].commentParams!=""){
+				var commentParams = Utils.stringToJson(appList[i].commentParams);
+				var avgScore = commentParams.avg;
+				appList[i].totalcom = "(" + commentParams.total + ")";
+				var j=1;
+				for(; j<=avgScore; j++){
+					eval("appList["+i+"].star"+j+"='1';");
+				}
+				for(; j<=5; j++){
+					eval("appList["+i+"].star"+j+"='0';");
+				}
+			}
+		}
+		updateApps = appList;
+		update.setItems(appList);
+		update.reloadData();	
+	}
+	
+	function getDataFfn(e){
+		log("error:"+e);
+	}
+
+	function getInstDataSfn(appList){
+		uninstall.setItems(appList);
+		uninstall.reloadData();
+	}
+	
+	function UpdateSFn(){
+        AppManager.getUpdateAppList(getUpdateDataSfn, getDataFfn);
+        isOperate = true;
+        Utils.toast("更新成功");
+	}
+	
+	function dataLoad(){
+		AppManager.getUpdateAppList(getUpdateDataSfn, getDataFfn);
+		AppManager.getUninstallAppList(getInstDataSfn, getDataFfn);
+	}
+		
+	//若执行了更新或卸载操作返回时要通知更新列表	
+	var isOperate = false;
+	function goBack(){
+		$M.page.goBack({'isChange':isOperate+''});
+	}
+	
+	function clickTab1(){
+		managetab.setSelectedIndex(0);
+	}
+
+ 	function clickTab2(){
+		managetab.setSelectedIndex(1);
+	}
+	
+	managetab.addEvent('onChange', function(oldValue, newValue){
+		var sel = managetab.getSelectedIndex();
+		if(sel==0||sel=='0'){
+			statetab1.setBackgroundColor("#0b78e3");
+			statetab2.setBackgroundColor("#ffffff");
+			statelabel1.setColor("#0b78e3");
+			statelabel2.setColor("#999999");
+			btn_update.setDisplay(true);
+		}else{
+			statetab1.setBackgroundColor("#ffffff");
+			statetab2.setBackgroundColor("#0b78e3");			
+			statelabel1.setColor("#999999");
+			statelabel2.setColor("#0b78e3");
+			btn_update.setDisplay(false);
+		}
+	});
+	
+	function clickItem(row,tag,data){
+		if(tag=="updatebtn"){
+			AppManager.installUpdate(data, UpdateSFn, getDataFfn);
+		}
+		if(tag=="uninstbtn"){
+			var isDele = AppManager.deleteApp(data);
+			if(isDele){
+				AppManager.getUninstallAppList(getInstDataSfn, getDataFfn);
+				isOperate = true;
+				Utils.toast("卸载成功");
+			}else{
+				Utils.toast("卸载失败");
+			}
+		}
+	}
+	
+	function updateAllapps(){
+		for(var i =0;i<updateApps.length;i++){
+			AppManager.installUpdate(updateApps[i], UpdateSFn, getDataFfn);			
+		}
+	}
+	
+</script>
+</html>

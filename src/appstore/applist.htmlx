@@ -1,0 +1,649 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+	$M.includeFile("/common/appMgr.html");
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+<!-- 搜索框 -->
+<div width="100%" height="100%"  marginBottom="-1" layout="VBox" backgroundColor="#ffffff" >
+	<!-- 标题栏 -->
+  	<div id="nav" width="100%" height="50" vAlign="middle" class="emp-nav-backgroundColor">
+		<div width="80" height="100%" id="leftDiv" vAlign="middle" onClick="goBackChangeOrder">
+			<div width="10" height="100%"/>
+			<img src="/linkman/back.png" width="11" height="18"/>
+			<div width="4" height="100%"/>
+			<input type="label" value="返回" fontSize="18" color="#ffffff"/>
+		</div>
+ 		<div width="100%" height="100%"  hAlign="center" vAlign="middle">			 
+ 			<input type="label" id="title" width="-2" height="100%" color="#FFFFFF" fontSize="20"/>
+		</div>
+ 		<div width="80" height="100%" id="rightDiv" vAlign="middle">
+<!--  			<div width="30" height="100%"/> -->
+<!--  			<input type="label" value="我的" width="100%" height="100%" color="#FFFFFF" fontSize="16"/> -->
+ 		</div> 
+ 	</div>
+	<div width="100%" height="1px" backgroundColor="#999999"></div>
+	<!-- 搜索框 -->
+	<div width="100%" height="40" vAlign="middle" backgroundColor="#ffffff">
+		<div width="100%" marginLeft="10" marginRight="10" backgroundColor="#F2F2F2" vAlign="middle" cornerRadius="5" borderColor="#f2f2f2" borderWidth="1px" >
+			<img src="/appstore/search.png" width="13" height="13" marginLeft="5" />
+			<input type="text" fontSize="15" id="search" returnType="search"
+				height="27" width="100%" emptyText="搜索" backgroundColor="#F2F2F2" paddingLeft="5"  />
+			<div width="27" height="27" id="cancelSearch" visibility="false" vAlign="middle" onClick="clearSearch" >
+				<img src="/appstore/cancel.png" width="20" height="20" marginRight="5" />
+			</div>
+		</div>
+	</div> 
+	
+	<div id="searchadapter" width="360" height="100%" position="relative" top="90" display="false" layout="VBox" backgroundColor="#ffffff" >
+		<div width="100%" height="-2" layout="VBox" >
+			<div width="100%" height="10"></div>
+			<div width="100%" height="35" marginLeft="10" >
+				<div width="-2" height="35" backgroundColor="#f0f6ea" borderWidth="2px" borderColor="#c4cbbb" cornerRadius="5" id="itemdiv0" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10"  id="label0" />
+				</div>
+				<div width="10" height="35"></div>
+				<div width="-2" height="35" backgroundColor="#f9f2ea" borderWidth="2px" borderColor="#e2d0bc" cornerRadius="5" id="itemdiv1" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label1"/>
+				</div>
+				<div width="10" height="35"></div>
+				<div width="-2" height="35" backgroundColor="#f7ecea" borderWidth="2px" borderColor="#d3bdbf" cornerRadius="5" id="itemdiv2" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label2"/>
+				</div>
+				<div width="10" height="35"></div>
+				<div width="-2" height="35" backgroundColor="#e8f6f6" borderWidth="2px" borderColor="#bdd3d0" cornerRadius="5" id="itemdiv3" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label3" />
+				</div>							
+			</div>
+			<div width="100%" height="10"></div>
+			<div width="100%" height="35" marginLeft="10" >
+				<div width="-2" height="35" backgroundColor="#f9f2ea" borderWidth="2px" borderColor="#e2d0bc" cornerRadius="5" id="itemdiv4" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label4" />
+				</div>
+				<div width="10" height="35"></div>
+				<div width="-2" height="35" backgroundColor="#f0f6ea" borderWidth="2px" borderColor="#c4cbbb" cornerRadius="5" id="itemdiv5" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label5" />
+				</div>
+				<div width="10" height="35"></div>
+				<div width="-2" height="35" backgroundColor="#f7ecea" borderWidth="2px" borderColor="#d3bdbf" cornerRadius="5" id="itemdiv6" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label6"/>
+				</div>
+				<div width="10" height="35"></div>
+				<div width="-2" height="35" backgroundColor="#e8f6f6" borderWidth="2px" borderColor="#bdd3d0" cornerRadius="5" id="itemdiv7" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label7"/>
+				</div>							
+			</div>
+			<div width="100%" height="10"></div>
+			<div width="100%" height="35" marginLeft="10" >
+				<div width="-2" height="35" backgroundColor="#e8f6f6" borderWidth="2px" borderColor="#bdd3d0" cornerRadius="5" id="itemdiv8" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label8"/>
+				</div>
+				<div width="10" height="35"></div>
+				<div width="-2" height="35" backgroundColor="#f9f2ea" borderWidth="2px" borderColor="#e2d0bc" cornerRadius="5" id="itemdiv9" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label9"/>
+				</div>
+				<div width="10" height="35"></div>
+				<div width="-2" height="35" backgroundColor="#f0f6ea" borderWidth="2px" borderColor="#c4cbbb" cornerRadius="5" id="itemdiv10" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label10"/>
+				</div>	
+				<div width="10" height="35"></div>	
+				<div width="-2" height="35" backgroundColor="#f7ecea" borderWidth="2px" borderColor="#d3bdbf" cornerRadius="5" id="itemdiv11" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label11"/>
+				</div>					
+			</div>
+			<div width="100%" height="10"></div>
+			<div width="100%" height="35" marginLeft="10" >
+				<div width="-2" height="35" backgroundColor="#f7ecea" borderWidth="2px" borderColor="#d3bdbf" cornerRadius="5" id="itemdiv12" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label12"/>
+				</div>
+				<div width="10" height="35"></div>
+				<div width="-2" height="35" backgroundColor="#f9f2ea" borderWidth="2px" borderColor="#e2d0bc" cornerRadius="5" id="itemdiv13" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label13"/>
+				</div>
+				<div width="10" height="35"></div>
+				<div width="-2" height="35" backgroundColor="#f7ecea" borderWidth="2px" borderColor="#d3bdbf" cornerRadius="5" id="itemdiv14" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label14"/>
+				</div>	
+				<div width="10" height="35"></div>
+				<div width="-2" height="35" backgroundColor="#e8f6f6" borderWidth="2px" borderColor="#bdd3d0" cornerRadius="5" id="itemdiv15" display="false" >
+					<input type="label" value="" height="35" fontSize="15" paddingLeft="10" paddingRight="10" id="label15"/>
+				</div>					
+			</div>
+		</div>
+	</div>
+	
+	<div width="100%" height="1px" backgroundColor="#e8e6e8"></div>
+	<div width="100%" height="10"/>
+	
+   	<div width="100%" height="55" marginLeft="15" marginRight="15" >
+		<div id="tab1" width="100%" height="100%" backgroundImage="/appstore/tab_bg2.png" onClick="gotonewapplist1" vAlign="middle" hAlign="center" >
+			<input type="label" value="新手必备" fontBold="true" color="#ffffff" />
+		</div>
+		<div width="15" height="100%"/>
+		<div id="tab2" width="100%" height="100%" backgroundImage="/appstore/tab_bg1.png" onClick="gotonewapplist2" vAlign="middle" hAlign="center" >
+			<input type="label" value="新品首发" fontBold="true" color="#ffffff" />
+		</div>
+	</div>
+	<div width="100%" height="10"></div>
+    <listview id="listview" width="100%" height="100%" onItemClick="clickItem">
+	</listview>
+	
+	<template id="applist">
+		<div width="100%" layout="VBox">
+			<div width="100%" height="80" layout="HBox" vAlign="middle">
+				<div width="100%" height="100%" vAlign="middle" tag="enter">
+					<div width="56" height="56" marginLeft="15" borderWidth="1" borderColor="#ffffff" cornerRadius="12" >
+						<img src="/images/app.png" width="56" height="56" tag="icon" />
+					</div>
+					<div width="100%" height="100%"  marginLeft="13" vAlign="middle" layout="VBox" >
+						<input type="label" fontSize="18" tag="name" id="appname" singleLine="true" width="120"/> 
+						<div width="100%" height="3"></div>
+						<div width="100%" height="13" tag="appstar" id="appstar" >
+							<div width="9" height="9" tag="star1" id="star1">
+							</div>
+							<div width="1" height="100%"></div>
+							<div width="9" height="9" tag="star2" id="star2">
+							</div>
+							<div width="1" height="100%"></div>
+							<div width="9" height="9" tag="star3" id="star3">
+							</div>
+							<div width="1" height="100%"></div>
+							<div width="9" height="9" tag="star4" id="star4">
+							</div>
+							<div width="1" height="100%"></div>
+							<div width="9" height="9" tag="star5" id="star5">
+							</div>
+							<input type="label" value="" color="#888888" fontSize="11" marginLeft="5" tag="totalcom"/>
+						</div>							
+						<div width="100%" height="2"></div>
+						<input type="label" fontSize="12" tag="summary" id="appdescribe" color="#999999"/>
+					</div>				
+				</div>
+              	 
+             <div width="40" height="26" tag="uninstallbtn" id="uninstallbtn" visibility="false"  >
+                <input type="label" value="卸载" class="emp-fontcolor" vAlign="middle" hAlign="center" width="40" height="25" fontSize="14"/>                       
+            </div>
+			<div  width="40" height="26"  tag="loadbtn" id="loadbtn" marginLeft="10"  >
+              	<div width="0" height="100%" backgroundColor="#8fc2f2" id="loading" tag="loading"/>                                    
+                <input type="label"  class="emp-fontcolor" tag="isload" id="isload" position="relative"  vAlign="middle" hAlign="center" width="40" height="25" fontSize="14"/>                       
+            </div>
+				<div width="15" height="100%"/> 
+			</div>
+
+			<div width="100%" height="1px" backgroundColor="#D9D9D9" marginLeft="15" /> 
+		</div>
+	</template>
+	
+	<template id='searchnothing'>
+		<div width="100%" height="100%" hAlign="center" layout="VBox" >
+			<div width="100%" height="20"/>
+			<input type="label" id='tips' tag="tips" value="查无此应用~" fontSize="14" color="#666666" />
+		</div>
+	</template>
+	
+	<template id='listtitle'>
+		<div width="100%" height="10" backgroundColor="#f9f9f9" >
+		
+		</div>
+	</template>
+</div>
+</body>
+<script> 
+	var allData;
+	var searchItems1=[];
+	var hasupdateApps=new Array();
+	var userId = preference1.get('userid');
+	var isDownloading = false;
+	
+	var isFirst=true;	
+	title.setValue("应用商店");
+	
+	if(Emp.isIOS){
+		Utils.setStatusBarStyle('light');
+	}
+
+	if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+		searchadapter.setTop(100);
+	}
+    
+    //下载进度条样式
+    var schedules = [];
+	for(var i=0; i<=40;i++){
+		var schedule = {};
+		schedule.value=i+'';
+		schedule.width=i+'';
+		schedules.push(schedule);
+	}
+	loading.setAttrAdapter(schedules);
+
+    appstar.setAttrAdapter([{
+    	value : '1',
+    	display: 'true'
+    },{
+    	value : '0',
+    	display : 'false'
+    }]);
+    
+    uninstallbtn.setAttrAdapter([{
+    	value : '1',
+    	visibility: 'true',
+    	backgroundImage : '/images/widgets/button_div/button_whtie.png'
+    },{
+    	value : '0',
+    	visibility : 'false' ,
+    	backgroundImage : '/images/widgets/button_div/button_whtie.png'
+    }]);
+    
+    loadbtn.setAttrAdapter([{
+    	value : '1',
+    	backgroundImage : '/images/widgets/button_div/button_whtie.png'
+    }]);
+    
+    star1.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star2.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star3.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star4.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star5.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	
+    listview.setOnclickTags(['loadbtn','uninstallbtn','enter', 'appicon0', 'appicon1', 'appicon2', 'appicon3']);
+	listview.setTemplates({'applist':applist, 'searchnothing':searchnothing,'listtitle':listtitle});	
+	function loadData(){
+		AppManager.getUpdateAppList(isUpdateSfn,getDataFfn);
+	}	
+	
+	function isUpdateSfn(hasupdateList){
+		//modify by liulei 2017-05-30 更改应用更新成功后，图标依然显示更新bug
+		hasupdateApps=[];
+		for(var i=0; i<hasupdateList.length; i++){
+			hasupdateApps.push(hasupdateList[i]);
+		}
+		AppManager.getAppList(getDataSfn, getDataFfn);
+	}
+	
+	function getDataFfn(e){ 
+		log("error:"+e);
+	}
+			
+	function getDataSfn(appList){
+		if(appList.length>0){
+			for(var i=0; i<appList.length; i++){
+				if(appList[i].commentParams!=null&&appList[i].commentParams!=""){
+					appList[i].appstar = '1';
+					var commentParams = Utils.stringToJson(appList[i].commentParams);
+					var avgScore = commentParams.avg;
+					appList[i].totalcom = "(" + commentParams.total + ")";
+					var j=1;
+					for(; j<=avgScore; j++){
+						eval("appList["+i+"].star"+j+"='1';");
+					}
+					for(; j<=5; j++){
+						eval("appList["+i+"].star"+j+"='0';");
+					}
+				}else{
+					appList[i].appstar = '0';
+				}
+				if(appList[i].icon==''||appList[i].icon==null||appList[i].icon=='undefined'){
+					appList[i].icon='/common/defaultapp.png';
+				}
+				appList[i].template="applist";
+				appList[i].loading='0';
+				appList[i].isload="下载";
+				appList[i].uninstallbtn ='0';
+				var isInstall = AppManager.isThisAppInstalled(appList[i]);
+				if(isInstall==true){
+					appList[i].isload="打开";
+					appList[i].uninstallbtn ='1';
+				}	
+		
+				for(var j=0;j<hasupdateApps.length;j++){
+					if(appList[i].id==hasupdateApps[j].id){
+						appList[i].isload="更新";
+						break;
+					}else{
+						continue;
+					}
+				}
+				if(isFirst==true){
+					var searchItem = {};
+					searchItem.keyname = appList[i].name;
+					searchItems1.push(searchItem);
+				}
+			}
+			isFirst=false;	
+		}else{
+			var items={};
+			items.tips="暂无可下载应用~";
+			items.template="searchnothing";
+			appList.push(items);
+		}
+		getInstalledApp(appList); //获取已安装 
+	}
+		
+	function getInstalledApp(appList){	
+		var items = [];
+		items.push({'template':'listtitle'});
+		
+		for(var i=0; i<appList.length; i++){
+			appList[i].loadbtn = "1";
+			items.push(appList[i]);
+		}
+		listview.setItems(items);
+		listview.reloadData();
+		allData = listview.getItems();
+	}
+	Emp.page.addEvent("onLoad", function(params) {
+		loadData();
+	});	
+		
+	$M.page.addEvent('onBack', function(param){
+		$M.setCurrentAppId('com.primeton.mwork'); //解决从微应用中返回时黑屏
+		var isChange = $M.contextData.getValue("isChange1");
+		
+		log('返回的isChange:'+isChange);
+		if(isChange==null||isChange==""||isChange=='undefined'){
+			loadData();
+			$M.contextData.setValue("isChange1", "false");
+		}else{
+			if(isChange=="true"){
+				loadData();
+				$M.contextData.setValue("isChange1", "false");
+			}		
+		}
+	});
+		
+	function initHistoryRecord(){
+		var db = $M.Database.openDatabase('historyrecorddb');//打开一个数据库，假如该数据库不存在，则创建该数据库	
+		var sql = "create table  if not exists thistoryrecord(id varchar PRIMARY KEY,keyname varchar);"; //sql语句
+		db.execute(sql)
+		db.close();
+	}
+	
+	initHistoryRecord(); //初始化历史记录表
+	
+	function saveHistoryRecord(name){
+		var db = $M.Database.openDatabase('historyrecorddb');//打开一个数据库，假如该数据库不存在，则创建该数据库	
+		var sql = "select keyname from thistoryrecord where keyname='"+name+"'";
+		var result = db.query(sql);
+		if(result.length>0){
+			log('-udpate app-,first delete old appInfo')
+			sql = "delete thistoryrecord  where keyname='"+name+"'"; //sql语句
+			db.execute(sql); 
+		}		
+		sql = "insert into thistoryrecord values(null,'"+name+"')"; //sql语句
+		var state=db.execute(sql);
+		db.close();
+		return state; 
+	}
+	
+	function getHistoryRecord(){
+		var db = $M.Database.openDatabase('historyrecorddb');//打开一个数据库，假如该数据库不存在，则创建该数据库		
+		//建表
+		var sql = "select keyname from thistoryrecord order by id desc limit 0,4"; //sql语句
+		var data=db.query(sql);
+		db.close();
+		return data;
+	}
+	
+	function LabelAddEvent(){
+		for(var i=0; i<4; i++){
+			for(var j=0; j<4; j++){
+				var k = i*4+j;
+				eval("itemdiv"+k+".addEvent('onClick',function(){ search.setValue(label"+k+".getValue()); })");
+			}
+		}
+	}
+	
+	function initSearchDiv(){
+		var historyItems = getHistoryRecord();
+		
+		var searchItems2 = historyItems.concat(searchItems1);
+		var wordNum = 0; //每行字数,超过17设为0
+		var curItem = 0; //当前记录序号
+		var MAXLEN = 16; //最大记录数
+		for(var i=0; i<4; i++){
+			for(var j=0; j<4; j++){
+				var k = i*4+j;
+				if(curItem<searchItems2.length){
+					wordNum = wordNum + searchItems2[curItem].keyname.length;
+
+					if(wordNum<18){
+						eval("itemdiv"+k+".setDisplay(true)");
+						eval("label"+k+".setValue('"+searchItems2[curItem].keyname+"')");
+						curItem++;
+					}else{						
+						wordNum = 0;
+						break;
+					}
+				}
+			}
+			wordNum = 0;
+		}
+		LabelAddEvent();
+		
+	}
+	
+	function clearSearch() {
+		System.hideKeyboard();
+		search.setValue("");
+		searchadapter.setDisplay(false);
+		loadData();
+	}	
+	
+	search.addEvent("onChange",function(o,n){
+	if(n==''){
+		cancelSearch.setVisibility(false);
+		initSearchDiv()
+		searchadapter.setDisplay(false);
+	}else{
+		cancelSearch.setVisibility(true);
+		initSearchDiv()
+		searchadapter.setDisplay(true);
+	}
+	});
+	
+	search.addEvent("onKeyDown",function(type){
+		log(search.getValue().trim());
+		if(type=='return'){
+			System.hideKeyboard();
+			searchadapter.setDisplay(false);
+			if(search.getValue().trim()==""){
+				listview.setItems(allData);
+				listview.reloadData();  
+				//return;  
+			}else{
+				saveHistoryRecord(search.getValue().trim());
+				var searchKey = search.getValue().trim().toUpperCase();
+				
+				//搜索过滤
+				var newItems = [];
+				if(allData.length>0&&allData[0].template!='searchnothing'){
+					for(var i=0; i<allData.length;i++){
+						if(allData[i].template=='applist'){
+						    var oname = allData[i].name.toUpperCase();
+							if(oname.indexOf(searchKey)>-1){
+								newItems.push(allData[i]);
+							}
+						}
+					}
+				}
+				if(newItems.length==0){
+					var items={};
+					items.tips="查无此应用~";
+					items.template="searchnothing";
+					newItems.push(items);	
+				}
+				listview.setItems(newItems); 
+				listview.reloadData();			
+			}
+		}
+	});
+	
+	function gotonewapplist1(){
+		$M.page.goTo('/appstore/newapplist.html', {"appClass":"need"}, false);
+	}
+
+ 	function gotonewapplist2(){
+		$M.page.goTo('/appstore/newapplist.html', {"appClass":"new"}, false);
+	}
+	
+	function failureFn(){
+		toast("下载失败请重试"); 
+		loadData();
+		isDownloading = false;
+	}
+	
+	function successFn(){
+		log("success");
+	}
+	
+	function downloadSfn(){
+		log('下载成功，重新加载数据');
+		loadData();
+		isDownloading = false;
+	}
+	
+	function clone(obj){
+	    var result={};
+	    for(key in obj){
+	        result[key]=obj[key];
+	    }
+	    return result;
+	}
+    function loadingFn(a, b, data, row){
+		var newItem1 = clone(data);
+		newItem1.loading=parseInt(parseInt(b)/parseInt(a)*40);
+		listview.updateItem(row, newItem1);
+		listview.reloadData();
+	}
+	
+	function clickItem(row,tag,data){
+	log(Utils.jsonToString(data))
+		var params ={};
+		params.param=null;
+		if(tag=="enter"){  
+			$M.page.goTo("/appstore/appdetail.html", data, false);
+		}else if(tag=="loadbtn"){
+			if(data.isload=="打开"){
+				statisticsAppInfo(userId,"",data.id,data.name,data.ver,"2");
+				AppManager.startApp(data, params, failureFn);  
+			}
+			if(data.isload=="下载"){
+				if (isDownloading) return;
+				statisticsAppInfo(userId,"",data.id,data.name,data.ver,"1");
+				AppManager.installApp(data, downloadSfn, failureFn, loadingFn, row);
+				isDownloading = true;
+			}
+			if(data.isload=="更新"){
+				AppManager.installUpdate(data, downloadSfn, failureFn, loadingFn, row);
+			}
+		} else if(tag=="uninstallbtn"){
+			confirm("确认要卸载 "+data.name+" 应用吗？",function(){
+				var result = AppManager.deleteApp(data);
+				if(result==true){
+					statisticsAppInfo(userId,"",data.id,data.name,data.ver,"3");
+					toast('应用卸载成功');
+					loadData();
+					
+				}else{
+					toast('应用卸载失败');
+				}
+			},function(){
+				toast('取消应用卸载');
+			});
+			
+		}else if(tag == 'appicon0'){
+			var opendata = {};
+			opendata.id = data.id0;
+			opendata.name = data.name0;
+			opendata.type = data.type0;
+			opendata.urlScheme = data.urlScheme0;
+			opendata.packageName = data.packageName0;
+			opendata.activityName = data.activityName0;
+			opendata.entryUrl = data.entryUrl0;
+			AppManager.startApp(opendata, params, failureFn);
+		} else if(tag == 'appicon1'){
+			var opendata = {};
+			opendata.id = data.id1;
+			opendata.name = data.name1;
+			opendata.type = data.type1;
+			opendata.urlScheme = data.urlScheme1;
+			opendata.packageName = data.packageName1;
+			opendata.activityName = data.activityName1;
+			opendata.entryUrl = data.entryUrl1;
+			AppManager.startApp(opendata, params, failureFn);
+		} else if(tag == 'appicon2'){
+			var opendata = {};
+			opendata.id = data.id2;
+			opendata.name = data.name2;
+			opendata.type = data.type2;
+			opendata.urlScheme = data.urlScheme2;
+			opendata.packageName = data.packageName2;
+			opendata.activityName = data.activityName2;
+			opendata.entryUrl = data.entryUrl2;
+			AppManager.startApp(opendata, params, failureFn);
+		} else if(tag == 'appicon3'){
+			if(data.appicon3 == "/appstore/allapps.png"){
+				$M.page.goTo('/appstore/myapps.html', {}, false);				
+			}else{
+				var opendata = {};
+				opendata.id = data.id3;
+				opendata.name = data.name3;
+				opendata.type = data.type3;
+				opendata.urlScheme = data.urlScheme3;
+				opendata.packageName = data.packageName3;
+				opendata.activityName = data.activityName3;
+				opendata.entryUrl = data.entryUrl3;
+				AppManager.startApp(opendata, params, failureFn);
+			}
+		}
+	}
+	
+	function goManagement(){
+		$M.page.goTo('/appstore/aboutme.html', {}, false);
+	}
+	
+	
+	function goBackChangeOrder(){
+		$M.page.goBack({'fromAppList':'true'});
+	}
+	
+	$M.page.addEvent("onPressBackKeySystem", function(){
+		$M.page.goBack({'fromAppList':'true'});
+	});
+</script>
+</html>

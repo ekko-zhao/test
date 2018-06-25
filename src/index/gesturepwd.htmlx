@@ -1,0 +1,67 @@
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+
+<div layout="VBox" width="100%" height="100%">
+	<div width="100%" height="60" vAlign="middle">
+		<div width="20" height="100%"/>
+		<div width="80" height="100%" vAlign="middle" onClick="goaboutme">
+			<input type="label" value="返回" />
+		</div>	
+	</div>
+	<div width="360" hAlign="center" marginTop="20" layout="VBox" vAlign="middle">
+		<input type="label" fontSize="20" color="#000000" />
+		<input type="label" id="info" fontSize="15" color="#000000" value="请绘制手势密码" />
+	</div>
+	<div width="100%" height="70"/>
+	<div id="GestureDiv" hAlign="center" width="100%" />
+</div>
+
+</body>
+<script>
+	
+//生成数据
+var firstPwd = '';
+var gp=new $M.GesturePassword({"width":"100%", "height":"100%"});
+gp.setBigPointBackgroundColor("#f8f1e6");//设置大圆背景色
+gp.setBigPointHighlightColor("#F9DCB8");//设置大圆高亮背景色
+gp.setSmallPointBackgroundColor("#AF8652");//设置小圆背景色
+gp.setSmallPointHighlightColor("#FF8630");//设置小圆高亮背景色
+gp.setPointBorderBackgroundColor("#AF8652");//设置边框颜色 
+gp.setPointBorderHighlightColor("#ff8800");//设置边框高亮背景色
+gp.setLineWidth(2);
+	
+gp.addEvent("onFinished",function() {
+
+	if(firstPwd=='') {
+		if(gp.getPassword().length < 4){
+			Utils.toast("手势密码不能少于四个点，请重新绘制");
+			return;
+		}
+		firstPwd = gp.getPassword();
+		log(firstPwd);
+		info.setValue('请再次绘制手势密码');
+	} else if(firstPwd==gp.getPassword()) {
+		toast('手势密码设置成功');
+		preference.put("isGesture",'true');
+		preference.put('gesturepwd', firstPwd);
+ 		$M.page.goBack();
+	} else {
+		Utils.toast('两次绘制手势密码不匹配');
+	}
+});
+
+GestureDiv.add(gp);
+
+function goaboutme(){
+	$M.page.goBack();
+
+}
+</script>
+</html>

@@ -1,0 +1,65 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>邮箱</title>
+</head>
+<body>
+<slide id="slide" width="100%" height="100%" enableScroll="false" tipVisible="false" enableLoop="false" >
+    <slideurl url="/email/mail.html" />
+    <slideurl url="/email/toDo.html" />
+    <slideurl url="/email/writeMail.html" />
+</slide>
+<div width="100%" height="1" backgroundColor="#eaeaea" ></div>
+<div width="100%" height="46" layout="HBox" id="tab"  backgroundColor="#f9f9f9">
+	<div width="100%" height="100%" vAlign="middle" hAlign="center" onClick="goEmail" layout="VBox" >
+		<div width="100%" height="26" vAlign="middle" hAlign="center" >
+			<img src="/email/tab_mail_selected.png" width="21" height="21" id="sy" />
+		</div>
+		<input type="label" value="邮件" color="#08abf7" fontSize="11" id="syFont" />
+	</div>
+	<div width="100%" height="100%" vAlign="middle" hAlign="center" onClick="toDO" layout="VBox">
+		<div width="100%" height="26" vAlign="middle" hAlign="center" >
+			<img src="/email/tab_todo_normal.png" width="21" height="21" id="jjcs" />
+		</div>
+		<input type="label" value="待办" color="#707070" fontSize="11" id="jjcsFont" />
+	</div>
+	<div width="100%" height="100%" vAlign="middle" hAlign="center" onClick="writeMail" layout="VBox">
+		<div width="100%" height="26" vAlign="middle" hAlign="center" >
+			<img src="/email/tab_mine_normal.png" width="21" height="21" id="hdzq" /> 
+		</div>
+		<input type="label" value="我" color="#707070" fontSize="11" id="hdzqFont" />
+	</div>
+</div>
+</body>
+<script>
+function goEmail() { 
+	slide.setSelectedIndex(0);
+	sy.setSrc("/email/tab_mail_selected.png");
+	syFont.setColor("#08abf7");
+	jjcs.setSrc("/email/tab_todo_normal.png");
+	jjcsFont.setColor("#707070");
+	hdzq.setSrc("/email/tab_mine_normal.png");
+	hdzqFont.setColor("#707070"); 
+}
+function toDO() {
+	slide.setSelectedIndex(1);
+	sy.setSrc("/email/tab_mail_normal.png");
+	syFont.setColor("#707070");
+	jjcs.setSrc("/email/tab_todo_selected.png");
+	jjcsFont.setColor("#08abf7");
+	hdzq.setSrc("/email/tab_mine_normal.png");
+	hdzqFont.setColor("#707070"); 
+} 
+
+function writeMail() {
+ 	slide.setSelectedIndex(3);
+	sy.setSrc("/email/tab_mail_normal.png");
+	syFont.setColor("#707070");
+	jjcs.setSrc("/email/tab_todo_normal.png");
+	jjcsFont.setColor("#707070");
+	hdzq.setSrc("/email/tab_mine_selected.png"); 
+	hdzqFont.setColor("#08abf7"); 
+}
+slide.setTipVisible(false);
+</script>
+</html>

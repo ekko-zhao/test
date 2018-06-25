@@ -1,0 +1,40 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<div id="float_div" width="60" height="60" position="relative"
+		top='430' left='290'>
+		<img width="60" height="60" src="/cui/robot.png" onClick="go2Chat"
+			onClickHold="longClick" />
+	</div>
+
+</body>
+<script>
+	if ($M.isAndroid) {
+		if (Utils.hasVirtualBottomBar()) {
+			log("=========");
+			float_div.setTop("380");
+		}
+	}
+	$M.page.setShakeMode(true);
+	$M.page.addEvent("onShake", function() {
+		Utils.record2String(true, function(text, path) {
+// 			$M.page.goTo("/cuipage/chatPage.html", {
+			$M.page.goTo("/cuipage/cuiPage.html", {
+				'jump' : text
+			}, false);
+		});
+	});
+	function go2Chat() {
+		$M.page.goTo("/cuipage/cuiPage.html", {}, false);
+	}
+	function longClick() {
+		Utils.record2String(true, function(text, path) {
+			$M.page.goTo("/cuipage/cuiPage.html", {
+				'jump' : text
+			}, false);
+		});
+	}
+</script>
+</html>

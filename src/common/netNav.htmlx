@@ -1,0 +1,64 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<!-- 自定义导航栏 -->
+<div id="nav" width="100%" height="50" vAlign="middle" class="emp-nav-backgroundColor" >
+	<!-- 左侧返回按钮, 默认不显示 -->
+	<div id="backButton" width="80" height="100%" vAlign="middle"  visibility="false" >
+		<div width="10" height="100%"></div>
+		<img src="/images/widgets/nav/topbar_back_normal.png" scaleType="fitCenter" width="18" height="20" />
+	</div>
+	
+	<!-- 中间标题信息 -->
+	<div width="100%" height="100%" vAlign="middle" hAlign="center" >
+		<input id="titleInfo" type="label" color="#FFFFFF"  vAlign="middle" hAlign="center" />
+	</div>
+	
+	<!-- 右侧功能菜单, 可以设置文字图片 -->
+	<div width="80" height="100%" vAlign="middle" hAlign="center" >
+		<div id="rightPanel" borderColor="#FFFFFF" borderWidth="2px" cornerRadius="3" width="70" height="30" display="false" >
+			<input id="rightButton" type="label" width="70" height="30" color="#FFFFFF" hAlign="center" />
+		</div>
+		<img id="rightPic" width="20" height="20" display="false" />
+	</div>
+</div>
+<div id="noNetworkDiv" width="100%" height="40" layout="VBox" display="false" >
+	<div width="100%" height="1px" backgroundColor="#999999" >
+	</div>
+	<div width="100%" height="100%" backgroundColor="#ffdfe0" vAlign="middle" hAlign="center" >
+		<img src="/common/warning.png" width="30" height="30" />
+		<div width="10" height="100%"></div>
+		<input type="label" value="当前网络不可用，请检查你的网络设置" color="#695453" />
+	</div>
+	<div width="100%" height="1px" backgroundColor="#999999">
+	</div>
+</div>
+</body>
+<script> 
+/**
+ * 添加返回事件
+ */
+backButton.addEvent('onClick', function(){
+	//$M.page.goBack();
+	$M.page.goBack({animation:"slideright"});
+});
+
+if($M.isIOS) {
+	nav.setHeight(61);
+	nav.setPaddingTop(10);
+	titleInfo.setFontSize(20)
+} else {
+	titleInfo.setFontSize(22);
+}
+
+setInterval(function(){
+	if(Utils.isNetworkAvailable()){
+		noNetworkDiv.setDisplay(false);
+	}else{
+		noNetworkDiv.setDisplay(true);
+	}
+}, 1000);
+</script>
+</html>

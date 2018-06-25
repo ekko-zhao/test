@@ -1,0 +1,264 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8"/>
+<title>读邮件</title>
+<script>
+	$M.includeFile("/common/mailDetails.html");
+	Emp.includeFile("/email/commonPre.html"); 
+	$M.includeFile("/common/commonUtils.html");
+</script>
+</HEAD>
+<BODY>
+<div width="100%" height="50" id="nav" vAlign="middle" backgroundColor="#0b78e3">
+	<div width="80" height="100%" id="leftDiv" vAlign="middle" >
+		<img src="/email/back.png" width="9" height="16" marginLeft="20" />
+	</div>
+	<div width="100%" height="100%" id="TitleDiv" vAlign="middle" hAlign="center"></div>
+	<div width="80" height="100%" id="rightDiv" vAlign="middle" hAlign="center" ></div>
+</div>
+<div layout="VBox"  width="100%" height="100%" >
+	<div layout="VBox" width="100%" height="100%"  >
+		<div width="100%" layout="VBox" height="-2" backgroundColor="#ffffff">
+			<div width="100%" height="2"></div>
+			<div width="100%" height="-2" marginLeft="8" vAlign="middle">
+				<input type="label" id="subject" singleLine="false" width="350" fontSize="16"/>
+			</div>
+			<div width="100%" height="2"></div>
+		</div>
+		
+		<div layout="VBox" width="100%" backgroundColor="#ffffff" >
+			<div width="100%" height="100%" marginLeft="8" id="template1">
+				<input type="label" id="sendName" color="#999999" fontSize="14"/>
+				<input type="label" value=" 发至 " color="#999999" fontSize="14" />
+				<input type="label" id="receiveNames" width="100%" color="#999999" fontSize="14"/>
+				<div width="70" height="100%" hAlign="right" onClick="showMore" >
+					<input type="label" value=" 详情" color="#0b78e3" marginRight="8" fontSize="14"/>
+				</div>
+			</div>
+			<div width="100%" height="-2" layout="VBox" id="template2" display="false" >
+				<div height="-2" width="100%">
+					<div width="70" height="-2" marginLeft="8" >
+						<input type="label" value="发件人:" height="100%" color="#999999" fontSize="14"/>
+					</div>
+					<div width="100%"  height="-2" vAlign="middle">
+						<input type="label" id="mailSendUserName"  color="#0b78e3"  height="100%" fontSize="14"/>
+					</div>
+				</div>
+				<div width="100%" id="recvUserDiv" height="-2">
+					<div height="-2" marginLeft="8" width="70">
+						<input type="label" value="收件人:"  vAlign="top" height="100%" color="#999999" fontSize="14"/>
+					</div>
+					<div width="100%" height="-2"  vAlign="middle">
+						<label id="mailRecvUserName" singleLine="false" color="#0b78e3"  width="280" fontSize="14"></label>
+					</div>
+				</div>
+				<div width="100%" id="copyUserDiv"  height="-2" >
+					<div width="70" height="-2" marginLeft="8" >
+						<input type="label" value="抄   送:" vAlign="top" height="-2" color="#999999" fontSize="14"/>
+					</div>
+					<div width="100%" height="-2" >
+						<label id="mailCopyUserName" singleLine="false" color="#0b78e3" vAlign="top"  width="280" fontSize="14" ></label>
+					</div>
+				</div>
+				<div width="100%" id="mailDateDiv" height="30">
+					<div height="100%" marginLeft="8" width="70">
+						<input type="label" value="时   间:"  vAlign="top" height="100%" color="#999999" fontSize="14"/>
+					</div>
+					<div width="100%" height="100%" vAlign="top" >
+						<label id="mailSentDate" width="280" color="#999999" fontSize="14" ></label>
+					</div>
+					<div width="100" hAlign="right" onClick="showLess" >
+						<input type="label" hAlign="right" vAlign="bottom" color="#0b78e3" marginRight="8" value="隐藏" width="100%" fontSize="14"/>
+					</div>
+				</div>
+				<div  width="100%" id="mailFilesDiv" vAlign="middle" display="false" height="-2" >
+					<div width="70" height="100%" marginLeft="8" >
+						<input type="label" value="附   件:" height="100%" vAlign="top" color="#999999" fontSize="14"/>
+					</div>
+					<div width="100%" heigth="-2">
+						<img src="/email/file.png" width="16" height="17"  marginTop="3" />
+						<input type="label" id="fileName" height="-2" marginLeft="5" fontSize="14" onClick="attachClick" vAlign="top"/>
+					</div>
+				</div>
+			</div>
+		</div>   
+		<div width="100%" height="10"></div>
+		<div  width="100%" height="2px" backgroundColor="#e5e5e5" marginTop="5" />
+			<!-- 邮件内容 -->
+		<div id="contentBody" width="100%" height="100%" hAlign="center">
+			<webview id="contentWebview" width="358" height="100%" enableScale="true" />
+		</div>
+	</div>
+</div>
+	<!-- 进度条-->
+	<dialog id="processDialog"  width="50" height="50" canceledOnTouchOutside="true" >
+		<div  width="50" height="50">
+			<progress width="50" height="50"></progress>
+		</div>
+    </dialog>
+</BODY>
+<SCRIPT>
+
+var mailData = {};
+
+if($M.isIOS){
+	nav.setHeight(60);
+	nav.setPaddingTop(10);
+}
+leftDiv.addEvent('onClick', function(){
+	Emp.page.goBack();
+});
+//全局的存储当前邮件状态信息的变量
+var mailStatus = 0;
+var content='';
+var mailFlag='';
+$M.page.addEvent("onLoad", function(params){
+	processDialog.show();
+	subject.setValue(params.subject);
+	sendName.setValue(params.fromUser.substring(0,5));
+	var temp1 = "";
+	var temp2 = "";
+ 	for(var i = 0;i<params.to.length;i++){
+ 	    if(i == 0 ){
+ 	    	temp1 += params.to[i].nickName;
+ 	    }else{
+ 	    	temp1 += "、";
+			temp1 += params.to[i].nickName;
+ 	    }
+	} 
+	if(params.cc != null && params.cc.length != null && params.cc.length>0){
+		for(var i = 0;i<params.cc.length;i++){
+			if(i == 0 ){
+	 	    	temp2+= params.cc[i].userName;
+	 	    }else{
+	 	    	temp2 += "、";
+				temp2+= params.cc[i].userName;
+	 	    }
+		} 
+	} 
+	if(params.bcc != null && params.bcc.length != null && params.bcc.length>0){
+		for(var i = 0;i<params.bcc.length;i++){
+	 		temp2 += "、";
+			temp2 += params.bcc[i].userName;
+		} 
+	} 
+	if(temp2 ==""){
+		var temp = temp1+temp2;
+		copyUserDiv.setDisplay(false);
+	}
+	else{
+		var temp = temp1+"、"+temp2;
+		mailCopyUserName.setValue(temp2);
+	}
+	if(temp.length > 20){
+		temp = temp.substring(0, 15)+"...等人";
+	}
+	receiveNames.setValue(temp);
+	mailSendUserName.setValue(params.fromUser);
+	mailRecvUserName.setValue(temp1);
+	mailSentDate.setValue(params.sentDate);
+	loadData(params.messageID,params.currentFolder);
+});
+
+var userid = mailpreference.get("userid");
+var mailpwd = mailpreference.get("mailPwd");
+
+function loadData(mailId,folder){
+	var db = $M.Database.openDatabase("mobile");
+	//测试
+	//var sql1="drop table mailcontent;"	
+	//db.excute(sql1);
+	
+	var sql = "create table if not exists mailcontent (" 
+	  + "id integer primary key,"
+	  + "mailid varchar(70),"
+	  + "mailcontent text);";
+	
+	db.excute(sql);
+	
+	sql = 'select * from mailcontent where mailid like ?;';	
+ 	var params  = new Array();
+  	params.push(mailId);
+  	var cache = db.query(sql,params);
+			
+	//查找是否有缓存
+	if(cache.length>0){
+		processDialog.close();
+		
+		var result = cache[0].mailcontent;
+		
+		mailData = Utils.stringToJson(result);
+    	contentWebview.setLoadData(mailData.content);
+    	if(mailData.attachs != null && mailData.attachs.length >0){
+    		mailFilesDiv.setDisplay(true);
+    		var array = new Array();
+    		for(var i = 0;i< mailData.attachs.length;i++){
+    			array.push(mailData.attachs[i].fileName);
+    		}
+    	//  alert(array.toLocaleString());
+    		fileName.setValue(array.toString());
+    		//fileSize.setValue(data.attachs[0].size);
+    		db.close();
+    	}
+	}else{
+		var ajaxData = {};
+		ajaxData.userName = userid;
+		ajaxData.password = mailpwd;
+		ajaxData.folder = folder;
+		ajaxData.mailid = mailId
+		AjaxUtil.submit("/com.primeton.pmbusiness.mail.emailComponent.getMailContent.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(result){
+	    	processDialog.close();
+	    	log("hello--"+result);
+	    	mailData = Utils.stringToJson(result);
+	    	contentWebview.setLoadData(mailData.content);
+	    	if(mailData.attachs != null && mailData.attachs.length >0){
+	    		mailFilesDiv.setDisplay(true);
+	    		var array = new Array();
+	    		for(var i = 0;i< mailData.attachs.length;i++){
+	    			array.push(mailData.attachs[i].fileName);
+	    		}
+	    	//  alert(array.toLocaleString());
+	    		fileName.setValue(array.toString());
+	    		//fileSize.setValue(data.attachs[0].size);
+	    	}
+	    	//添加缓存目前存入数据库
+	    	var db = $M.Database.openDatabase("mobile");
+	    	
+	    	var sql ='insert into mailcontent values(null,?,?);';
+	    	var params  = new Array();
+  			params.push(mailId);
+  			params.push(result);
+  			//var cache = db.query(sql,params);
+  				
+			db.excute(sql,params);
+			db.close();
+	    }, function(error){
+	    	log("55555--"+error);
+	    });
+    }
+}
+
+function attachClick(){
+/* 	contentWebview.setDisplay(false);
+	var webview = new $M.WebView('{height:"100%",width:"100%",enableScale:"true"}');
+	var url = mailData.attachs[0].localResID;
+// 	webview.setUrl(url);
+	webview.setLoadData('<html><head><meta http-equiv="content-type" content="text/html; charset=GB2312"></head><body><div>'+
+	'<img src="'+url+'" border="0" style="width:100%;height:100%"></div></body></html>');
+	contentBody.add(webview); */
+}
+$M.page.addEvent("onBack", function(params){
+//	replyDialog.close();
+});
+
+function showMore(){
+	template1.setDisplay(false);
+	template2.setDisplay(true);
+}
+
+function showLess(){
+	template1.setDisplay(true);
+	template2.setDisplay(false);
+}
+</SCRIPT>
+</HTML>

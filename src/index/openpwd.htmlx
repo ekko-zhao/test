@@ -1,0 +1,76 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+<div width="100%" height="100%" backgroundColor="#f8f8f8" layout="VBox" hAlign="center" >
+	<!-- 标题栏 -->
+ 	<div id="nav" width="100%" height="50" vAlign="middle" class="emp-nav-backgroundColor">
+		<div width="80" height="100%" id="leftDiv" vAlign="middle" onClick="goBack">
+			<div width="10" height="100%"/>
+			<img src="/appstore/back.png" width="11" height="18"/>
+			<div width="4" height="100%"/>
+			<input type="label" value="返回"  fontSize="18" color="#ffffff" />
+		</div>				
+		<div width="100%" height="100%"  hAlign="center" vAlign="middle">			 	
+			<input type="label" id="title" width="-2" height="100%" color="#FFFFFF" fontSize="20" value="手势密码锁定"/>
+		</div>
+		<div width="80" height="100%" id="rightDiv" vAlign="middle" />
+	</div>
+	<div width="100%" height="9"></div>
+	<div width="330" height="50" vAlign="middle" marginLeft="15">
+		<div width="100%" height="100%" vAlign="middle" >				
+			<input type="label" fontSize="18" value="手势密码启用" />
+		</div>
+		<div id="switchDiv" width="60" height="25" hAlign="center" vAlign="middle" >
+			
+		</div>
+	</div>
+	<div width="100%" height="50"/>
+	<div width="320" height="50" hAlign="center" vAlign="middle" backgroundColor="#eeeeee" borderColor="#ffffff" borderWidth="1px" cornerRadius="5" onClick="gosetpwd" >
+		<input type="label" value="修改手势密码"/>
+	</div>
+</div>
+</body>
+<script>
+if(Emp.isIOS){
+	nav.setHeight(60);
+	nav.setPaddingTop(8);
+}
+Emp.page.addEvent("onLoad", function(params) {
+	createSwitchBtn();
+});	
+
+function createSwitchBtn(){
+	//创建开关按钮对象
+	var switchBut = new $M.SwitchButton({'width':'50', 'height':'25', 'id':'switchButton'});	
+	//设置关闭时背景色
+	switchBut.setOffBackgroundColor("#D9D9D9");	
+	//设置开启状态时背景色
+	switchBut.setOnBackgroundColor("#3dcb9a");
+	//设置开关按钮的颜色
+ 	switchBut.setThumbColor("#ffffff");	
+ 	switchBut.addEvent("onChange", function(o,n){
+ 		preference.put("isGesture", n+"");
+ 	});
+	switchDiv.add(switchBut);
+	if(preference.get("isGesture")=="true"){
+		switchBut.setSwitchStatus(true);
+	}else{
+		//设置默认状态
+		switchBut.setSwitchStatus(false);
+	}
+}
+
+function goBack(){
+	$M.page.goBack();
+}
+
+function gosetpwd(){
+	$M.page.goTo('/index/gesturepwd.html', {}, false);
+}
+</script>
+</html>

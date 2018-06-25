@@ -1,0 +1,444 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script>
+	$M.includeFile("/common/appMgr.html");
+	$M.includeFile("/common/commonUtils.html");
+</script>
+</head>
+<body>
+	<div id="nav" width="100%" height="50" vAlign="middle" class="emp-nav-backgroundColor" >
+		<div width="80" height="100%" id="leftDiv" vAlign="middle" onClick="goBack">
+			<img src="/meeting/back.png" width="13" height="20" marginLeft="20"></img>
+		</div>
+		<input type="label" id="title" value="应用消息" width="100%" height="100%"
+			hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" />
+		<div width="80" height="100%" id="rightDiv2" vAlign="middle" hAlign="center" display="true">
+			
+		</div>
+	</div>
+	<div id="maindiv" width="100%" height="100%" layout="VBox" >
+		<!-- 标题栏 -->
+		<!--  	<div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3"> -->
+		<!-- 		<div width="80" height="100%" id="leftDiv" vAlign="middle" onClick="goBack"> -->
+		<!-- 		</div>				 -->
+		<!-- 		<div width="100%" height="100%"  hAlign="center" vAlign="middle">			 	 -->
+		<!-- 			<input type="label" id="title" width="-2" height="100%" color="#FFFFFF" fontSize="20" value=""/> -->
+		<!-- 		</div> -->
+		<!-- 		<div width="80" height="100%" id="rightDiv" vAlign="middle" /> -->
+		<!-- 	</div> -->
+		<div width="100%" height="1" backgroundColor="#e8e6e8"></div>
+		<div id="listdiv" width="100%" height="100%">
+			<listview id="listview" width="100%" height="100%" onItemClick="clickItem" onItemLongClick="longClickItem" enablePullDown="true" > 
+			</listview>
+		</div>
+		<div id="editdiv" width="100%" height="0" layout="VBox" >
+			<listview id="editList" width="100%" height="100%" onItemClick="sel" >
+			
+			</listview>
+			<div width="100%" height="1px" backgroundColor="#999999" ></div>
+			<div width="100%" height="36">
+				<input type="label" hAlign="center" value="取消全选" width="100%" height="100%" onClick="allSelect" id="allBt" tag="1" />
+				<input type="label" width="1px" height="100%" backgroundColor="#999999" />
+				<input type="label" hAlign="center" value="取消" width="100%" height="100%" onClick="cancel" />
+				<input type="label" width="1px" height="100%" backgroundColor="#999999" />
+				<input type="label" hAlign="center" value="删除" width="100%" height="100%" onClick="deleteMsg" color="#ff0000" />
+			</div>
+		</div>
+		</div>
+		<template id='msglist'>
+			<div id="div" width="100%" height="68" overflow="x" >
+				<div width="360" layout="VBox" height="68" tag="item">
+					<!-- 列表模板 -->
+					<div width="100%" height="65" layout="HBox" vAlign="middle">
+						<div width="10" height="100%"></div>
+						
+						<div width="100%" height="100%" vAlign="middle" marginLeft="13"
+							layout="VBox">
+							<div width="100%" height="6" />
+							<div width="100%" height="100%" layout="HBox" vAlign="middle">
+								<input type="label" fontSize="16" color="#333333" tag="alertMsg"
+									singleLine="true" />
+								<div width="100%" height="100%" />
+								<input type="label" fontSize="14" color="#999999" tag="rcvTime"
+									singleLine="true" />
+								<div width="20" height="100%" />
+							</div>
+							<div width="100%" height="100%">
+								<input type="label" fontSize="14" color="#999999" tag="emp"
+									singleLine="true" />
+							</div>
+							<div width="100%" height="6" />
+						</div>
+					</div>
+					<div width="100%" height="2px" backgroundColor="#e7e7e7"
+						marginLeft="40" />
+				</div>
+	
+				<div width="60" height="65" tag="delete">
+					<div width="60" height="100%" vAlign="middle" id="statusDiv"
+						hAlign="center" backgroundColor="#FA3B30" adapterTag="status">
+						<input type="label" value="删除" fontSize="18" tag="status"
+							color="#ffffff" />
+					</div>
+				</div>
+			</div>
+		
+		</template>
+		<template id='nothingmsg'>
+		<div width="100%" height="100%" hAlign="center" layout="VBox">
+			<div width="100%" height="20" />
+			<input type="label" id='tips' tag="tips" fontSize="14"
+				color="#666666" />
+			<!--  <input type="label" id='tips' tag="tips" value="暂无未读消息~" fontSize="14" color="#666666" />-->
+		</div>
+		</template>
+			<template>
+			<div id="editTemp" width="100%" height="68" vAlign="middle">
+				<img id="box" width="20" height="20" marginLeft="10" tag="box" />
+				<div width="330" layout="VBox" height="68" tag="item">
+					<!-- 列表模板 -->
+					<div width="100%" height="65" layout="HBox" vAlign="middle">
+
+						<div width="100%" height="100%" vAlign="middle" marginLeft="13"
+							layout="VBox">
+							<div width="100%" height="6" />
+							<div width="100%" height="100%" layout="HBox" vAlign="middle">
+								<input type="label" fontSize="16" color="#333333" tag="alertMsg"
+									singleLine="true" />
+								<div width="100%" height="100%" />
+								<input type="label" fontSize="14" color="#999999" tag="rcvTime"
+									singleLine="true" />
+								<div width="20" height="100%" />
+							</div>
+							<div width="100%" height="100%">
+								<input type="label" fontSize="14" color="#999999" tag="emp"
+									singleLine="true" />
+							</div>
+							<div width="100%" height="6" />
+						</div>
+					</div>
+					<div width="100%" height="2px" backgroundColor="#e7e7e7"
+						marginLeft="40" />
+				</div>
+			</div>
+			</template> 
+</body>
+<script>
+	//管子MES偏好设置,便于存储用户ID和用户组织
+	var ssmsPreference = new $M.Preferences();
+	ssmsPreference.open('ssmspre');
+	var pref = new $M.Preferences();
+	pref.open('workbench');
+	var userId = pref.get('userid');
+	if (Emp.isIOS) {
+		Utils.setStatusBarStyle('light');
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+	// if(Emp.isIOS){
+	// 	nav.setHeight(60);
+	// 	nav.setPaddingTop(8);
+	// }
+	// titleInfo.setValue("消息");
+
+	div.setOffSetX('60');
+	div.setAttrAdapter([ {
+		value : '1',
+		scrollToX : '{x:-60,during:0}'
+	}, {
+		value : 'other',
+		scrollToX : '{x:0,during:0}'
+	} ]);
+	
+	listview.setTemplates({
+		'msglist' : msglist,
+		'nothingmsg' : nothingmsg
+	});
+	listview.addEvent('onLoadMore', function(action){
+		if(action == 'pullDown'){
+			//下滑刷新
+			loadData();
+		}
+	});
+	$M.page.addEvent('onBack', function(param){
+		$M.Portal.setCurrentAppId("com.primeton.mwork");
+		if(param.msgid){
+			deletemsgOne(param.msgid);
+		}else{
+			
+		}
+	});
+	box.setAttrAdapter([{'value':'0','src':'/message/select_false.png'},{'value':'1','src':'/message/select_true.png'}]);
+	editList.setTemplates({'editTemp':editTemp});
+	/**
+	 * 初始化操作
+	 */
+	var editItems = [];//编辑列表数据
+	function loadData() {
+		if(Utils.isNetworkAvailable()){
+			var msgItems = []; //存放信息
+			editItems = [];
+			var userid = preference.get('userid');
+			var ajaxData = {};
+			ajaxData.userid = userid;
+			AjaxUtil.submit("/com.primeton.pmbusiness.push.pushComponent.findAllMessage.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(result){
+				var resultData = Utils.stringToJson(result);
+				var msgRecords = Utils.stringToJson(resultData.records);
+				if(msgRecords&&msgRecords.length>0){
+					msgRecords.reverse();
+					for (var i = 0; i < msgRecords.length; i++) {
+						if(msgRecords[i].msgtype == "chatMessage"){
+							continue;
+						}
+						var temp = msgRecords[i];		
+						var item = {};
+						item.alertMsg = temp.title;
+						item.rcvTime = temp.msgtime.substring(5, 16);
+						if(temp.summary == null){
+							item.emp = "";
+						}else{
+							item.emp = temp.summary;
+						}
+						item.msgtype = temp.msgtype;
+						item.msgcontent = temp.msgcontent;
+						item.template = 'msglist';
+						item.status = "删除";
+						item.scroll = 0;
+						item.msgid = temp.id;
+						item.userid = temp.userid;
+						msgItems.push(item);
+						var eitem = copyObj(item);
+						eitem.template = 'editTemp';
+						eitem.box = '1';
+						editItems.push(eitem);
+					}
+				}else{
+					var item = {};
+					item.tips = "暂无未读消息~";
+					item.template = 'nothingmsg';
+					msgItems.push(item);
+				}
+				listview.setItems(msgItems);
+				listview.reloadData();
+				editList.setItems(editItems);
+				editList.reloadData();
+			}, function(errCode, errMsg){
+				toast("获取列表失败");
+			});
+		}else{
+			listview.resetScroller();
+			toast('当前网络不可用');
+		}
+	}
+	function goBack() {
+		$M.page.goBack();
+	}
+
+	Emp.page.addEvent("onLoad", function(params) {
+		loadData();
+		otherData = preference.get(userId + "cacheOtherData");
+		homeData=preference.get( userId+"cacheHomeData");
+	});
+	listview.setOnclickTags([ 'item', 'delete' ]);
+	function clickItem(row, tag, data) {
+		if (tag == 'delete') {
+			deletemsgOne(data.msgid);
+		} else {
+			if (data.template == 'msglist') {
+				if(data.msgtype == "ssms"){
+					var appid = "com.chinasws.mobile.ssms";
+					if(!applists(appid)){
+						alert("请先下载安监平台");
+						return ;
+					}
+					var dataarr = [];
+					var datastr = data.msgcontent;
+					dataarr = datastr.split(",");
+					if(dataarr.length == 3){
+						if(dataarr[0] == "1"){
+							var temp = {};
+							temp.ordertype = "zgd";
+							temp.ordersno = dataarr[2].trim();
+							temp.msgid = data.msgid;
+							$M.Portal.setCurrentAppId("com.chinasws.mobile.ssms");
+							ssmsPreference.put('empNo', preference.get('userid'));
+							ssmsPreference.put('companyCd', dataarr[1].trim());
+							$M.page.goTo('/dealBill/DebitListPage.html', temp, false);
+						}else if(dataarr[0] == "2"){
+							var temp = {};
+							temp.ordertype = "kkd";
+							temp.ordersno = dataarr[2].trim();
+							temp.msgid = data.msgid;
+							$M.Portal.setCurrentAppId("com.chinasws.mobile.ssms");
+							ssmsPreference.put('empNo', preference.get('userid'));
+							ssmsPreference.put('companyCd', dataarr[1].trim());
+							$M.page.goTo('/dealBill/DebitListPage.html', temp, false);
+						}
+					}else{
+						$M.page.goTo("/appstore/applist.html", null, false);
+					}
+				}else{
+					$M.page.goTo("/appstore/applist.html", null, false);
+				}
+			}
+		}
+	}
+	
+	function longClickItem() {
+		selectAll();
+		listdiv.setHeight('0');
+		editdiv.setHeight('100%');
+	}
+	
+	editList.setOnclickTags(['box']);
+	function sel(row, tag, data) {
+		var d = copyObj(data);
+		if (data.box == "0") {
+			d.box = "1";
+		} else {
+			d.box = "0";
+		}
+		editList.updateItem(row,d);
+		editList.reloadData();
+	}
+	
+	function allSelect() {
+		if (allBt.tag == "1") {
+			deselectAll();
+		} else {
+			selectAll();
+		}
+	}
+	
+	function selectAll() {
+		allBt.setValue("取消全选");
+		allBt.tag = "1";
+		editList.setItems(editItems);
+		editList.reloadData();
+	}
+	
+	function deselectAll() {
+		allBt.setValue("全选");
+		allBt.tag = "0";
+		var desItems = [];
+		for (var i = 0; i < editItems.length; i++) {
+			var item = copyObj(editItems[i]);
+			item.box = "0";
+			desItems.push(item);
+		}
+		
+		if (desItems.length > 0) {
+			editList.setItems(desItems);
+			editList.reloadData();
+		}
+	}
+	
+	function cancel() {
+		listdiv.setHeight('100%');
+		editdiv.setHeight('0');
+	}
+	
+	function deleteMsg() {
+		var items = editList.getItems();
+		var delIDs = [];
+		for (var i = items.length - 1; i >= 0; i--) {
+			var tm = items[i];
+			if (tm.box == "1") {
+				var id = {};
+				id.id = tm.msgid;
+				delIDs.push(id);
+				items.splice(i,1);
+			}
+		}
+		var delData = {}
+		delData.ids = delIDs;
+// 		log(Utils.jsonToString(delData)); 
+		AjaxUtil.submit("/com.primeton.pmbusiness.push.pushComponent.deleteMessages.biz.ext", delData, AjaxUtil.TYPE_POST, function(args){
+			var resultData = Utils.stringToJson(args);
+			if(resultData.retCode&&resultData.retCode=="1") {
+				listdiv.setHeight('100%');
+				editdiv.setHeight('0');
+				loadData();
+			}else{
+				toast("删除失败");
+			}
+		}, function(errorCode, errorMsg){
+			toast("删除失败：" + errorCode);
+		});
+		
+	}
+	
+	function copyObj(obj) {
+		var c = {}
+		for ( var key in obj) {
+			c[key] = obj[key];
+		}
+		return c;
+	}
+	//app的列表对比 
+	function applists(appid) {
+		var dataAllApp = AppManager.getLocalNativeAppList();
+		for(var i=0;i<dataAllApp.length;i++){
+			var ditm = dataAllApp[i];
+			if(ditm.appid == appid){
+				return true;
+			}
+		}
+		return false;
+	}
+	//删除单条消息
+	function deletemsgOne(msgid) {
+		var ajaxData = {};
+		ajaxData.id = msgid;
+		AjaxUtil.submit('/com.primeton.pmbusiness.push.pushComponent.deleteMessage.biz.ext', ajaxData, AjaxUtil.TYPE_POST, function(args){		
+		var resultData = Utils.stringToJson(args);
+		if(resultData.retCode&&resultData.retCode=="1"){
+			loadData();
+		}else{
+			toast('删除失败');
+		}		
+		}, function(errCode, errMsg){
+			toast('删除失败');
+		});
+	}
+	
+	
+// 	/**
+// 	 * 存数据库,批量存
+// 	 */
+// 	function saveMsg(){
+// 		var sql = new Array();		
+// 		for(var i=0; i<msgItems.length; i++){
+// 			var item = msgItems[i];
+// 			sql.push("insert into t_mwork_msg values("
+// 			+item.msgid
+// 			+", \'" + item.userid 
+// 			+"\' , \'" + item.alertMsg 
+// 			+"\' , \'" + item.emp  
+// 			+"\' , \'" + item.msgtype  
+// 			+"\' , \'" + item.msgcontent  
+// 			+"\' , \'" + item.rcvTime + "\')");
+// 		}
+// 		var result = database.executeBatch(sql);
+		
+// 		return result;
+// 	}
+	
+// 	/**
+// 	 * 删数据库
+// 	 */
+// 	function deleteMsg(id){
+// 		var sql = "";
+// 		var result = database.execute(sql, params);
+// 		return result;
+// 	}
+	
+// 	/**
+// 	 * 删除后重新加载
+// 	 */
+// 	function reloadData(){
+		 
+// 	}
+</script>
+</html>

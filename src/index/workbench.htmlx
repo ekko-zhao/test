@@ -1,0 +1,527 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<title>首页</title>
+	<script>
+		Emp.includeFile("/email/commonPre.html");
+		$M.includeFile("/common/appMgr.html");
+		$M.includeFile("/common/commonUtils.html");
+	</script>
+</head>
+<body>
+<div width="100%" height="100%" layout="VBox">
+<!-- 标题栏 --> 
+<!-- <div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3"> -->
+<!-- 	<div width="80" height="100%" id="leftDiv" vAlign="middle" />				 -->
+<!-- 	<div width="100%" height="100%"  hAlign="center" vAlign="middle">			 	 -->
+<!-- 		<input type="label" id="title" width="-2" height="100%" color="#FFFFFF" fontSize="20" value="移动工作平台"/> -->
+<!-- 	</div> -->
+<!-- 	<div width="80" height="100%" id="rightDiv" vAlign="middle" /> -->
+<!-- </div> -->
+<div width="100%" height="100%" overflow="y" layout="VBox" bounces="false">
+
+<div width="100%" height="173">
+	<slide id="banner" tipVisible="true" tipTop="150">
+		<slidepage>
+			<div width="100%" height="165" backgroundImage="/common/banner.png" layout="VBox" hAlign="center" vAlign="middle" >
+				<div width="100%" height="15"/>
+				<input type="label" value="让办公走出办公室" fontSize="20" color="#ffffff" />
+				<div width="100%" height="10"/>
+				<input type="label" value="欢迎您来到集团，感谢您的辛勤付出" fontSize="14" color="#ffffff" />
+				<input type="label" value="" fontSize="14" color="#ffffff" />
+			</div>
+		</slidepage>
+		<slidepage>
+			<div width="100%" height="165" backgroundImage="/common/banner.png" layout="VBox" ></div>
+		</slidepage>
+	</slide>
+</div>
+<div id="workbenchDiv" width="100%" height="100%" backgroundColor="#ffffff" layout="VBox" >
+	<div id="workbenchPgs" width="100%" height="100%" vAlign="middle" hAlign="center" >
+		<progress width="50" height="50" />
+	</div>
+	<div id="workbenchShow" width="100%" height="100%" >
+		<slide id="slide" tipVisible="false"  height="100%"  width="100%" > 
+			<slidepage backgroundColor="#000000" layout="VBox">	
+			</slidepage>
+		</slide>		
+	</div>
+</div>
+	
+</div>
+</div>
+
+	<dialog id="alertDialog"  canceledOnTouchOutside="true">
+		<div id="div" layout="VBox"  hAlign="center"  width="300" height="264" backgroundImage="/meeting/bg_dialog.png">
+			<div width="100%" height="40"/>
+			<input type="label" value="提示" />
+			<div width="100%" height="100%"/>
+			<input type="label" value="想调整首页顺序？去“更多”进行编辑吧" hAlign="center" width="210" fontSize="18" color="#333333" />
+			<div width="100%" height="100%"></div>
+			<div width="220" height="1px" backgroundColor="#D9D9D9" />	
+			<div width="220" height="50" vAlign="middle" >	
+				<input type="button" width="100%" height="35" value="取消" onClick="closeDialog" color="#4ca1fe"  backgroundColor="#ffffff" fontSize="18" />
+				<div width="1px" height="100%" backgroundColor="#D9D9D9" ></div>
+				<input type="button" width="100%" height="35" value="去编辑" onClick="goUpdateDialog" color="#4ca1fe"  backgroundColor="#ffffff" fontSize="18" />  
+			</div>
+			<div width="100%" height="32"/>
+		</div>
+	</dialog>
+</body>
+<script> 
+	if(Emp.isIOS){
+		workbenchDiv.setMarginBottom("-1");
+	}
+
+	var cellDatas=[];
+	var installedAppList;
+	var MAXLEN;
+	var hasupdateApps=new Array();
+	var itemadd = {'icon':'/menu/moreapps.png','name':'更多应用','url':'/index/moreapps.html', 'appid':'', 'hasUpdate':'false','isOriginal':'true'};
+	var itemoriginal = [
+	{'icon':'/menu/schedule.png','name':'日程管理','url':'/schedule/scheduleHome.html', 'appid':'', 'hasUpdate':'false','isOriginal':'true'}
+	];
+	var userId = preference1.get('userid');
+	
+	Emp.page.addEvent("onLoad", function(params) {
+		//调试用
+		slide.removeAll();
+		workbenchShow.setDisplay(false);
+		workbenchPgs.setDisplay(true);
+		if(Utils.isNetworkAvailable()){
+			getAppList();
+		}else{
+			installedAppList = AppManager.getInstalledAppList();
+			MAXLEN = installedAppList.length;
+			installedStr = "";
+			for(var j=MAXLEN-1;j>=0;j--){
+				var id = installedAppList[j].id;
+				installedStr += "," + id;
+			}
+			installedStr += ",";
+			cellDatas = preference.get(userId + "offlineCellDatas");
+			
+			//把其他用户已经卸载的应用从数据中删除
+			for (var j=cellDatas.length-1;j>=0;j--) {
+				var id = cellDatas[j].id;
+				if(installedStr.indexOf(","+id+",")==-1 && cellDatas[j].isOriginal == "false"){
+					cellDatas.splice(j,1);
+				}
+			}
+			
+			initGrid();
+		}
+	});	
+	
+// 	Emp.page.addEvent("onBack", function(params) {
+// 		log('back workbench')
+// 		$M.setCurrentAppId('com.primeton.mwork');
+// 		workbenchShow.setDisplay(false);
+// 		workbenchPgs.setDisplay(true);
+// 		if (Emp.isIOS) {
+// 			Utils.setStatusBarStyle('light');
+// 		}
+// 		slide.removeAll();
+// 		if(Utils.isNetworkAvailable()){
+// 			getAppList();
+// 		}else{
+// 			cellDatas = preference.get("offlineCellDatas");
+// 			initGrid();
+// 		}
+// 	});
+	Broadcast.receive("updateWorkBench", function(){
+		$M.setCurrentAppId('com.primeton.mwork');
+		workbenchShow.setDisplay(false);
+		workbenchPgs.setDisplay(true);
+		if (Emp.isIOS) {
+			Utils.setStatusBarStyle('light');
+		}
+		slide.removeAll();
+		if(Utils.isNetworkAvailable()){
+			getAppList();
+		}else{
+			installedAppList = AppManager.getInstalledAppList();
+			MAXLEN = installedAppList.length;
+			installedStr = "";
+			for(var j=MAXLEN-1;j>=0;j--){
+				var id = installedAppList[j].id;
+				installedStr += "," + id;
+			}
+			installedStr += ",";
+			cellDatas = preference.get(userId + "offlineCellDatas");
+			
+			//把其他用户已经卸载的应用从数据中删除
+			for (var j=cellDatas.length-1;j>=0;j--) {
+				var id = cellDatas[j].id;
+				if(installedStr.indexOf(","+id+",")==-1 && cellDatas[j].isOriginal == "false"){
+					cellDatas.splice(j,1);
+				}
+			}
+			
+			initGrid();
+		}
+	});		
+	
+	function getAppList(){
+        AppManager.USERID = preference1.get('userid');
+		AppManager.getAppList(applistFn,getDataFfn);
+	  
+	}
+	var applists = "";
+	var installedStr = "";
+	function applistFn(applist){
+		applists = "";
+		if(applist.length>0){
+			for(var i=0;i<applist.length;i++){
+				applists+=","+applist[i].id;
+			}
+			applists+=",";
+		} 
+		loadData();
+	}
+	function loadData(){
+		AppManager.getUpdateAppList(UpdateSfn,getDataFfn);
+	    
+	}
+	
+	function UpdateSfn(hasupdateList){
+		// modify by liulei 2017-05-30 更新应用结束后，界面无法立即刷新问题
+		hasupdateApps = [];
+		for(var i=0; i<hasupdateList.length; i++){
+			hasupdateApps.push(hasupdateList[i]);
+		}
+		installedAppList = AppManager.getInstalledAppList();
+		var length = installedAppList.length;
+		installedStr = "";
+		for(var j=length-1;j>=0;j--){
+			var id = installedAppList[j].id;
+			if(applists.indexOf(","+id+",")==-1){
+				installedAppList.splice(j,1);
+			} else {
+				installedStr += "," + id;
+			}
+		}
+		installedStr += ",";
+		MAXLEN = installedAppList.length;
+		if(preference.get(userId + 'griddatas')==null||preference.get(userId + 'griddatas')==''||preference.get(userId + 'griddatas')=='undefined'){
+			cellDatas=[];
+			cellDatas = itemoriginal.concat();
+			if(installedAppList != null&&installedAppList.length!=0){
+				for(var i=0; i<MAXLEN; i++){
+					if(hasupdateApps.length==0){
+						installedAppList[i].hasUpdate='false';
+					}else{
+						for(var j=0;j<hasupdateApps.length;j++){
+							if(installedAppList[i].id==hasupdateApps[j].id){
+								installedAppList[i].hasUpdate='true';
+								installedAppList[i].updateappinfo=Utils.jsonToString(hasupdateApps[j]);
+								break;
+							}else{
+								installedAppList[i].hasUpdate='false';
+								continue;
+							}
+						}
+					}
+					var  data = {};
+					installedAppList[i].isOriginal='false';
+					data = installedAppList[i];
+					cellDatas.push(data);
+				}
+			}
+			preference.put(userId + "griddatas", cellDatas);
+			if(cellDatas.length>11){
+				cellDatas = cellDatas.slice(0,11);
+				var otherDatas = cellDatas.slice(11);
+				preference.put(userId + "homecelldata", cellDatas);
+				preference.put(userId + "othercelldata", otherDatas);
+			}else{
+				var otherDatas = {};
+				preference.put(userId + "homecelldata", cellDatas);
+				preference.put(userId + "othercelldata", otherDatas);
+			}
+		
+		}else{
+			cellDatas = preference.get(userId + 'homecelldata');
+		}
+		
+		//把其他用户已经卸载的应用从数据中删除
+		for (var j=cellDatas.length-1;j>=0;j--) {
+			var id = cellDatas[j].id;
+			if(installedStr.indexOf(","+id+",")==-1 && cellDatas[j].isOriginal == "false"){
+				cellDatas.splice(j,1);
+			}
+		}
+		
+		// add by liulei 2017-05-30 处理更新逻辑
+		var length = cellDatas.length;
+		//处理更改用户登录后，没有权限的应用不显示
+		for(var j=length-1;j>=0;j--){
+			var id = cellDatas[j].id;
+			if(id==undefined)
+				continue;
+			if(applists.indexOf(","+id+",")==-1){
+				cellDatas.splice(j,1);
+			}
+		}
+		length = cellDatas.length;
+		for(var i=0; i<length; i++){
+			if(hasupdateApps.length==0){
+				cellDatas[i].hasUpdate='false';
+			}else{
+				for(var k=0;k<hasupdateApps.length;k++){
+				
+					if(cellDatas[i].id==hasupdateApps[k].id){
+						var tempObj={};
+						for(var a in cellDatas[i]){
+							tempObj[a] = cellDatas[i][a];
+						}
+						tempObj.hasUpdate='true';
+						tempObj.updateappinfo=Utils.jsonToString(hasupdateApps[k]);
+						cellDatas[i]= tempObj;
+						break;
+					}else{
+						cellDatas[i].hasUpdate='false';
+						continue;
+					}
+				}
+			}
+		}
+		//处理更新逻辑结束
+		cellDatas.push(itemadd);
+		preference.put(userId + "offlineCellDatas", cellDatas);
+		initGrid();
+	}
+	
+	function getDataFfn(e){ 
+		installedAppList = AppManager.getInstalledAppList();
+		MAXLEN = installedAppList.length;
+		installedStr = "";
+		for(var j=MAXLEN-1;j>=0;j--){
+			var id = installedAppList[j].id;
+			installedStr += "," + id;
+		}
+		installedStr += ",";
+		if(preference.get(userId + 'griddatas')==null||preference.get(userId + 'griddatas')==''||preference.get(userId + 'griddatas')=='undefined'){
+			cellDatas=[];
+			cellDatas = itemoriginal.concat();
+			if(installedAppList != null&&installedAppList.length>0){
+				for(var i=0; i<MAXLEN; i++){
+					if(hasupdateApps.length==0){
+						installedAppList[i].hasUpdate='false';
+					}else{
+						for(var j=0;j<hasupdateApps.length;j++){
+							if(installedAppList[i].id==hasupdateApps[j].id){
+								installedAppList[i].hasUpdate='true';
+								installedAppList[i].updateappinfo=Utils.jsonToString(hasupdateApps[j]);
+								break;
+							}else{
+								installedAppList[i].hasUpdate='false';
+								continue;
+							}
+						}
+					}
+					var  data = {};
+					installedAppList[i].isOriginal='false';
+					data = installedAppList[i];
+					cellDatas.push(data);
+				}
+			}
+			preference.put(userId + "griddatas", cellDatas);
+			if(cellDatas.length>11){
+				cellDatas = cellDatas.slice(0,11);
+				var otherDatas = cellDatas.slice(11);
+				preference.put(userId + "homecelldata", cellDatas);
+				preference.put(userId + "othercelldata", otherDatas);
+			}else{
+				var otherDatas = {};
+				preference.put(userId + "homecelldata", cellDatas);
+				preference.put(userId + "othercelldata", otherDatas);
+			}
+		}else{
+			cellDatas = preference.get(userId + 'homecelldata');
+		}
+		//把其他用户已经卸载的应用从数据中删除
+		for (var j=cellDatas.length-1;j>=0;j--) {
+			var id = cellDatas[j].id;
+			if(installedStr.indexOf(","+id+",")==-1 && cellDatas[j].isOriginal == "false"){
+				cellDatas.splice(j,1);
+			}
+		}
+		
+		// add by liulei 2017-05-30 处理更新逻辑
+		var length = cellDatas.length;
+		//处理更改用户登录后，没有权限的应用不显示
+		for(var j=length-1;j>=0;j--){
+			var id = cellDatas[j].id;
+			if(id==undefined)
+				continue;
+			if(applists.indexOf(","+id+",")==-1){
+				cellDatas.splice(j,1);
+			}
+		}
+		length = cellDatas.length;
+		for(var i=0; i<length; i++){
+			if(hasupdateApps.length==0){
+				cellDatas[i].hasUpdate='false';
+			}else{
+				for(var k=0;k<hasupdateApps.length;k++){
+					if(cellDatas[i].id==hasupdateApps[k].id){
+						var tempObj={};
+						for(var a in cellDatas[i]){
+							tempObj[a] = cellDatas[i][a];
+						}
+						tempObj.hasUpdate='true';
+						tempObj.updateappinfo=Utils.jsonToString(hasupdateApps[k]);
+						cellDatas[i]= tempObj;
+						break;
+					}else{
+						cellDatas[i].hasUpdate='false';
+						continue;
+					}
+				}
+			}
+		}
+		cellDatas.push(itemadd);
+		preference.put(userId + "offlineCellDatas", cellDatas);
+		initGrid();
+	}
+	
+	function initGrid(){
+//		var tip = parseInt(cellDatas.length/12+1);
+// 		for(var i=0; i<tip; i++){
+// 			if(cellDatas.length%8==0&&i==tip-1){
+				
+// 			}else{
+				var newPage = new $M.Panel({'width':'100%', 'height':'100%', 'backgroundColor':'#ffffff', 'layout':'VBox'});	
+				var div = new $M.Panel({'width':'100%', 'height':'100%', 'backgroundColor':'#ffffff', 'layout':'VBox'});
+				for(var j=0; j<3; j++){
+					var row = new $M.Panel({'width':'100%', 'height':'100%'}); 
+					for(var k=0; k<4; k++){
+						var cell = createCell(j*4+k);
+						var divvcline = new $M.Panel({'width':'1px', 'height':'100%', 'backgroundColor':'#e5e5e5'});
+						row.add(divvcline);
+						row.add(cell);
+					}
+					div.add(row);	
+					var divhzline = new $M.Panel({'width':'100%', 'height':'1px', 'backgroundColor':'#e5e5e5'});
+					div.add(divhzline);		
+				}				
+				newPage.add(div);
+				slide.add(newPage);
+				
+// 			}
+// 		}
+		workbenchPgs.setDisplay(false);
+		workbenchShow.setDisplay(true);
+	}
+	
+	//创建单元格
+	function createCell(index){
+		var cell = new $M.Panel({'width':'100%', 'height':'100%', 'backgroundColor':'#ffffff', 'hAlign':'center', 'vAlign':'middle', 'layout':'VBox'});
+		
+		var imgdiv = new $M.Panel({'width':'45', 'height':'45','vAlign':'bottom', 'hAlign':'center'});
+		var imgcorner = new $M.Panel({'width':'40', 'height':'40','vAlign':'bottom', 'hAlign':'center','borderColor':'#ffffff','borderWidth':'1px','cornerRadius':'12'});
+		var img = new $M.Image({'width':'40', 'height':'40'});
+		var divblank = new $M.Panel({'width':'100%', 'height':'6'});
+		var divBottom = new $M.Panel({'width':'100%', 'height':'22', 'vAlign':'middle', 'hAlign':'center'});
+		var label = new $M.Label({'color':'#333333', 'fontSize':'18'});
+		var point = new $M.Panel({'width':'10', 'height':'10', 'backgroundImage':'/images/redpoint.png','position':'relative','top':0,'left':35});
+		if(cellDatas[index]!=null){
+			img.setSrc(cellDatas[index].icon);
+			label.setValue(cellDatas[index].name);
+			if(cellDatas[index].hasUpdate==true||cellDatas[index].hasUpdate=='true'){
+				imgdiv.add(point);
+			}
+		}
+		imgcorner.add(img);
+		imgdiv.add(imgcorner);
+		cell.add(imgdiv);
+		cell.add(divblank);
+		divBottom.add(label);
+		cell.add(divBottom);
+		//添加点击事件
+		cell.addEvent("onClick",function(){
+			cellClick(index);
+		}); 
+		//添加长按事件
+		cell.addEvent("onClickHold", function(){
+			cellClickHold(index);
+		});
+		return cell;
+	}
+	
+	function failureFn(){
+		log('open fail');
+	}
+	
+	function successFn(){
+		toast('更新应用成功');
+		slide.removeAll();
+		getAppList();
+	}
+	
+	function loadingFn(){
+	
+	}
+	
+	//单元格点击事件
+	function cellClick(index){
+		var params = {};
+		params.param=null;
+		var token = preference.get('access_token');
+		params={'token':token};
+		
+		if(cellDatas[index]!=null&&cellDatas[index].isOriginal=='true'){
+			$M.page.goTo(cellDatas[index].url);
+		}else if(cellDatas[index]!=null&&cellDatas[index].isOriginal=='false'){
+			if(cellDatas[index].hasUpdate=='true'){
+				log('更新应用:'+Utils.jsonToString(cellDatas[index].updateappinfo));
+				if(Utils.isNetworkAvailable()){			
+					confirm("更新"+cellDatas[index].name+" 应用",function(){
+						AppManager.installUpdate(Utils.stringToJson(cellDatas[index].updateappinfo), successFn, failureFn, loadingFn, '1');
+					},function(){
+						toast('取消更新');
+					});
+				}else{
+					toast('当前网络不可用');
+				}
+			}
+			else{
+				AppManager.startApp(cellDatas[index],params,failureFn);
+			}
+		}
+	}
+	
+	//单元格长按事件
+	function cellClickHold(index){
+// 		if(cellDatas[index]!=null&&cellDatas[index].isOriginal=='false'){
+// 			confirm("确认要卸载 "+cellDatas[index].name+" 应用吗？",function(){
+// 				var result = AppManager.deleteApp(cellDatas[index]);
+// 				if(result==true){
+// 					cellDatas.splice(index, 1);
+// 					slide.removeAll();
+// 					getAppList();
+// 					toast('卸载应用成功');
+// 				}else{
+// 					toast('应用卸载失败');
+// 				}
+// 			},function(){
+// 				toast('取消应用卸载');
+// 			});
+// 		}
+
+		alertDialog.show();
+
+
+	}
+	
+	function closeDialog(){
+		alertDialog.close();
+	}
+	
+	function goUpdateDialog(){
+		alertDialog.close();
+		$M.page.goTo("/index/moreapps.html", {}, false);
+	}
+</script>
+</html>

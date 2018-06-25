@@ -1,0 +1,34 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div id="nav" width="100%" height="50" vAlign="middle" class="emp-nav-backgroundColor" >
+	<div width="80" height="100%" id="leftDiv" vAlign="middle"  onPressUp="goBack" >
+		<div width="10" height="100%"/>
+		<img src="/linkman/back.png" width="11" height="18"/>
+		<div width="4" height="100%"/>
+		<input type="label" value=""  fontSize="18" color="#ffffff" />
+	</div>
+	<input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" value="" />
+	<div width="80" height="100%" id="rightDiv" vAlign="middle">
+		<div width="80" height="100%" id="addPerson" vAlign="middle" hAlign="center" onClick="groupDatil" >
+			<img src="/chat/pepermange.png" height="30" width="30" />
+		</div>
+	</div>
+</div>
+</body>
+<script>
+if(Emp.isIOS){
+	nav.setHeight(60);
+	nav.setPaddingTop(8);
+}
+function groupDatil() {
+	var temp = {};
+	temp.gID = gID;
+	temp.name = name;
+	temp.myGroup = myGroup;
+	$M.page.goTo('/chat/groupDetail.html', temp, false);
+}
+</script>
+</html>

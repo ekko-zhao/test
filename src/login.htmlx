@@ -1,0 +1,239 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<script>
+		$M.includeFile("/common/commonUtils.html");
+	</script> 
+</head>
+<body>
+ 	
+<div width="100%" height="100%" backgroundColor="#F1F1F1" layout="VBox" hAlign="center" >
+	<div width="100%" height="70" />
+	<div width="100%" height="30" hAlign="center" vAlign="middle" >
+	<progress id="loginprogress" width="30" height="30" display="false" />
+	<input id="platformName" type="label" value="企业移动工作台" fontSize="23" />
+	</div>
+	<div width="100%" height="50" />
+	<div width="100%" height="50" layout="HBox" backgroundColor="#ffffff" vAlign="middle" paddingLeft="10" >
+		<img src="/images/login_account.png" width="19" height="21" />
+		<input type="text" backgroundColor="#ffffff" width="100%" emptyText="用户名" emptyTextColor="#cccccc" fontSize="15" id="userNameControl" />
+		<div width="27" height="27" id="cancelUid" visibility="false" onClick="clearUid" vAlign="middle">
+			<img src="/common/cancel.png" width="20" height="20" marginRight="5" />
+		</div>
+	</div>
+	<div width="320" height="1px" backgroundColor="#D9D9D9" />	
+	<div width="100%" height="50" layout="HBox" backgroundColor="#ffffff" vAlign="middle" paddingLeft="10" id="pswinvisible">
+		<img src="/images/login_pwd.png" width="19" height="21" />
+		<div width="100%" height="100%">
+			<input type="password" backgroundColor="#ffffff" width="100%" emptyText="密码" emptyTextColor="#cccccc" fontSize="15" id="passwordControl1"/>
+			<input type="text" backgroundColor="#ffffff" display="false" width="100%" emptyText="密码" emptyTextColor="#cccccc" fontSize="15" id="passwordControl2" />
+		</div>
+		<div width="35" height="27" id="cancelPwd" visibility="false" onClick="clearPwd" vAlign="middle">
+			<img src="/common/cancel.png" width="20" height="20" marginRight="5" />
+		</div>
+		<div width="35" height="27" visibility="true" vAlign="middle" onClick="clickVisible" >
+			<img src="/common/invisible.png" width="20" height="20" marginRight="5" id="visibleimg"/>
+		</div>
+	</div>
+	<div width="100%" height="55" />
+	<div width="320" height="45" class="emp-nav-backgroundColor" cornerRadius="4" borderColor="#ffffff" borderWidth="1" 
+		hAlign="center" vAlign="middle">
+		<input id="loginBtn" class="emp-nav-backgroundColor" type="button" width="100%" height="100%" value="登        录" color="#FFFFFF" fontSize="20"  onClick="login"/>
+	</div>
+	<div width="100%" height="100%" />
+	<input type="label" width="360" value="上海外高桥造船有限公司" fontSize="12" vAlign="middle" hAlign="center" height="20" />
+	<input type="label" width="360" value="(c)Copyright Chinasws 2017. All Rights Reserved." fontSize="12" vAlign="middle" hAlign="center" height="40" />
+</div>
+
+<dialog id="dialog">
+	<div id="div" layout="VBox"  hAlign="center" backgroundColor="#ffffff" height="100" width="200" cornerRadius="10" borderColor="#D9D9D9" borderWidth="1px" >
+		<div width="100%" height="22"></div>
+		<input id="dialogtext" type="label" value="用户名或密码错误" /> 
+		<div width="100%" height="22"></div>
+		<div width="100%" height="1px" backgroundColor="#D9D9D9" />	
+		<input type="button" width="100%" height="35" value="关闭" onClick="closeDialog" color="#4ca1fe"  backgroundColor="#ffffff" fontSize="20" /> 
+	</div>
+</dialog>
+
+</body>
+<script>
+
+if(Emp.isIOS){
+	Utils.setStatusBarStyle('default');
+}
+
+var loginId = preference.get('userid');
+var loginPwd = preference.get('password');
+if(loginId!=' '||loginId!=null||loginId!='undefined'){
+	if(loginId===' '){
+		log('username is null');
+	}else{
+		userNameControl.setValue(loginId);
+	}
+}
+if(loginPwd!=' '||loginPwd!=null||loginPwd!='undefined'){
+	if(loginPwd===' '){
+		log('pwd is null');
+	}else{
+		passwordControl1.setValue(loginPwd);
+	 	passwordControl2.setValue(loginPwd);
+	}
+}
+
+function login(){
+	System.hideKeyboard();
+	//设置按钮失效
+	loginBtn.setDisabled(true);
+	loginprogress.setDisplay(true);
+	platformName.setValue("正在登录...");
+	var userid = userNameControl.getValue();
+	var pmsecret = null;
+	if(isVisible){
+		var pmsecret = passwordControl2.getValue();
+	}else{
+		var pmsecret = passwordControl1.getValue();
+	}
+	if(userid && pmsecret){
+		getToken(userid, pmsecret);
+	} else {
+		loginBtn.setDisabled(false);
+		platformName.setValue("企业移动平台");
+		loginprogress.setDisplay(false);
+		dialogtext.setValue("用户名或密码不能为空");
+		dialog.show();
+	}
+}
+
+function getToken(userid, pmsecret){
+	var ajaxData = {};
+	ajaxData.userid = userid;
+	ajaxData.pmsecret = pmsecret;
+	ajaxData.imei = Utils.getImei();
+	ajaxData.msgtoken = Utils.getMessageToken();
+	AjaxUtil.submit("/pmtoken", ajaxData, AjaxUtil.TYPE_POST, function(args){
+		var info = Utils.stringToJson(args);
+		if(info.errCode=="101"){
+			loginBtn.setDisabled(false);
+			//获取token失败
+			platformName.setValue("企业移动平台");
+			loginprogress.setDisplay(false);
+			dialogtext.setValue(info.errMsg);
+			dialog.show();
+		} else if(info.exception){
+			loginBtn.setDisabled(false);
+			platformName.setValue("企业移动平台");
+			loginprogress.setDisplay(false);
+			dialogtext.setValue("用户接入失败、后台异常");
+			dialog.show();
+		} else {
+			var access_token = info.access_token;
+			preference.put("access_token", access_token);
+			preference.put('userid', userid);
+			preference.put('password', pmsecret);
+			preference.put('loginstate','in');
+			ACCESS_TOKEN = access_token;
+			//modify by yaozp 2017/09/07 获取用户信息之后跳转
+			var ajaxData = {};
+			ajaxData.userid = preference.get('userid');
+			AjaxUtil.submit('/com.primeton.pmbusiness.contacts.coframeComponent.getEmployee.biz.ext', ajaxData, AjaxUtil.TYPE_POST, function(args) {
+				loginBtn.setDisabled(false);
+				var info = Utils.stringToJson(args);
+				var appconfig = $M.getAppConfig("com.primeton.mwork");
+				var	Version = appconfig.appVersion+"."+appconfig.patchVersion;
+				statisticsAppInfo(userid,"",appconfig.appId,appconfig.appName,Version,"2");//记录登录
+				
+				if (info.currentUser[0]) {
+					preference.put('CURRENT_USER', Utils.jsonToString(info.currentUser[0]));
+					CURRENT_USER = info.currentUser[0];
+					$M.page.goTo('/index.html', {}, true);
+				} else {
+					preference.put('CURRENT_USER', '');
+					CURRENT_USER = {};				
+					$M.page.goTo('/index.html', {}, true);
+				}
+			}, function(errCode, errMsg) {
+				//获取token失败
+				loginBtn.setDisabled(false);
+				platformName.setValue("企业移动平台");
+				loginprogress.setDisplay(false);
+		 		dialogtext.setValue("获取用户信息失败");
+		 		dialog.show();
+			});		
+		}
+	}, function(errCode, errMsg){
+		//获取token失败
+		loginBtn.setDisabled(false);
+		platformName.setValue("企业移动平台");
+		loginprogress.setDisplay(false);
+ 		dialogtext.setValue("无法连接后台");
+ 		dialog.show();
+	});
+}
+
+function closeDialog(){
+	dialog.close();
+}
+
+passwordControl1.addEvent("onChange",function(o,n){
+	if(n==''){
+		cancelPwd.setVisibility(false);
+	}else{
+		cancelPwd.setVisibility(true);
+	}
+});
+
+passwordControl2.addEvent("onChange",function(o,n){
+ 	if(n==''){
+		cancelPwd.setVisibility(false);
+	}else{
+		cancelPwd.setVisibility(true);
+	}
+});
+
+function clearPwd(){
+	passwordControl1.setValue("");
+	passwordControl2.setValue("");
+}
+
+var isVisible = false;
+function clickVisible(){
+	if(isVisible==false){
+		visibleimg.setSrc("/common/visible.png");
+		var psw = passwordControl1.getValue();
+		passwordControl2.setValue(psw);
+		passwordControl1.setDisplay(false);
+		passwordControl2.setDisplay(true);
+		isVisible = true;
+	}else{
+		visibleimg.setSrc("/common/invisible.png");
+		var psw = passwordControl2.getValue();
+		passwordControl1.setValue(psw);
+		passwordControl1.setDisplay(true);
+		passwordControl2.setDisplay(false);
+		isVisible = false;
+	}
+}
+
+userNameControl.addEvent("onChange",function(o,n){
+	if(n==''){
+		cancelUid.setVisibility(false);
+	}else{
+		cancelUid.setVisibility(true);
+	}
+});
+
+function clearUid(){
+	userNameControl.setValue("");
+}
+
+var count=0;
+$M.page.addEvent('onPressBackKeySystem', function(){
+	if(count != 1){
+		Utils.toast("再按一次退出系统");
+		count++;
+	} else {
+		System.exit();
+	}
+});
+</script>
+</html>

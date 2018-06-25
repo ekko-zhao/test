@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <appId>com.primeton.mwork</appId>
+    <appName>移动办公</appName>
+    <description></description>
+    <date>2016-09-08</date>
+    <homepage>/welcome.html</homepage>
+    <icon>/images/app.png</icon>
+    <minClientVersion>1.0</minClientVersion>
+    <appVersion>2.4</appVersion>
+    <updateTime></updateTime>  
+    <patchVersion>105.0</patchVersion>
+</config>

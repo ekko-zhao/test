@@ -1,0 +1,153 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+<div width="100%" height="100%" layout="VBox" backgroundColor="#f8f8f8">
+	<div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3" >
+		<div width="80" height="100%" id="leftDiv" vAlign="middle"  onPressUp="goBack">
+			<div width="10" height="100%"/>
+			<img src="/linkman/back.png" width="11" height="18"/>
+			<div width="4" height="100%"/>
+			<input type="label" value="返回"  fontSize="18" color="#ffffff" />
+		</div>
+		
+		<input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="20" value="审批" />
+		<div width="80" height="100%" id="rightDiv" vAlign="middle" hAlign="center">
+		</div>
+	</div>
+	<div width="100%" height="120" backgroundColor="#ffffff" >
+		<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="goToMyApproval" >
+			<img src="/approval/pendingApproval.png" width="35" height="38" />
+			<div width="100%" height="10"/>
+			<input type="label" value="待我审批" color="#999999" fontSize="16" />
+		</div>
+		<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="goToMyPropose">
+			<img src="/approval/apply.png" width="32" height="37" />
+			<div width="100%" height="10"/>
+			<input type="label" value="我发起的" color="#999999" fontSize="16" />
+		</div>
+		<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox">
+			<img src="/approval/toMe.png" width="32" height="37" />
+			<div width="100%" height="10"/>
+			<input type="label" value="抄送我的" color="#999999" fontSize="16" />
+		</div>
+	</div>
+	<div width="100%" height="1px" backgroundColor="#e5e5e5" ></div>
+	<div width="100%" height="10"></div>
+	<div width="100%" height="1px" backgroundColor="#e5e5e5" ></div>
+	<div width="100%" height="100%" backgroundColor="#ffffff" layout="VBox" overflow="y">
+		<div width="100%" height="120" >
+			<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="askForLeave">
+				<img src="/approval/askForVacation.png" width="36" height="36" />
+				<div width="100%" height="10"/>
+				<input type="label" value="请假" color="#999999" fontSize="16" />
+			</div>
+			<div width="1px" height="100%" backgroundColor="#e5e5e5" ></div>
+			<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="askForLeave">
+				<img src="/approval/businessTrip.png" width="36" height="36" />
+				<div width="100%" height="10"/>
+				<input type="label" value="出差" color="#999999" fontSize="16" />
+			</div>
+			<div width="1px" height="100%" backgroundColor="#e5e5e5" ></div>
+			<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="askForLeave">
+				<img src="/approval/goOut.png" width="36" height="36" />
+				<div width="100%" height="10"/>
+				<input type="label" value="外出" color="#999999" fontSize="16" />
+			</div>
+		</div>
+		<div width="100%" height="1px" backgroundColor="#e5e5e5" ></div>
+		<div width="100%" height="120" >
+			<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="askForLeave">
+				<img src="/approval/getGoods.png" width="36" height="36" />
+				<div width="100%" height="10"/>
+				<input type="label" value="物品领用" color="#999999" fontSize="16" />
+			</div>
+			<div width="1px" height="100%" backgroundColor="#e5e5e5" ></div>
+			<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="askForLeave">
+				<img src="/approval/approval.png" width="36" height="36" />
+				<div width="100%" height="10"/>
+				<input type="label" value="通用审批" color="#999999" fontSize="16" />
+			</div>
+			<div width="1px" height="100%" backgroundColor="#e5e5e5" ></div>
+			<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="askForLeave">
+				<img src="/approval/askForVacation.png" width="36" height="36" />
+				<div width="100%" height="10"/>
+				<input type="label" value="加班" color="#999999" fontSize="16" />
+			</div>
+		</div>
+		<div width="100%" height="1px" backgroundColor="#e5e5e5" ></div>
+		<div width="100%" height="120" >
+			<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="askForLeave">
+				<img src="/approval/pay.png" width="36" height="36" />
+				<div width="100%" height="10"/>
+				<input type="label" value="付款" color="#999999" fontSize="16" />
+			</div>
+			<div width="1px" height="100%" backgroundColor="#e5e5e5" ></div>
+			<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="askForLeave">
+				<img src="/approval/askForVacation.png" width="36" height="36" />
+				<div width="100%" height="10"/>
+				<input type="label" value="合同审批" color="#999999" fontSize="16" />
+			</div>
+			<div width="1px" height="100%" backgroundColor="#e5e5e5" ></div>
+			<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="askForLeave">
+				<img src="/approval/performanceReview.png" width="36" height="36" />
+				<div width="100%" height="10"/>
+				<input type="label" value="绩效自评" color="#999999" fontSize="16" />
+			</div>
+		</div>
+		<div width="100%" height="1px" backgroundColor="#e5e5e5" ></div>
+		<div width="100%" height="1px" backgroundColor="#e5e5e5" ></div>
+		<div width="100%" height="120" >
+			<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="askForLeave">
+				<img src="/approval/getGoods.png" width="36" height="36" />
+				<div width="100%" height="10"/>
+				<input type="label" value="报销" color="#999999" fontSize="16" />
+			</div>
+			<div width="1px" height="100%" backgroundColor="#e5e5e5" ></div>
+			<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="askForLeave">
+				<img src="/approval/askForVacation.png" width="36" height="36" />
+				<div width="100%" height="10"/>
+				<input type="label" value="离职" color="#999999" fontSize="16" />
+			</div>
+			<div width="1px" height="100%" backgroundColor="#e5e5e5" ></div>
+			<div width="100%" height="100%" hAlign="center" vAlign="middle" layout="VBox" onClick="askForLeave">
+				<img src="/approval/performanceReview.png" width="36" height="36" />
+				<div width="100%" height="10"/>
+				<input type="label" value="部门协作" color="#999999" fontSize="16" />
+			</div>
+		</div>
+		<div width="100%" height="1px" backgroundColor="#e5e5e5" ></div>
+	</div>
+	
+</div>
+</body>
+<script>
+	if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+	function goBack() {
+		$M.page.goBack();
+		//Emp.page.goTo({'url':"/index.html",'params':{},'isDestroySelf':true,'animation':'slideright'});
+		//Emp.page.goTo('/index.html', {}, true);
+// 		$M.page.goBack({}, '/index.html');
+		
+	}
+	
+	function askForLeave(){
+		$M.page.goTo('/approval/askForLeave.html', {}, false);
+	}
+	
+	function goToMyApproval(){
+		$M.page.goTo('/approval/myapproval.html', {"page":"0"}, false);
+	}
+	
+	function goToMyPropose(){
+		$M.page.goTo('/approval/mypropose.html', {}, false);
+	}
+</script>
+</html>

@@ -1,0 +1,342 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<script>
+		$M.includeFile("/chat/commonchat.html");
+	</script>
+</head>
+<body>
+<div width="100%" height="100%" layout="VBox" >
+	<div width="100%" height="50" vAlign="middle" onClick="appmsg" layout="VBox" >
+		<div width="100%" height="100%">
+			<input type="label" height="49" fontSize="22" value="应用消息" marginLeft="10" width="100%"  />
+			<div width="40" height="100%" hAlign="center" vAlign="middle" >
+				<img  width="20" height="20" src="/linkman/right.png" />
+			</div>
+		</div>
+		<div width="100%" height="1" backgroundColor="#D9D9D9" ></div>
+	</div>
+	<listview id="listview" width="100%" height="100%"  dividerVisible="false"  enablePullDown="true">
+		
+	</listview>
+	<template id="template1" >
+		<div width="100%" height="65" id="div" overflow="x">
+			<div width="360" height="65" layout="HBox" hAlign="center" tag="item" >
+				<div width="60" height="65" hAlign="center" vAlign="middle" >
+					<div width="50" hAlign="center" vAlign="middle" height="50" class="emp-nav-backgroundColor" borderWidth="1" borderColor="#ffffff" cornerRadius="25" >
+						<img id="handImg" tag="handImg"   width="30" height="30" />
+					</div>
+				</div>
+				<div width="100%" height="100%" layout="VBox" >
+					<div width="290" height="30">
+						<input type="label" height="30" tag="name"  fontSize="16" fontBold="true" marginLeft="10" />
+						<div width="100%" height="100%" />
+						<input type="label"  height="30" tag="date"  fontSize="14" hAlign="right" />
+						<div width="20" height="100%" />
+					</div>
+					<div width="100%" height="100%">
+						<input type="label" width="250" height="100%" tag="text" marginLeft="10" sigleLine="true" fontSize="14"/>
+						<div id="countDIv" tag="countDIv" width="30" height="30"  backgroundColor="#ff0000" vAlign="middle" hAlign="center" borderWidth="1" borderColor="#ffffff" cornerRadius="17" >
+							<input type="label" id="unreadCount" tag="unreadCount" value="" color="#ffffff" />
+						</div>
+					</div>
+					<div width="100%" height="5"></div>
+					<div width="100%" height="1px" backgroundColor="#D9D9D9" ></div>
+				</div>
+			</div>
+				<div width="60" height="75" tag="delete">
+					<div width="60" height="100%" vAlign="middle" id="statusDiv"
+						hAlign="center" backgroundColor="#FA3B30" adapterTag="status">
+						<input type="label" value="删除" fontSize="18" tag="status"
+							color="#ffffff" />
+					</div>
+				</div>
+			</div>
+		</template>
+		<template >
+			<div id="template2" width="100%" height="100%" layout="VBox" hAlign="center" >
+				<div width="100%" height="20" />
+				<input type="label" id='tips' tag="tips" fontSize="14"
+					color="#666666" />
+			</div>
+		</template>
+</div>
+</body>
+<script>
+	countDIv.setAttrAdapter([ {
+		value : '1',
+		display : 'false'
+	},{
+		value : '2',
+		display : 'true'
+	
+	}]);
+	div.setOffSetX('60');
+	div.setAttrAdapter([ {
+		value : '1',
+		scrollToX : '{x:-60,during:0}'
+	}, {
+		value : 'other',
+		scrollToX : '{x:0,during:0}'
+	} ]);
+	LoandAllMsg.loandMsg = function(){
+		loandAllMsg();
+		log("我从index来的");
+	};
+	
+	var items = [];
+	//设置listview可用的模板
+	listview.setTemplates({'template1':template1, 'template2':template2});
+	$M.page.addEvent('onLoad', loadData);
+	function loadData(args){
+		chat.setChatListener({'to':'all','chatType':'single'},function(r){
+			loandAllMsg();
+		});
+		chat.setChatListener({'to':'all','chatType':'group'},function(r){
+			loandAllMsg();
+		});
+		
+		loandAllMsg();
+	}
+	
+	function loandAllMsg() {
+		items = [];
+		chat.loadAllConversations(function(r){
+			log(r);
+			var info = Utils.stringToJson(r);
+			if(info.length > 0){
+				for(var i=0;i<info.length;i++){
+					if(Utils.jsonToString(info[i]) == "{}"){
+						continue;
+					}
+					var temp = {};
+					temp.chatType = info[i].chatType;
+					var to = info[i].to;
+					if(info[i].chatType == "single"){
+						temp.name = to.name;
+						temp.handImg = "/chat/hand2.png";
+					}else{
+						temp.name = to.gName;
+						temp.handImg = "/chat/hand1.png";
+					}
+					var datec = parseInt(info[i].time/1000);
+					temp.date = formatDateTime(datec);
+					if(info[i].lastMsg.length>17){
+						temp.text = info[i].lastMsg.substring(0,17)+"....";
+					}else{
+						temp.text = info[i].lastMsg;
+					}
+					temp.to = to;
+					temp.conversationID = info[i].conversationID;
+					temp.template = "template1";
+					temp.status = "删除";
+					if(info[i].unreadCount <= 0){
+						temp.unreadCount = info[i].unreadCount;
+						temp.countDIv="1";
+					}else{
+						if(info[i].unreadCount>99){
+							temp.unreadCount = "99+";
+						}else{
+							temp.unreadCount = info[i].unreadCount;
+						}
+						temp.countDIv="2";
+					}
+					
+					items.push(temp);
+				}
+			}else{
+				var item = {};
+				item.tips = "暂无未读消息~";
+				item.template = 'template2';
+				items.push(item);
+			}
+		});
+		listview.setItems(items);
+		listview.reloadData();
+	}
+	/*
+	$M.page.addEvent('onBack', function(prams){
+		log("我返回再次刷新了");
+		var items = [];
+			chat.loadAllConversations(function(r){
+				var info = Utils.stringToJson(r)
+				if(info.length > 0){
+				for(var i=0;i<info.length;i++){
+					if(Utils.jsonToString(info[i]) == "{}"){
+						continue;
+					}
+					var temp = {};
+					temp.chatType = info[i].chatType;
+					var to = info[i].to;
+					if(info[i].chatType == "single"){
+						temp.name = to.name;
+				  		temp.handImg = "/chat/hand2.png";
+					}else{
+						temp.name = to.gName;
+						temp.handImg = "/chat/hand1.png";
+					}
+					var datec = parseInt(info[i].time/1000);
+					temp.date = formatDateTime(datec);
+					if(info[i].lastMsg.length>17){
+						temp.text = info[i].lastMsg.substring(0,17)+"....";
+					}else{
+						temp.text = info[i].lastMsg;
+					}
+					temp.to = to;
+					temp.conversationID = info[i].conversationID;
+					temp.template = "template1";
+					temp.status = "删除";
+					if(info[i].unreadCount <= 0){
+						temp.unreadCount = info[i].unreadCount;
+						temp.countDIv="1";
+					}else{
+						if(info[i].unreadCount>99){
+							temp.unreadCount = "99+";
+						}else{
+							temp.unreadCount = info[i].unreadCount;
+						}
+						temp.countDIv="2";
+					}
+					
+					items.push(temp);
+				}
+			}else{
+				var item = {};
+				item.tips = "暂无未读消息~";
+				item.template = 'template2';
+				items.push(item);
+			}
+			});
+			listview.setItems(items);
+			listview.reloadData();
+	});
+	*/
+	function appmsg() {
+		$M.page.goTo('/index/message.html', {}, false);
+	}
+	listview.setOnclickTags(['item', 'delete']); 
+	listview.addEvent("onItemClick", function(row, tag, data){
+		if(tag == "item"){
+			if(data.chatType == "single"){
+				var temp = {};
+				temp.to=data.to;
+				temp.myID = preference.get('userid');
+				if(CURRENT_USER.nodeName != null){
+					temp.myName = CURRENT_USER.nodeName;
+				}else{
+					temp.myName = preference.get('userid');
+				} 
+				temp.type = "1";
+				$M.page.goTo("/chat/chatsigle.html", temp, false);
+			}else{
+				var temp = {};
+				var to = {};
+				to.gID = data.to.gID;
+				to.name = data.to.gName;
+				temp.myID = preference.get('userid');
+				if(CURRENT_USER.nodeName != null){
+					temp.myName = CURRENT_USER.nodeName;
+				}else{
+					temp.myName = preference.get('userid');
+				}
+				temp.to = to;
+				temp.type = "1";
+				if(data.to.ownerID == temp.myID ){
+					temp.myGroup = "Y";
+				}else{
+					temp.myGroup = "N"
+				}
+				
+				$M.page.goTo("/chat/phonecontacts.html", temp, false);
+			}
+		}else{
+			if(data.chatType == "single"){
+				chat.clearHistory({'conversationID':data.conversationID,'chatType':data.chatType,'to':data.to.userID});	
+				loandAllMsg();
+			}else{
+				chat.clearHistory({'conversationID':data.conversationID,'chatType':data.chatType,'to':data.to.gID});
+				loandAllMsg();
+			}
+		}
+	});
+	function formatDateTime(timeStamp) {   
+	 	if(Emp.isIOS){
+			var date = new Date(timeStamp); 
+			return date.format("MM-dd hh:mm");
+		}else{
+		    var date = new Date(); 
+		    date.setTime(timeStamp * 1000);  
+		    var y = date.getFullYear();      
+		    var m = date.getMonth() + 1;      
+		    m = m < 10 ? ('0' + m) : m;      
+		    var d = date.getDate();      
+		    d = d < 10 ? ('0' + d) : d;      
+		    var h = date.getHours();
+		    h = h < 10 ? ('0' + h) : h;    
+		    var minute = date.getMinutes();    
+		    var second = date.getSeconds();    
+		    minute = minute < 10 ? ('0' + minute) : minute;      
+		    second = second < 10 ? ('0' + second) : second;     
+		    return m+'-'+d +' '+ h+':'+minute;   
+		   }   
+	};
+	//下拉刷新
+	listview.addEvent('onLoadMore', function(action){
+		if(action == 'pullDown'){
+			var items = [];
+			chat.loadAllConversations(function(r){
+				var info = Utils.stringToJson(r)
+				if(info.length > 0){
+				for(var i=0;i<info.length;i++){
+					if(Utils.jsonToString(info[i]) == "{}"){
+						continue;
+					}
+					var temp = {};
+					temp.chatType = info[i].chatType;
+					var to = info[i].to;
+					if(info[i].chatType == "single"){
+						temp.name = to.name;
+						temp.handImg = "/chat/hand2.png";
+					}else{
+						temp.name = to.gName;
+						temp.handImg = "/chat/hand1.png";
+					}
+					var datec = parseInt(info[i].time/1000);
+					temp.date = formatDateTime(datec);
+					if(info[i].lastMsg.length>17){
+						temp.text = info[i].lastMsg.substring(0,17)+"....";
+					}else{
+						temp.text = info[i].lastMsg;
+					}
+					temp.to = to;
+					temp.conversationID = info[i].conversationID;
+					temp.template = "template1";
+					temp.status = "删除";
+					if(info[i].unreadCount <= 0){
+						temp.unreadCount = info[i].unreadCount;
+						temp.countDIv="1";
+					}else{
+						if(info[i].unreadCount>99){
+							temp.unreadCount = "99+";
+						}else{
+							temp.unreadCount = info[i].unreadCount;
+						}
+						temp.countDIv="2";
+					}
+					
+					items.push(temp);
+				}
+			}else{
+				var item = {};
+				item.tips = "暂无未读消息~";
+				item.template = 'template2';
+				items.push(item);
+			}
+			});
+			listview.setItems(items);
+			listview.reloadData();
+			listview.setSelection(0);
+		}
+});
+</script>
+</html>

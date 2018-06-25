@@ -1,0 +1,14 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+	<div width="30" height="30" backgroundImage="/common/closecoming.png" position="relative" left="300" top="30" onClick="goBack"></div>
+	<img src="/common/comingsoon.jpg" width="360" height="640" onClick="goBack" />
+</body>
+<script> 
+function goBack(){
+	$M.page.goBack();
+}
+</script>
+</html>

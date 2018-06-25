@@ -1,0 +1,15 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+
+</body>
+<script>
+
+var mailpreference = new Emp.Preferences();
+mailpreference.open('email');
+//var progress = new $M.Progress({"width":"25", "height":"25"});
+</script>
+</html>

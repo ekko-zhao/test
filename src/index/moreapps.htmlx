@@ -1,0 +1,913 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<script>
+	$M.includeFile("/common/appMgr.html");
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+	<div id="waitpgs" width="100%" hAlign="center" vAlign="middle" height="100%" backgroundColor="#222222" opacity="0.8" top="50" position="relative" >
+		<progress width="50" height="50" />
+	</div>
+	<div id="nav" width="100%" height="50" vAlign="middle"
+		class="emp-nav-backgroundColor" >
+		<div width="80" height="100%" id="leftDiv" vAlign="middle"
+			onClick="goBack">
+			<img src="/meeting/back.png" width="13" height="20" marginLeft="20"></img>
+		</div>
+		<input type="label" id="title" value="应用编辑" width="100%" height="100%"
+			hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" />
+		<div width="80" height="100%" id="rightDiv1" vAlign="middle"
+			hAlign="center" onClick="saveNewOrder" display="false">
+			<input type="label" value="完成" color="#ffffff" />
+		</div>
+		<div width="80" height="100%" id="rightDiv2" vAlign="middle"
+			hAlign="center" onClick="gotoappstore" display="true">
+			<img src="/menu/nav_gostore.png" width="12" height="12" />
+			<div width="5" height="100%" />
+			
+				<input type="label" value="更多应用" color="#ffffff" fontSize="14" />
+		</div>
+	</div>
+	
+	<div width="100%" height="35" vAlign="middle">
+		<div width="10" height="100%" />
+		<input type="label" value="首页应用" color="#333333" fontSize="16" />
+		<input type="label" value="（按住拖动调整排序）" color="#cccccc" fontSize="16" />
+	</div>
+	<div width="100%" height="1px" backgroundColor="#cccccc" />
+	<div width="100%" height="240" layout="VBox" id="gridView"
+		backgroundColor="#ffffff">
+	
+	</div>
+	
+	<div width="100%" height="100%" backgroundColor="#f8f8f8" layout="VBox" >
+		
+		<div width="100%" height="1px" backgroundColor="#cccccc" />  
+		<div width="100%" height="35" vAlign="middle">
+			<div width="10" height="100%" />
+			<input type="label" value="其他应用" color="#333333" fontSize="16" />
+		</div>
+		<div width="100%" height="1px" backgroundColor="#cccccc" />  
+		<div width="100%" height="100%" layout="VBox" id="otherApps"
+			backgroundColor="#ffffff" >
+		
+		</div>
+	</div>
+	
+	<template>
+		   <div id="temp1" width="100%" height="120" vAlign="middle" hAlign="center" layout="VBox" borderColor="#aaaaaa" borderWidth="1px">
+		     <div width="20" height="20" hAlign="center" vAlign="middle"
+			position="relative" top="8" left="65" display="false" id="deleteApp"
+			tag='deleteApp'>
+				<img src="/menu/removeApp.png" width="15" height="15" />
+			</div>
+			<div width="20" height="20" hAlign="center" vAlign="middle"
+			position="relative" top="8" left="65" display="false" id="addApp"
+			tag='addApp'>
+				<img src="/menu/addApp.png" width="15" height="15" />
+			</div>
+			 <div width="100%" height="14" />
+		     <div width="50" height="45"  borderWidth="1" borderColor="#ffffff" cornerRadius="12" hAlign="center" vAlign="middle" >
+				<img tag="icon" width="40" height="40" />
+				<div id="point" backgroundImage="/images/redpoint.png" width="10" height="10" position="relative" top="0" left="35" tag="hasUpdate" />
+	         </div>
+	         <div width="100%" height="100%" layout="VBox" vAlign="middle"
+			hAlign="center">
+		         <input type="label" value="" tag="name" />
+		     </div>
+		     <div width="100%" height="5" />
+		     <div width="100%" height="1px" backgroundColor="#cccccc" /> 
+	       </div> 
+		</template> 
+</body>
+<script>
+	if (Emp.isIOS) {
+		nav.setHeight(60);
+		waitpgs.setTop(60);
+		nav.setPaddingTop(8);
+	}
+	function goBack() {
+		$M.page.goBack({'key':'workbench'});
+	}
+	$M.page.addEvent('onPressBackKeySystem', function(){
+		$M.page.goBack({'key':'workbench'});
+	});
+	function gotoappstore() {
+		if(Utils.isNetworkAvailable()){
+			$M.page.goTo("/appstore/applist.html", {}, false);
+		}else{
+			alert('当前网络不可用');
+		}
+	}
+
+	deleteApp.setAttrAdapter([ {
+		value : 'show',
+		display : 'true'
+	}, {
+		value : 'hide',
+		display : 'false'
+	}, {
+		value : '',
+		display : 'false'
+	} ]);
+	addApp.setAttrAdapter([ {
+		value : 'show',
+		display : 'true'
+	}, {
+		value : 'hide',
+		display : 'false'
+	}, {
+		value : '',
+		display : 'false'
+	} ]);
+	point.setAttrAdapter([ {
+		value : 'true',
+		display : 'true'
+	}, {
+		value : 'false',
+		display : 'false'
+	}]);
+
+	var chosenData;
+	var cellDatas; //所有应用。包括默认安装应用及已安装应用
+	var homepageDatas; //首页应用
+	var otherDatas; //其他应用
+	var MAXLEN;
+	var applists = "";
+	var hasupdateApps = new Array();
+
+	//创建dragGridView
+	var dragGridViewHome = new Emp.DragGridView({
+		width : '100%',
+		height : '240',
+		column : 4,
+		itemHeight : 120,
+		isEnableDragGrid : false,
+	});	
+	dragGridViewHome.setTemplate(temp1); 
+    
+    
+	var dragGridViewAll = new Emp.DragGridView({
+		width : '100%',
+		height : '100%',
+		column : 4,
+		itemHeight : 120,
+		isEnableDragGrid : false,
+	});
+	dragGridViewAll.setTemplate(temp1);
+	
+	var installedStr = "";
+	$M.page.addEvent("onLoad", function() {
+		fromBack = 'true';
+		setTimeout(function(){
+			var otherh = otherApps.getHeight() + "px";
+			dragGridViewAll.setHeight(otherh);
+		},1);
+		waitpgs.setDisplay(true);
+		if(Utils.isNetworkAvailable()){
+			getAppList();
+		}else{
+			installedAppList = AppManager.getInstalledAppList();
+			var length = installedAppList.length;
+			installedStr = "";
+			for(var j=length-1;j>=0;j--){
+				var id = installedAppList[j].id;
+				installedStr += "," + id;
+			}
+			installedStr += ",";
+			
+			homepageDatas = preference.get(userId + "offlineHomepageDatas");
+			if(!homepageDatas){
+				homepageDatas = preference.get(userId + "offlineCellDatas");
+				if(homepageDatas && homepageDatas.length>1){
+					homepageDatas.splice(homepageDatas.length-1, 1);
+				}
+			}
+			//把其他用户已经卸载的应用从数据中删除
+			for (var j=homepageDatas.length-1;j>=0;j--) {
+				var id = homepageDatas[j].id;
+				if(installedStr.indexOf(","+id+",")==-1 && homepageDatas[j].isOriginal == "false"){
+					homepageDatas.splice(j,1);
+				}
+			}
+			otherDatas = preference.get(userId + "offlineOtherDatas");
+			if(!otherDatas){
+				otherDatas = [];
+			}
+			//把其他用户已经卸载的应用从数据中删除
+			for (var j=otherDatas.length-1;j>=0;j--) {
+				var id = otherDatas[j].id;
+				if(installedStr.indexOf(","+id+",")==-1 && otherDatas[j].isOriginal == "false"){
+					otherDatas.splice(j,1);
+				}
+			}
+			gridView.remove(dragGridViewHome);
+			otherApps.remove(dragGridViewAll);	
+			dragGridViewHome.setItems(homepageDatas);
+			dragGridViewAll.setItems(otherDatas);			
+			gridView.add(dragGridViewHome);
+			otherApps.add(dragGridViewAll); 
+			waitpgs.setDisplay(false);
+		}
+		log("dragGridViewHome"+dragGridViewHome.getHeight());
+	});
+	
+	var fromBack = false;
+	$M.page.addEvent("onBack", function(params) {		
+		$M.setCurrentAppId('com.primeton.mwork');
+		fromBack = false;
+		if(params != undefined && params.fromAppList != undefined){
+			waitpgs.setDisplay(true);
+			fromBack = params.fromAppList;	
+			if(Utils.isNetworkAvailable()){
+			 	getAppList();
+			}else{
+				installedAppList = AppManager.getInstalledAppList();
+				var length = installedAppList.length;
+				installedStr = "";
+				for(var j=length-1;j>=0;j--){
+					var id = installedAppList[j].id;
+					installedStr += "," + id;
+				}
+				installedStr += ",";
+				
+				homepageDatas = preference.get(userId + "offlineHomepageDatas");
+				if(!homepageDatas){
+					homepageDatas = preference.get(userId + "offlineCellDatas");
+					if(homepageDatas && homepageDatas.length>1){
+						homepageDatas.splice(homepageDatas.length-1, 1);
+					}
+				}
+				//把其他用户已经卸载的应用从数据中删除
+				for (var j=homepageDatas.length-1;j>=0;j--) {
+					var id = homepageDatas[j].id;
+					if(installedStr.indexOf(","+id+",")==-1 && homepageDatas[j].isOriginal == "false"){
+						homepageDatas.splice(j,1);
+					}
+				}
+				otherDatas = preference.get(userId + "offlineOtherDatas");
+				if(!otherDatas){
+					otherDatas = [];
+				}
+				//把其他用户已经卸载的应用从数据中删除
+				for (var j=otherDatas.length-1;j>=0;j--) {
+					var id = otherDatas[j].id;
+					if(installedStr.indexOf(","+id+",")==-1 && otherDatas[j].isOriginal == "false"){
+						otherDatas.splice(j,1);
+					}
+				}
+				gridView.remove(dragGridViewHome);
+				otherApps.remove(dragGridViewAll);	
+				dragGridViewHome.setItems(homepageDatas);
+				dragGridViewAll.setItems(otherDatas);					
+				gridView.add(dragGridViewHome);
+				otherApps.add(dragGridViewAll); 
+				waitpgs.setDisplay(false);
+			}
+		}
+	});
+
+	//首页应用单击事件	 
+	dragGridViewHome.addEvent("onItemClick", function(row, tag, data) {
+
+		var params = {};
+		params.param = null;
+		var token = preference.get('access_token');
+		params = {
+			'token' : token
+		};
+
+		if(data.deleteApp!='show'&&data.addApp!='show'){
+			if (data != null && data.isOriginal == 'true') {
+				$M.page.goTo(data.url);
+			} else if (data != null && data.isOriginal == 'false') {
+				if (data.hasUpdate == 'true') {
+					if(Utils.isNetworkAvailable()){
+						confirm("更新" + data.name + " 应用", function() {
+							AppManager.installUpdate(Utils.stringToJson(data.updateappinfo), successFn,
+									failureFn, loadingFn, '1');
+						}, function() {
+							toast('取消更新');
+						});
+					}else{
+						toast('当前网络不可用');
+					}
+				} else {
+					AppManager.startApp(data, params, failureFn);
+				}
+			}
+		}else if(data.deleteApp=='show'){
+			homepageDatas.splice(row, 1);
+			var data = copyobj(data);
+			data.deleteApp = 'hide';
+			data.addApp = 'show';
+			otherDatas.push(data);
+ 			
+ 			log("====alldata:"+Utils.jsonToString(homepageDatas));
+ 			if(homepageDatas.length>0){
+ 				dragGridViewHome.setItems(homepageDatas);
+ 			}else{
+				var arr = new Array();
+				gridView.remove(dragGridViewHome); 
+				dragGridViewHome.setItems(arr);
+				gridView.add(dragGridViewHome); 
+ 			}
+			dragGridViewAll.setItems(otherDatas);
+		}else{
+		
+		}
+	});
+	
+		//其他应用单击事件	 
+	dragGridViewAll.addEvent("onItemClick", function(row, tag, data) {
+
+		var params = {};
+		params.param = null;
+		var token = preference.get('access_token');
+		params = {
+			'token' : token
+		};
+		if(data.deleteApp!='show'&&data.addApp!='show'){
+			if (data != null && data.isOriginal == 'true') {
+				$M.page.goTo(data.url);
+			} else if (data != null && data.isOriginal == 'false') {
+				if (data.hasUpdate == 'true') {
+					log('更新应用:' + Utils.jsonToString(data.updateappinfo));
+					if(Utils.isNetworkAvailable()){
+						confirm("更新" + data.name + " 应用", function() {
+							AppManager.installUpdate(Utils.stringToJson(data.updateappinfo), successFn,
+									failureFn, loadingFn, '1');
+						}, function() {
+							toast('取消更新');
+						});
+					}else{
+						toast('当前网络不可用');
+					}
+				} else {
+					AppManager.startApp(data, params, failureFn);
+				}
+			}
+		}else if(data.addApp=='show'){
+		  if(homepageDatas.length==11){
+		  	toast("首页只能放11个应用～");
+			return;
+		  }
+			otherDatas.splice(row, 1);
+			var data = copyobj(data);
+			data.deleteApp = 'show';
+			data.addApp = 'hide';
+			homepageDatas.push(data);
+			
+			
+ 			dragGridViewHome.setItems(homepageDatas);
+ 			if(otherDatas.length>0){
+ 				dragGridViewAll.setItems(otherDatas);
+ 			}else{
+				var arr = new Array();
+				otherApps.remove(dragGridViewAll); 
+				dragGridViewAll.setItems(arr);
+				otherApps.add(dragGridViewAll); 
+ 			}
+		}else{
+		
+		}
+	});
+	//长按事件    
+	dragGridViewHome.addEvent("onItemLongClick", function(startPosition, data) {
+		dragGridViewHome.setEnableDragGrid(true);
+		rightDiv1.setDisplay(true);
+		rightDiv2.setDisplay(false);
+		homepageDatas = copy(homepageDatas);
+		otherDatas = copy(otherDatas);
+		for (var i = 0; i < homepageDatas.length; i++) {
+			homepageDatas[i].deleteApp = 'show';
+			homepageDatas[i].addApp = 'hide';
+		}
+		for (var j = 0; j < otherDatas.length; j++) {
+			otherDatas[j].deleteApp = 'hide';
+			otherDatas[j].addApp = 'show';
+		}
+		dragGridViewHome.setItems(homepageDatas);
+		dragGridViewAll.setItems(otherDatas);
+
+	});
+	
+	dragGridViewAll.addEvent("onItemLongClick", function(startPosition, data) {
+		dragGridViewHome.setEnableDragGrid(true);
+		rightDiv1.setDisplay(true);
+		rightDiv2.setDisplay(false);
+		homepageDatas = copy(homepageDatas);
+		otherDatas = copy(otherDatas);
+		for (var i = 0; i < homepageDatas.length; i++) {
+			homepageDatas[i].deleteApp = 'show';
+			homepageDatas[i].addApp = 'hide';
+		}
+		for (var j = 0; j < otherDatas.length; j++) {
+			otherDatas[j].deleteApp = 'hide';
+			otherDatas[j].addApp = 'show';
+		}
+		dragGridViewHome.setItems(homepageDatas);
+		dragGridViewAll.setItems(otherDatas);
+	});
+	
+	//拖动事件       
+	dragGridViewHome.addEvent("onItemDragChange", function(startPosition,
+			endPosition, data) {
+			//无事发生
+	});
+
+	function failureFn() {
+		waitpgs.setDisplay(false);
+		log('open fail');
+	}
+	
+	function successFn(){
+		toast('更新应用成功');
+		preference.put(userId + 'griddatas', "");
+		if(Utils.isNetworkAvailable()){
+			getAppList();
+		}else{
+			homepageDatas = preference.get(userId + "offlineHomepageDatas");
+			if(!homepageDatas){
+				homepageDatas = preference.get(userId + "offlineCellDatas");
+				if(homepageDatas && homepageDatas.length>1){
+					homepageDatas.splice(homepageDatas.length-1, 1);
+				}
+			}
+			otherDatas = preference.get(userId + "offlineOtherDatas");
+			if(!otherDatas){
+				otherDatas = [];
+			}
+			dragGridViewHome.setItems(homepageDatas);
+			dragGridViewAll.setItems(otherDatas);			
+			gridView.add(dragGridViewHome);
+			otherApps.add(dragGridViewAll); 
+		}
+	}
+
+function copy(jsona){
+	var jsonb = [];
+	for(var i=0;i<jsona.length;i++){
+		var jsonbi = {};
+		for(var k in jsona[i]){
+			jsonbi[k] = jsona[i][k];
+		}
+		jsonb.push(jsonbi);
+	}
+	return jsonb;
+}
+
+	function copyobj(obj){
+	    var result={};
+	    for(key in obj){
+	        result[key]=obj[key];
+	    }
+	    return result;
+	}
+
+	//完成
+	function saveNewOrder() {
+		dragGridViewHome.setEnableDragGrid(false);
+		rightDiv1.setDisplay(false);
+		rightDiv2.setDisplay(true);
+		homepageDatas = dragGridViewHome.getItems();
+		otherDatas = dragGridViewAll.getItems();
+		var homedrag = copy(homepageDatas);
+		var otherdrag = copy(otherDatas);
+		for (var i = 0; i < homedrag.length; i++) {
+			homedrag[i].deleteApp = 'hide';
+			homedrag[i].addApp = 'hide';
+		}
+		for (var j = 0; j < otherdrag.length; j++) {
+			otherdrag[j].deleteApp = 'hide';
+			otherdrag[j].addApp = 'hide';
+		}
+		dragGridViewHome.setItems(homedrag);
+		preference.put(userId + "offlineHomepageDatas", homedrag);
+		dragGridViewAll.setItems(otherdrag);
+		preference.put(userId + "offlineOtherDatas", otherdrag);
+		
+		preference.put(userId + "homecelldata", homedrag);
+		var offlineCellDatas = copy(homedrag);
+		offlineCellDatas.push(itemadd);
+		preference.put(userId + "offlineCellDatas", offlineCellDatas);
+		
+		preference.put(userId + "othercelldata", otherdrag);
+	}
+
+	var itemoriginal = [ {
+
+		'icon' : '/menu/schedule.png',
+		'name' : '日程管理',
+		'url' : '/schedule/scheduleHome.html',
+		'appid' : '',
+		'hasUpdate' : 'false',
+		'isOriginal' : 'true'
+	} ]; 
+ 	var itemadd = {'icon':'/menu/moreapps.png','name':'更多应用','url':'/index/moreapps.html', 'appid':'', 'hasUpdate':'false','isOriginal':'true'};
+ 	var userId = preference1.get('userid');
+ 	
+	function getAppList() {
+		AppManager.USERID = preference1.get('userid');
+		AppManager.getAppList(getApplistSFn, getApplistFfn);
+	}
+
+	function getApplistSFn(applist) {
+		applists = "";
+		if (applist.length > 0) {
+			for (var i = 0; i < applist.length; i++) {
+				applists += "," + applist[i].id;
+			}
+			applists += ",";
+		}
+		loadData();
+	}
+	
+	function loadData() {
+		AppManager.getUpdateAppList(UpdateSfn, getDataFfn);
+	}
+	
+	function getDataFfn(){
+		installedAppList = AppManager.getInstalledAppList();
+		MAXLEN = installedAppList.length;
+		installedStr = "";
+		for(var j=MAXLEN-1;j>=0;j--){
+			var id = installedAppList[j].id;
+			installedStr += "," + id;
+		}
+		installedStr += ",";
+		if(preference.get(userId + 'griddatas')==null||preference.get(userId + 'griddatas')==''||preference.get(userId + 'griddatas')=='undefined'||fromBack=='true'){
+			cellDatas = [];
+			cellDatas = itemoriginal.concat();
+			if (installedAppList != null && installedAppList.length > 0) {
+				for (var i = 0; i < MAXLEN; i++) {
+					if (hasupdateApps.length == 0) {
+						installedAppList[i].hasUpdate = 'false';
+					} else {
+						for (var j = 0; j < hasupdateApps.length; j++) {
+							if (installedAppList[i].id == hasupdateApps[j].id) {
+								installedAppList[i].hasUpdate = 'true';
+								log("1"+installedAppList[i].name);
+								installedAppList[i].updateappinfo = Utils.jsonToString(hasupdateApps[j]);
+								break;
+							} else {
+								installedAppList[i].hasUpdate = 'false';
+								continue;
+							}
+						}
+					}
+					var data = {};
+					installedAppList[i].isOriginal = 'false';
+					data = installedAppList[i];
+					cellDatas.push(data);
+				}
+			}
+			preference.put(userId + "griddatas", cellDatas);
+			if(fromBack=='true'){
+				otherDatas = [];
+				homepageDatas = preference.get(userId + "homecelldata");
+				if(homepageDatas.length>0){
+					for(var i=0;i<cellDatas.length;i++){
+						for(var j=0;j<homepageDatas.length;j++){
+							if(cellDatas[i].name!=homepageDatas[j].name){
+								if(j==homepageDatas.length-1){
+									otherDatas.push(cellDatas[i]);
+								}
+							}else{
+								break;
+							}
+						}
+					}
+				}else{
+					otherDatas=copy(cellDatas);
+				}
+				preference.put(userId + "othercelldata", otherDatas);
+				gridView.remove(dragGridViewHome);
+				otherApps.remove(dragGridViewAll);
+			}else{
+				if (cellDatas.length > 11) {
+					homepageDatas = cellDatas.slice(0, 11);
+					otherDatas = cellDatas.slice(11);
+					preference.put(userId + "homecelldata", homepageDatas);
+					preference.put(userId + "othercelldata", otherDatas);
+				} else {
+					homepageDatas = cellDatas;
+					otherDatas = {};
+					preference.put(userId + "homecelldata", homepageDatas);
+					preference.put(userId + "othercelldata", otherDatas);
+				}
+			
+			}
+			
+		}else{
+			cellDatas = preference.get(userId + 'griddatas');
+			homepageDatas = preference.get(userId + 'homecelldata');
+			otherDatas = preference.get(userId + 'othercelldata');
+		}
+		// add by liulei 2017-05-30 处理更新逻辑
+		var length = homepageDatas.length;
+		//处理更改用户登录后，没有权限的应用不显示
+		for(var j=length-1;j>=0;j--){
+			var id = homepageDatas[j].id;
+			if(id==undefined)
+				continue;
+			if(applists.indexOf(","+id+",")==-1){
+				homepageDatas.splice(j,1);
+			}
+		}
+		//把其他用户已经卸载的应用从数据中删除
+		for (var j=homepageDatas.length-1;j>=0;j--) {
+			var id = homepageDatas[j].id;
+			if(installedStr.indexOf(","+id+",")==-1 && homepageDatas[j].isOriginal == "false"){
+				homepageDatas.splice(j,1);
+			}
+		}
+		// add by liulei 2017-05-30 处理更新逻辑
+		var length = otherDatas.length;
+		//处理更改用户登录后，没有权限的应用不显示
+		for(var j=length-1;j>=0;j--){
+			var id = otherDatas[j].id;
+			if(id==undefined)
+				continue;
+			if(applists.indexOf(","+id+",")==-1){
+				otherDatas.splice(j,1);
+			}
+		}
+		//把其他用户已经卸载的应用从数据中删除
+		for (var j=otherDatas.length-1;j>=0;j--) {
+			var id = otherDatas[j].id;
+			if(installedStr.indexOf(","+id+",")==-1 && otherDatas[j].isOriginal == "false"){
+				otherDatas.splice(j,1);
+			}
+		}
+		dragGridViewHome.setItems(homepageDatas);
+		dragGridViewAll.setItems(otherDatas);
+		preference.put(userId + "offlineHomepageDatas", homepageDatas);
+		preference.put(userId + "offlineOtherDatas", otherDatas);
+		gridView.add(dragGridViewHome);
+		otherApps.add(dragGridViewAll); 
+		waitpgs.setDisplay(false);
+	}
+	
+	function UpdateSfn(hasupdateList) {
+		hasupdateApps = [];
+		for (var i = 0; i < hasupdateList.length; i++) {
+			hasupdateApps.push(hasupdateList[i]);
+		}
+
+		installedAppList = AppManager.getInstalledAppList();
+		var length = installedAppList.length;
+		installedStr = "";
+		for (var j = length - 1; j >= 0; j--) {
+			var id = installedAppList[j].id;
+			if (applists.indexOf("," + id + ",") == -1) {
+				installedAppList.splice(j, 1);
+			} else {
+				installedStr += "," + id;
+			}
+		}
+		installedStr += ",";
+		MAXLEN = installedAppList.length;
+		if(preference.get(userId + 'griddatas')==null||preference.get(userId + 'griddatas')==''||preference.get(userId + 'griddatas')=='undefined'||fromBack=='true'){
+			cellDatas = [];
+			cellDatas = itemoriginal.concat();
+			if (installedAppList != null && installedAppList.length != 0) {
+				for (var i = 0; i < MAXLEN; i++) {
+					if (hasupdateApps.length == 0) {
+						installedAppList[i].hasUpdate = 'false';
+					} else {
+						for (var j = 0; j < hasupdateApps.length; j++) {
+							if (installedAppList[i].id == hasupdateApps[j].id) {
+								installedAppList[i].hasUpdate = 'true';
+								log("2"+installedAppList[i].name);
+								installedAppList[i].updateappinfo = Utils.jsonToString(hasupdateApps[j]);
+								break;
+							} else {
+								installedAppList[i].hasUpdate = 'false';
+								continue;
+							}
+						}
+					}
+					var data = {};
+					installedAppList[i].isOriginal = 'false';
+					data = installedAppList[i];
+					cellDatas.push(data);
+				}
+			}
+			preference.put(userId + "griddatas", cellDatas);
+			if(fromBack=='true'){
+				otherDatas = [];
+				homepageDatas = preference.get(userId + "homecelldata");
+				if(homepageDatas.length>0){
+					for(var i=0;i<cellDatas.length;i++){
+						for(var j=0;j<homepageDatas.length;j++){
+							if(cellDatas[i].name!=homepageDatas[j].name){
+								if(j==homepageDatas.length-1){
+									otherDatas.push(cellDatas[i]);
+								}else{
+									//temp.push(cellDatas[i]);
+								}
+							}else{
+								//temp.push(cellDatas[i]);
+								break;
+							}
+						}
+					}
+				}else{
+					otherDatas=copy(cellDatas);
+				}
+				preference.put(userId + "othercelldata", otherDatas);
+				gridView.remove(dragGridViewHome);
+				otherApps.remove(dragGridViewAll);
+			}else{
+				
+				if (cellDatas.length > 11) {
+					homepageDatas = cellDatas.slice(0, 11);
+					otherDatas = cellDatas.slice(11);
+					preference.put(userId + "homecelldata", homepageDatas);
+					preference.put(userId + "othercelldata", otherDatas);
+				} else {
+					homepageDatas = cellDatas;
+					otherDatas = {};
+					preference.put(userId + "homecelldata", homepageDatas);
+					preference.put(userId + "othercelldata", otherDatas);
+				}
+			}
+		}else{
+			cellDatas = preference.get(userId + 'griddatas');
+			homepageDatas = preference.get(userId + 'homecelldata');
+			otherDatas = preference.get(userId + 'othercelldata');
+		}
+		// add by liulei 2017-05-30 处理更新逻辑
+		var length = homepageDatas.length;
+		//处理更改用户登录后，没有权限的应用不显示
+		for(var j=length-1;j>=0;j--){
+			var id = homepageDatas[j].id;
+			if(id==undefined)
+				continue;
+			if(applists.indexOf(","+id+",")==-1){
+				homepageDatas.splice(j,1);
+			}
+		}
+		//把其他用户已经卸载的应用从数据中删除
+		for (var j=homepageDatas.length-1;j>=0;j--) {
+			var id = homepageDatas[j].id;
+			if(installedStr.indexOf(","+id+",")==-1 && homepageDatas[j].isOriginal == "false"){
+				homepageDatas.splice(j,1);
+			}
+		}
+		// add by liulei 2017-05-30 处理更新逻辑
+		var length = otherDatas.length;
+		//处理更改用户登录后，没有权限的应用不显示
+		for(var j=length-1;j>=0;j--){
+			var id = otherDatas[j].id;
+			if(id==undefined)
+				continue;
+			if(applists.indexOf(","+id+",")==-1){
+				otherDatas.splice(j,1);
+			}
+		}
+		//把其他用户已经卸载的应用从数据中删除
+		for (var j=otherDatas.length-1;j>=0;j--) {
+			var id = otherDatas[j].id;
+			if(installedStr.indexOf(","+id+",")==-1 && otherDatas[j].isOriginal == "false"){
+				otherDatas.splice(j,1);
+			}
+		}
+		dragGridViewHome.setItems(homepageDatas);
+		dragGridViewAll.setItems(otherDatas);
+		preference.put(userId + "offlineHomepageDatas", homepageDatas);
+		preference.put(userId + "offlineOtherDatas", otherDatas);
+		gridView.add(dragGridViewHome);
+		otherApps.add(dragGridViewAll);
+		waitpgs.setDisplay(false);
+	}
+
+	function getApplistFfn(e) {
+		installedAppList = AppManager.getInstalledAppList();
+		MAXLEN = installedAppList.length;
+		installedStr = "";
+		for(var j=MAXLEN-1;j>=0;j--){
+			var id = installedAppList[j].id;
+			installedStr += "," + id;
+		}
+		installedStr += ",";
+		if(preference.get(userId + 'griddatas')==null||preference.get(userId + 'griddatas')==''||preference.get(userId + 'griddatas')=='undefined'||fromBack=='true'){
+			cellDatas = [];
+			cellDatas = itemoriginal.concat();
+			if (installedAppList != null && installedAppList.length > 0) {
+				for (var i = 0; i < MAXLEN; i++) {
+					if (hasupdateApps.length == 0) {
+						installedAppList[i].hasUpdate = 'false';
+					} else {
+						for (var j = 0; j < hasupdateApps.length; j++) {
+							if (installedAppList[i].id == hasupdateApps[j].id) {
+								installedAppList[i].hasUpdate = 'true';
+								log("3"+installedAppList[i].name);
+								installedAppList[i].updateappinfo = Utils.jsonToString(hasupdateApps[j]);
+								break;
+							} else {
+								installedAppList[i].hasUpdate = 'false';
+								continue;
+							}
+						}
+					}
+					var data = {};
+					installedAppList[i].isOriginal = 'false';
+					data = installedAppList[i];
+					cellDatas.push(data);
+				}
+			}
+			preference.put(userId + "griddatas", cellDatas);
+			if(fromBack=='true'){
+				otherDatas = [];
+				homepageDatas = preference.get(userId + "homecelldata");
+				if(homepageDatas.length>0){
+					for(var i=0;i<cellDatas.length;i++){
+						for(var j=0;j<homepageDatas.length;j++){
+							if(cellDatas[i].name!=homepageDatas[j].name){
+								if(j==homepageDatas.length-1){
+									otherDatas.push(cellDatas[i]);
+								}
+							}else{
+								break;
+							}
+						}
+					}
+				}else{
+					otherDatas=copy(cellDatas);
+				}
+				preference.put(userId + "othercelldata", otherDatas);
+				gridView.remove(dragGridViewHome);
+				otherApps.remove(dragGridViewAll);
+			}else{
+				if (cellDatas.length > 11) {
+					homepageDatas = cellDatas.slice(0, 11);
+					otherDatas = cellDatas.slice(11);
+					preference.put(userId + "homecelldata", homepageDatas);
+					preference.put(userId + "othercelldata", otherDatas);
+				} else {
+					homepageDatas = cellDatas;
+					otherDatas = {};
+					preference.put(userId + "homecelldata", homepageDatas);
+					preference.put(userId + "othercelldata", otherDatas);
+				}
+			
+			}
+			
+		}else{
+			cellDatas = preference.get(userId + 'griddatas');
+			homepageDatas = preference.get(userId + 'homecelldata');
+			otherDatas = preference.get(userId + 'othercelldata');
+		}
+		// add by liulei 2017-05-30 处理更新逻辑
+		var length = homepageDatas.length;
+		//处理更改用户登录后，没有权限的应用不显示
+		for(var j=length-1;j>=0;j--){
+			var id = homepageDatas[j].id;
+			if(id==undefined)
+				continue;
+			if(applists.indexOf(","+id+",")==-1){
+				homepageDatas.splice(j,1);
+			}
+		}
+		//把其他用户已经卸载的应用从数据中删除
+		for (var j=homepageDatas.length-1;j>=0;j--) {
+			var id = homepageDatas[j].id;
+			if(installedStr.indexOf(","+id+",")==-1 && homepageDatas[j].isOriginal == "false"){
+				homepageDatas.splice(j,1);
+			}
+		}
+		// add by liulei 2017-05-30 处理更新逻辑
+		var length = otherDatas.length;
+		//处理更改用户登录后，没有权限的应用不显示
+		for(var j=length-1;j>=0;j--){
+			var id = otherDatas[j].id;
+			if(id==undefined)
+				continue;
+			if(applists.indexOf(","+id+",")==-1){
+				otherDatas.splice(j,1);
+			}
+		}
+		//把其他用户已经卸载的应用从数据中删除
+		for (var j=otherDatas.length-1;j>=0;j--) {
+			var id = otherDatas[j].id;
+			if(installedStr.indexOf(","+id+",")==-1 && otherDatas[j].isOriginal == "false"){
+				otherDatas.splice(j,1);
+			}
+		}
+		
+		dragGridViewHome.setItems(homepageDatas);
+		dragGridViewAll.setItems(otherDatas);
+		preference.put(userId + "offlineHomepageDatas", homepageDatas);
+		preference.put(userId + "offlineOtherDatas", otherDatas);
+		gridView.add(dragGridViewHome);
+		otherApps.add(dragGridViewAll); 
+		waitpgs.setDisplay(false);
+	}
+	function loadingFn() {
+	}
+</script>
+</html>

@@ -1,0 +1,637 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+	
+</body>
+<script> 
+//******************应用商店通用方法**********
+
+// var preference = new $M.Preferences();
+// preference.open('appstore');
+
+AppManager = {};
+AppManager.TYPE_MICRO = "microapp";
+AppManager.TYPE_HTML5 = "html5";
+AppManager.TYPE_ANDROID = "android";
+AppManager.TYPE_IOS = "ios";
+
+AppManager.LOCALPATH = 'sd://com.primeton.appstore/app/'; 
+AppManager.ICONPATH = 'sd://com.primeton.appstore/icon/';
+
+var preference1 = new $M.Preferences();
+preference1.open('workbench');
+AppManager.USERID = preference1.get('userid');
+
+//URL
+var SERVICEPATH;
+var clientInfo = $M.Portal.getClientConfig();
+
+if(clientInfo.appServerAddress.indexOf("http")!=-1)
+	SERVICEPATH=  clientInfo.appServerAddress + ":" + clientInfo.appServerPort+ "/appstore";
+else
+	SERVICEPATH=  "http://"+clientInfo.appServerAddress + ":" + clientInfo.appServerPort+ "/appstore";
+
+AppManager.getAppListUrl = SERVICEPATH + '/store/app/getUserAppList.do';
+AppManager.getAppCommentsUrl = SERVICEPATH + '/store/admin/allComments.do';
+AppManager.saveAppCommentUrl = SERVICEPATH + '/store/app/saveAppComment.do';
+AppManager.getUpdateAppListUrl = SERVICEPATH + '/store/app/getUserUpdateAppList.do';
+AppManager.searchOneDetailtUrl = SERVICEPATH + '/store/app/getDetailByAppId.do';
+
+AppManager.DEVICE_TYPE = null;
+if(Emp.isAndroid){
+	AppManager.DEVICE_TYPE = 'android';
+}
+else if(Emp.isIOS){
+	AppManager.DEVICE_TYPE = 'ios';
+}
+
+//应用列表过滤ios/android
+AppManager.filterApp = function(appList) {
+	var apps=[];
+	var system=AppManager.TYPE_IOS;
+	if($M.isIOS) 
+		system=AppManager.TYPE_ANDROID;
+	for(var i=0;i<appList.length;i++)
+	{
+	   //如果是ios,android的应用都过滤，反之，易然
+       if(appList[i].type!=system){
+         apps.push(appList[i]);
+	   }
+	}	
+	return apps;
+};
+
+//应用列表过滤过滤出html5、microapp
+AppManager.filterApp2 = function(appList) {
+	var apps=[];
+	for(var i=0; i<appList.length; i++)
+	{
+		if(appList[i].type==AppManager.TYPE_HTML5||appList[i].type==AppManager.TYPE_MICRO){
+			apps.push(appList[i]);
+		}
+	}
+	return apps;
+}
+
+//过滤出新手必备
+AppManager.filterNeedApp = function(appList) {
+	var apps=[];
+	var system=AppManager.TYPE_IOS;
+	if($M.isIOS) 
+		system=AppManager.TYPE_ANDROID;
+	for(var i=0;i<appList.length;i++)
+	{
+	   //如果是ios,android的应用都过滤，反之，易然
+       if(appList[i].type!=system){
+       		if(appList[i].appClass == "2" || appList[i].appClass == "4"){	
+       			apps.push(appList[i]);
+       		}
+	   }
+	}
+	return apps;
+};
+
+//过滤出新品发布
+AppManager.filterNewApp = function(appList) {
+	var apps=[];
+	var system=AppManager.TYPE_IOS;
+	if($M.isIOS) 
+		system=AppManager.TYPE_ANDROID;
+	for(var i=0;i<appList.length;i++)
+	{
+	   //如果是ios,android的应用都过滤，反之，易然
+       if(appList[i].type!=system){
+        	if(appList[i].appClass == "3" || appList[i].appClass == "4"){	
+       			apps.push(appList[i]);
+       		}
+	   }
+	}
+	return apps;
+};
+
+//是否已经安装原生应用
+AppManager.isInstalledApp = function(appInfo) {
+	if(appInfo.type==AppManager.TYPE_ANDROID){
+		if($M.isAndroid){
+ 			return Utils.isAppInstalled(appInfo.packageName);
+		}
+	}else if(appInfo.type==AppManager.TYPE_IOS){
+		//判断ios是否安装
+		if($M.isIOS){
+			return util.isNativeAppInstalled(appInfo.bundleId);
+		}
+	}else{
+		return true;
+	}	
+};
+
+AppManager.isThisAppInstalled = function(appInfo) {
+	var db = $M.Database.openDatabase('nativeAppInfo');//打开一个数据库，假如该数据库不存在，则创建该数据库	
+	var sql = "select appid from nativeapp where appid='"+appInfo.id+"'";
+	var result = db.query(sql);
+	if(result.length>0){
+		return true;
+	}else{
+		return false;
+	}	
+};
+
+
+//获取本地应用列表
+AppManager.getLocalAppList = function() {
+	var localAppList = [];
+	
+	var nativeApps=AppManager.getLocalNativeAppList();
+		
+	for (var i = 0; i < nativeApps.length; i++) {
+		if(AppManager.isInstalledApp(nativeApps[i])){
+			localAppList.push({
+				id : nativeApps[i].appid,
+				version : nativeApps[i].ver,
+				type:nativeApps[i].type
+			});
+		}else{
+			AppManager.delNativeApp(nativeApps[i]);
+		}
+	}
+	return Utils.jsonToString(localAppList);
+
+};
+
+
+//********原生应用信息数据库
+//初始化数据库
+AppManager.initNativeAppInfo = function() {
+	var db = $M.Database.openDatabase('nativeAppInfo');//打开一个数据库，假如该数据库不存在，则创建该数据库		
+	//建表
+	sql = "create table  if not exists nativeapp(appid varchar PRIMARY KEY,name varchar,icon varchar,type varchar,ver varchar,urlScheme varchar,bundleId varchar,packageName varchar,activityName varchar,entryUrl varchar, summary varchar);"; //sql语句
+	db.execute(sql)
+	db.close();
+};
+
+AppManager.initNativeAppInfo(); //初始化数据库
+
+//****获取原生应用数据库信息
+AppManager.getLocalNativeAppList = function() {
+	var db = $M.Database.openDatabase('nativeAppInfo');//打开一个数据库，假如该数据库不存在，则创建该数据库		
+	//建表
+	sql = "select appid, name, icon ,type ,ver,urlScheme ,bundleId ,packageName ,activityName, entryUrl, summary from nativeapp"; //sql语句
+	var data=db.query(sql);
+	db.close();
+	return data;
+};
+
+//添加原生应用信息到本地
+AppManager.addNativeApp = function(appInfo, successFn) {
+	var db = $M.Database.openDatabase('nativeAppInfo');//打开一个数据库，假如该数据库不存在，则创建该数据库	
+	var sql = "select appid from nativeapp where appid='"+appInfo.id+"'";
+	var result = db.query(sql);
+	if(result.length>0){
+		log('-udpate app-,first delete old appInfo')
+		AppManager.delNativeApp(appInfo);
+	}
+	var iconfile = AppManager.ICONPATH + appInfo.type + '_' + appInfo.id + '_' + appInfo.ver + '.png';
+	var iconTask = $M.DownLoadManager.createUserTask(appInfo.icon, iconfile);
+	
+	iconTask.addEvent("onSuccess",function(){
+		log("图片保存成功");
+		sql = "insert into nativeapp  values('"+appInfo.id+"','"+appInfo.name+"','"+iconfile+"','"+appInfo.type+"','"+appInfo.ver
+		+"','"+appInfo.urlScheme+"','"+appInfo.bundleId+"','"+appInfo.packageName+"','"+appInfo.activityName+"','"+appInfo.entryUrl+"','"+appInfo.summary+"')"; //sql语句
+		log(sql);
+	
+		var state=db.execute(sql);
+		db.close();
+	
+		successFn();
+		
+		return state 
+	});
+	
+	iconTask.addEvent("onFailure",function(){
+		sql = "insert into nativeapp  values('"+appInfo.id+"','"+appInfo.name+"','"+appInfo.icon+"','"+appInfo.type+"','"+appInfo.ver
+		+"','"+appInfo.urlScheme+"','"+appInfo.bundleId+"','"+appInfo.packageName+"','"+appInfo.activityName+"','"+appInfo.entryUrl+"','"+appInfo.summary+"')"; //sql语句
+		log(sql);
+		var state=db.execute(sql);
+		db.close();
+		successFn();
+		return state 
+	});
+	
+	iconTask.start();
+	//插入数据
+};
+
+//****更新原生应用信息到本地数据库
+AppManager.updateNativeApp = function(appInfo) {
+	var db = $M.Database.openDatabase('nativeAppInfo');//打开一个数据库，假如该数据库不存在，则创建该数据库		
+	sql = "update nativeapp set ver='"+appInfo.ver+"' and type='"+appInfo.type+"' and entryUrl='"+appInfo.entryUrl+"' and urlScheme='"+appInfo.urlScheme+"' and bundleId='"+appInfo.bundleId+"' and packageName='"+appInfo.packageName+"' and summary='"+appInfo.summary+"' where appid='"+appInfo.id+"'";	
+	var state=db.execute(sql);
+	db.close();
+	return state 
+};
+
+//****删除原生应用信息到本地数据库
+AppManager.delNativeApp = function(appInfo) {
+	var iconfile = AppManager.ICONPATH + appInfo.type + '_' + appInfo.id + '_' + appInfo.ver + '.png';
+	$M.FileUtil.deleteFile(iconfile);
+	if(appInfo.id==undefined&&appInfo.appid==undefined){
+		log('appid为空，删除失败,app信息：'+Utils.jsonToString(appInfo));		
+		return;
+	}
+	var db = $M.Database.openDatabase('nativeAppInfo');//打开一个数据库，假如该数据库不存在，则创建该数据库		
+	sql = "delete nativeapp  where appid='"+appInfo.id+"'"; //sql语句
+	if(appInfo.id)
+		sql = "delete from nativeapp  where appid='"+appInfo.id+"'"; //sql语句
+	else
+		sql = "delete from nativeapp  where appid='"+appInfo.appid+"'"; //sql语句
+	var state=db.execute(sql);
+	db.close();
+	return state 
+};
+
+//****获取应用列表
+//所有应用
+AppManager.getAppList = function(successFn, failuerFn) {
+	var ajax = new $M.Ajax();
+	ajax.setAction(AppManager.getAppListUrl);
+	//参数
+	ajax.add('userId', AppManager.USERID);
+	ajax.add('deviceType', AppManager.DEVICE_TYPE);
+	
+	ajax.submit(function(r) {
+	//调用成功，返回结果
+	try {
+		var rep = Utils.stringToJson(r)
+		if (rep.state == true) {
+			successFn(AppManager.filterApp(rep.result));
+		} else {
+			failuerFn(rep.msg);
+		}
+	} catch (e) {
+		failuerFn("get Applist Data error:" + r);
+	}
+	}, function(r) {
+		failuerFn("get Applist Error:" + r);
+	});
+};
+
+//新手必备
+AppManager.getNeedAppList = function(successFn, failuerFn) {
+	var ajax = new $M.Ajax();
+	ajax.setAction(AppManager.getAppListUrl);
+	//参数
+	ajax.add('userId', AppManager.USERID);
+	ajax.add('deviceType', AppManager.DEVICE_TYPE);
+	
+	ajax.submit(function(r) {
+	//调用成功，返回结果
+	try {
+		var rep = Utils.stringToJson(r)
+		if (rep.state == true) {
+			successFn(AppManager.filterNeedApp(rep.result));
+		} else {
+			failuerFn(rep.msg);
+		}
+	} catch (e) {
+		failuerFn("get NeedApplist Data error:" + r);
+	}
+	}, function(r) {
+		failuerFn("get NeedApplist Error:" + r);
+	});
+};
+
+//新品发布
+AppManager.getNewAppList = function(successFn, failuerFn) {
+	var ajax = new $M.Ajax();
+	ajax.setAction(AppManager.getAppListUrl);
+	//参数
+	ajax.add('userId', AppManager.USERID);
+	ajax.add('deviceType', AppManager.DEVICE_TYPE);
+	
+	ajax.submit(function(r) {
+	//调用成功，返回结果
+	try {
+		var rep = Utils.stringToJson(r)
+		if (rep.state == true) {
+			successFn(AppManager.filterNewApp(rep.result));
+		} else {
+			failuerFn(rep.msg);
+		}
+	} catch (e) {
+		failuerFn("get NewApplist Data error:" + r);
+	}
+	}, function(r) {
+		failuerFn("get NewApplist Error:" + r);
+	});
+};
+
+//****获取评论列表
+AppManager.getAppComments = function(successFn, failuerFn, appid, pageIndex, pageSize) {
+	var ajax = new $M.Ajax();
+	ajax.setAction(AppManager.getAppCommentsUrl);
+	//参数
+	ajax.add('appId', appid);  //应用id
+	ajax.add('pageIndex', pageIndex);		//分页
+	ajax.add('pageSize', pageSize);		//每页数据条数
+	
+	ajax.submit(function(r) {
+		//调用成功，返回结果
+		try {
+			var rep = Utils.stringToJson(r)
+			successFn(rep)
+		} catch (e) {
+			failuerFn("get AppComments Data error:" + r);
+		}
+	}, function(r) {
+		failuerFn("get AppComments Error:" + r);
+	});
+};
+
+//****发布评论
+AppManager.saveAppComment = function(successFn, failuerFn, commentData) {
+	var ajax = new $M.Ajax();
+	ajax.setAction(AppManager.saveAppCommentUrl);
+	ajax.add('data', Utils.jsonToString(commentData));
+	ajax.submit(function(r) {
+		log(r);
+		//调用成功，返回结果
+		try {
+			var rep = Utils.stringToJson(r)
+			if (rep.state == true) {
+				successFn(rep)
+			} else {
+				failuerFn(rep.msg);
+			}
+		} catch (e) {
+			
+			failuerFn("save AppComment Data error:" + r);
+		}
+	}, function(r) {
+		log(r);
+		failuerFn("save AppComment Error:" + r);
+	});
+};
+
+//********安装应用
+//调用安装应用
+AppManager.installApp = function(appInfo, successFn, failureFn, loadingFn, row) {
+	//modify by liulei,应用安装，判断oldAppType  如果不为空，则新发布的应用更改了应用类型，需要特殊处理
+	if(appInfo.oldAppType!=''&&appInfo.oldAppType!='null')
+		commonDealAppType(appInfo);
+	if (appInfo.type == AppManager.TYPE_MICRO) {
+		AppManager.installApp_micro(appInfo, successFn, failureFn, loadingFn, row);
+	} else if (appInfo.type == AppManager.TYPE_ANDROID) {
+		AppManager.installApp_android(appInfo, successFn, failureFn, loadingFn, row)
+	}else if (appInfo.type == AppManager.TYPE_IOS) {
+		AppManager.installApp_ios(appInfo, successFn, failureFn,loadingFn, row);
+	}else if (appInfo.type == AppManager.TYPE_HTML5) {
+		AppManager.installApp_html5(appInfo,successFn, failureFn);
+	}else{
+		log("installApp:type error");
+	}
+};
+
+//处理应用安装时应用类型更改场景
+function commonDealAppType(appInfo){
+	log('----deal old appType------'+Utils.jsonToString(appInfo));
+	var oldAppType = appInfo.oldAppType;
+	//1.从数据库表结构中删除appid对应的记录
+	AppManager.delNativeApp(appInfo);
+	//2.删除oldType 和appid 如果 是微应用和umap应用对应的源代码
+	if(oldAppType==AppManager.TYPE_MICRO){//如果是微应用
+		$M.Portal.uninstall(appInfo.id);
+	}
+}
+
+//安装微应用
+AppManager.installApp_micro = function(appInfo, successFn, failureFn, loadingFn, row) {
+	var localfile = AppManager.LOCALPATH + appInfo.type + '_' + appInfo.id + '_' + appInfo.ver + '.zip';
+	var microApps = $M.Portal.getAllApps();
+	var currentVersion=0;
+	for (var i = 0; i < microApps.length; i++) {
+		if(appInfo.id == microApps[i].appId){
+			currentVersion = microApps[i].appVersion;
+		}
+	}
+	var url = appInfo.instURL;
+	//modify by liulei 2017-05-30 更改应用增量更新不生效问题
+	var task = $M.DownLoadManager.createUserTask(url, localfile);
+	task.addEvent("onSuccess", function() {
+		$M.Portal.install(localfile);
+		AppManager.addNativeApp(appInfo, successFn);
+	});
+	task.addEvent("onFailure", function() {
+		failureFn();
+	});
+	task.addEvent("loading", function(a,b){
+		loadingFn(a, b, appInfo, row);
+	});
+	task.start();
+};
+
+//安装android
+AppManager.installApp_android = function(appInfo, successFn, failureFn, loadingFn, row) {
+	var localfile = AppManager.LOCALPATH + appInfo.type + '_' + appInfo.id + '_' + appInfo.ver + '.apk';
+	var task = $M.DownLoadManager.createUserTask(appInfo.instURL, localfile);
+	task.addEvent("onSuccess", function() {
+		Utils.install(localfile,function(){
+			if("package:"+appInfo.packageName==arg){
+					AppManager.addNativeApp(appInfo,successFn);
+				}
+		},function(){
+		
+			failureFn();
+		
+		});
+	});
+	task.addEvent("onFailure", function() {		
+		failureFn();
+	});
+	task.addEvent("loading", function(a,b){
+		loadingFn(a, b, appInfo, row);
+	});
+	task.start();
+};
+
+//安装ios
+AppManager.installApp_ios = function(appInfo, successFn, failureFn, loadingFn, row) {
+	Utils.browser(appInfo.instURL);
+	Utils.nativeAppInstallProgress(appInfo.bundleId, function() {
+		AppManager.addNativeApp(appInfo,successFn);
+	}, function(a, b) {
+		log(a+":"+b);
+		loadingFn(b, a, appInfo, row);
+	});	
+};
+
+//安装html5
+AppManager.installApp_html5 = function(appInfo, successFn, failureFn) {
+	try{
+		AppManager.addNativeApp(appInfo,successFn);
+// 		successFn();
+	}catch(e){	
+		failureFn(e);
+	}
+};	
+	
+//********打开应用
+//如果是html5应用，需要传入跳转页page
+AppManager.startApp = function(appInfo, params, failureFn) {
+	if (appInfo.type == AppManager.TYPE_MICRO) {
+		AppManager.startMicroApp(appInfo, failureFn, params);				
+	} else if (appInfo.type == AppManager.TYPE_ANDROID) {
+		AppManager.startNativeApp(appInfo, failureFn, params);
+	}else if (appInfo.type == AppManager.TYPE_IOS) {
+		AppManager.startNativeApp(appInfo, failureFn, params);
+	}else if(appInfo.type == AppManager.TYPE_HTML5){
+		AppManager.startHtml5App(appInfo,params);
+	}else{
+		failureFn("open error");
+	}
+};
+
+//打开html5应用 
+AppManager.startHtml5App = function(appInfo,param){
+	$M.page.goTo('/appstore/commonHtml5.html',appInfo);
+}
+
+//打开 本地应用 
+AppManager.startNativeApp = function(appInfo, failureFn, params) {
+	if(appInfo.type==AppManager.TYPE_ANDROID)
+	{
+		if($M.isAndroid)
+		{
+			Utils.openInstalledApp(appInfo.packageName,appInfo.activityName,params);
+		}
+	}
+	else if(appInfo.type==AppManager.TYPE_IOS)
+	{
+		if($M.isIOS)
+		{	
+			var temp = Utils.stringToJson(params);
+			var result = "open?";
+			var i=0;
+			for(var a in temp){
+				if(i!=0){
+					 result+="&"
+				}else{
+					i++;
+				}
+				result +=a+"="+temp[a];
+			}
+			log("start-ios" + result)
+			$M.Portal.openInstalledApp(appInfo.urlScheme,result)						
+		}
+	}
+	else
+	{
+		failureFn("open native app error");
+	}
+		
+};
+
+//打开微应用
+AppManager.startMicroApp = function(appInfo, failureFn, param){
+	$M.setCurrentAppId(appInfo.id);
+	var microApps = $M.Portal.getAllApps();
+	for (var i = 0; i < microApps.length; i++) {
+		if(microApps[i].appId == appInfo.id){
+			appInfo.homepage = microApps[i].homepage;
+		}
+	}
+	$M.page.goTo(appInfo.homepage, param, false);
+};
+
+//****获取应用更新列表
+AppManager.getUpdateAppList = function(successFn, failureFn) {
+	var ajax = new $M.Ajax();
+		ajax.setTimeout(5);
+	ajax.setAction(AppManager.getUpdateAppListUrl);
+	ajax.add('userId', AppManager.USERID);
+	ajax.add("apps", AppManager.getLocalAppList());
+	ajax.add('deviceType', AppManager.DEVICE_TYPE);
+	ajax.submit(function(r) {
+		//调用成功，返回结果
+		try {
+			var rep = Utils.stringToJson(r);
+			if (rep.state == true) {
+				successFn(AppManager.filterApp(rep.result));
+			} else {
+				failureFn(rep.msg);
+			}
+		} catch (e) {
+			failureFn("get AppUpdatalist error:==="+e);
+		}
+		}, function(r) {
+			failureFn("get AppUpdatalist Error:" + r);
+	});
+};
+
+
+//****安装应用更新
+AppManager.installUpdate = function(appInfo, successFn, failureFn, loadingFn, row) {
+	AppManager.installApp(appInfo, successFn, failureFn, loadingFn, row);
+}
+
+//****获取本地安装应用列表
+AppManager.getInstalledAppList = function() {
+	var installedAppList = [];
+	
+	var nativeApps=AppManager.getLocalNativeAppList();
+	//原生应用,h5应用
+	for (var i = 0; i < nativeApps.length; i++) {
+		if(AppManager.isInstalledApp(nativeApps[i])){
+			nativeApps[i].id=nativeApps[i].appid;
+			installedAppList.push(nativeApps[i]);
+		}else{
+			AppManager.delNativeApp(nativeApps[i]);
+		}
+	}	
+	try{
+		return AppManager.filterApp(installedAppList);
+	}catch(e){
+		return;
+	}
+
+}
+
+//****卸载应用
+//获取卸载列表
+AppManager.getUninstallAppList = function(successFn, failureFn){
+	var uninstallAppList = [];
+	
+	var nativeApps=AppManager.getLocalNativeAppList();
+	//原生应用,h5应用
+	for (var i = 0; i < nativeApps.length; i++) {
+		nativeApps[i].id=nativeApps[i].appid;
+		uninstallAppList.push(nativeApps[i]);
+	}	
+	try{
+		successFn(AppManager.filterApp2(uninstallAppList));
+		log("获取卸载列表："+Utils.jsonToString(uninstallAppList));
+	}catch(e){
+		failureFn("get uninstallAppList error:" + r);
+	}
+}
+
+//删除应用
+AppManager.deleteApp = function(appInfo){
+	log('--deal delete install app:--'+Utils.jsonToString(appInfo));
+	if (appInfo.type == AppManager.TYPE_MICRO) {
+		if(appInfo.id){
+			$M.Portal.uninstall(appInfo.id);
+			AppManager.delNativeApp(appInfo);
+		}else{
+			$M.Portal.uninstall(appInfo.appId);
+			AppManager.delNativeApp(appInfo);
+		}
+	} else if (appInfo.type == AppManager.TYPE_ANDROID||appInfo.type == AppManager.TYPE_IOS||appInfo.type == AppManager.TYPE_HTML5) {
+		AppManager.delNativeApp(appInfo);
+	}
+	return true;
+};
+
+</script>
+</html>

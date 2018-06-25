@@ -1,0 +1,283 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+	$M.includeFile("/common/sql.html");
+	$M.includeFile("/common/commonUtils.html");
+	$M.includeFile("/update/updateDialog.html");
+</script> 
+<body>
+	<div backgroundImage="/images/welcome.jpeg" width="100%" height="100%" />
+</body>
+<script> 
+
+if (Emp.isIOS) {
+	Utils.setStatusBarStyle('default');
+}
+
+initDatabase();
+		//initDatabase
+		var db = $M.Database.openDatabase("microAppCache");
+		var sql = "create table if not exists appsdata ("
+				+ "userid varchar(32) primary key," 
+				+ "appid varchar(32),"
+				+ "cache integer,"
+				+ "extend varchar);";
+		db.excute(sql);//创建表结构
+		db.close();
+	
+function initDatabase() {
+    //记录初始化状态
+	log('initDatabase', 'contactsTable === ' + database.excute(Topcontacts));
+	log('initDatabase', 'TopcityTable === ' + database.excute(Topcity));
+	log('dropDatabase', 'tmworkmsgTable ===' + database.excute(dtmworkmsg));
+	//log('initDatabase', 'tmworkmsgTable === ' + database.excute(ctmworkmsg));
+	database.close();
+}
+
+var loginId = preference.get('userid');
+var pmsecret = preference.get('password');
+var loginstate = preference.get('loginstate');
+var isFirst = preference.get('isFirst');
+var msg = new Emp.MessageService();
+var initor = new $M.Init();
+var msgOrIn = "" ;
+function initMQTT() {
+	log("welcome","initMQTT");
+	msg.registerToken(function(){
+		log("-------注册成功----------");
+		msg.insertMsgConfig('com.primeton.mwork', 'appsUpdate', '/welcome.html','1');
+		msg.joinGroup('appsUpdate', function(){
+			log('--------加入推送组成功---------');
+		}, function(){
+			log('--------加入推送组失败---------');
+		});
+	}, function(){
+		log("-------注册失败----------");
+	});
+	
+	msg.registerToken(function(){
+		log("-------注册成功----------");
+		msg.insertMsgConfig('com.primeton.mwork', 'chatMessage', '/welcome.html','2');
+		msg.joinGroup('chatMessage', function(){
+			log('--------加入消息推送组成功---------');
+		}, function(){
+			log('--------加入推送组失败---------');
+		});
+	}, function(){
+		log("-------注册失败----------");
+	});
+}
+
+$M.page.addEvent('onLoad', function(args){
+	if(args == null){
+		msgOrIn = "i";
+	}else{
+		msgOrIn = "m";
+	}
+	initor.startMsgService(function() {
+		log('success');
+	}, function() {
+	});
+	initMQTT();
+	setTimeout(function(){
+		if(Utils.isNetworkAvailable()){
+			appUpdate();
+		}else{
+			goToPage();
+		}
+	},1000);
+});
+
+function goToPage(){
+	if (isFirst == null || isFirst == " "||isFirst=='undefined') {
+		gointo(1500, '/intropage.html');
+	}else if(loginId==null || loginId==''||loginId=='undefined'||loginstate!="in"){
+		gointo(2000, '/login.html');
+	}else{
+		if(Utils.isNetworkAvailable()){
+			login();
+		}else{
+			gointo(1500, '/index.html');
+		}			
+	}
+}
+
+//左键取消时间
+function cancel(){
+	dialog.close();
+	goToPage();
+}
+
+//右键应用更新事件
+function updateApp(){
+	log('welcome', '开始更新应用');
+	dialog.close();
+	showProgress('正在更新...');
+	initor.appUpdate(function() {
+		log('welcome', '更新应用结束');
+		dismissProgress();
+		if (isFirst == null || isFirst == " "||isFirst=='undefined') {
+			$M.page.goTo({'url':'/intropage.html',
+				'params':'',
+				'isDestroySelf': true,
+				'animation':'fade'
+			});
+		}else if(loginId==null || loginId==''||loginId=='undefined'||loginstate!="in"){
+			$M.page.goTo({'url':'/login.html',
+				'params':'',
+				'isDestroySelf': true,
+				'animation':'fade'
+			});
+		}else{
+			if(Utils.isNetworkAvailable()){
+				login();
+			}else{
+				$M.page.goTo({'url':'/index.html',
+					'params':msgOrIn,
+					'isDestroySelf': true,
+					'animation':'fade'
+				});
+			}			
+		}
+
+	}, function() {
+		if (isFirst == null || isFirst == " "||isFirst=='undefined') {
+			$M.page.goTo({'url':'/intropage.html',
+				'params':'',
+				'isDestroySelf': true,
+				'animation':'fade'
+			});
+		}else if(loginId==null || loginId==''||loginId=='undefined'||loginstate!="in"){
+			$M.page.goTo({'url':'/login.html',
+				'params':'',
+				'isDestroySelf': true,
+				'animation':'fade'
+			});
+		}else{
+			if(Utils.isNetworkAvailable()){
+				login();
+			}else{
+				$M.page.goTo({'url':'/index.html',
+					'params':msgOrIn,
+					'isDestroySelf': true,
+					'animation':'fade'
+				});
+			}			
+		}
+	});
+}
+
+    function appUpdate(){
+    	var patchVersion = "";
+//     	var apps = $M.Portal.getAllApps();
+// 	   	for(var i=0;i<apps.length;i++){
+// 	   		if(apps[i].appId=="com.primeton.mwork"){
+// 	   			patchVersion = apps[i].patchVersion;
+// 	   		}
+// 	   	}
+		var appconfig = $M.getAppConfig("com.primeton.mwork");
+		patchVersion = appconfig.patchVersion;
+        //应用检查更新
+		initor.hasUpdatableApp(function(result,appInfo) {
+			if (result == true) {
+				var updateContent = appInfo[0];
+				
+				var patchArr = patchVersion.split(".");
+  				var curBaseline = parseInt(patchArr[0]);
+  				
+  				var newVersion = updateContent.patch;
+  				var newPatchArr = newVersion.split(".");
+  				var newBaseline = parseInt(newPatchArr[0]);	
+ 		  		if(curBaseline<newBaseline){
+ 		  			title.removeAll();
+ 		  			content.removeAll();
+ 		  			updateInfo.version = updateContent.version;
+ 		  			updateInfo.content = "请前往下载最新版本"+updateContent.version+"."+newVersion;
+ 		  			setData();
+		    		setViews(true);
+		    		update();
+ 		  			addRightAppStoreUpdate();
+ 		  		}else{
+ 		  			if(updateContent.releasePolicy=="1"){
+	 		  			title.removeAll();
+						content.removeAll();
+					    updateInfo.version=updateContent.version;
+					    updateInfo.content=updateContent.remark;  
+					    setData();
+					    setViews(true);
+					  	update();
+	 		  			addRightClick();
+	 		  		}else{
+	 		  			title.removeAll();
+						content.removeAll();
+					    updateInfo.version=updateContent.version;
+					    updateInfo.content=updateContent.remark;  
+					    setData();
+					    setViews(false);
+					  	update();
+					  	addRightClick();
+					  	addLeftClick();
+	 		  		}
+ 		  		}			
+			} else {
+				log("welcome", "无可更新应用");
+                goToPage();
+			}
+		}, function() {
+			log("welcome", "检查应用更新失败");
+			goToPage();
+		});    
+    }
+/**
+* 刷新服务端token、session
+* 
+*/
+function login(){
+
+	var ajaxData = {};
+	ajaxData.userid = loginId;
+	ajaxData.pmsecret = pmsecret;
+	ajaxData.imei = Utils.getImei();
+	ajaxData.msgtoken = Utils.getMessageToken();
+	AjaxUtil.submit('/pmtoken', ajaxData, AjaxUtil.TYPE_POST, function(args){
+		var info = Utils.stringToJson(args);
+		if(info.errCode=="101"){
+			Utils.toast(info.errMsg);
+			gointo(1500, '/login.html');
+		}
+		else {
+			var access_token = info.access_token;
+			preference.put("access_token", access_token);
+			
+			if(preference.get('isGesture')=='true'){
+				gointo(1000, '/writegesture.html');	
+			}else{
+				preference.put('loginstate','in');
+				ACCESS_TOKEN = access_token;
+				gointo(1000, '/index.html');	
+			}
+		}
+	}, function(errCode, errMsg){
+		Utils.toast("无法连接后台");
+		gointo(1500, '/login.html');		
+	});
+}
+
+function gointo(time, url){
+	//自动登录统计
+	var appconfig = $M.getAppConfig("com.primeton.mwork");
+	var	Version = appconfig.appVersion+"."+appconfig.patchVersion;
+	statisticsAppInfo(loginId,"",appconfig.appId,appconfig.appName,Version,"2");//记录登录
+	setTimeout(function(){
+		$M.page.goTo({'url':url,
+			'params':msgOrIn,
+			'isDestroySelf': true,
+			'animation':'fade'
+		});
+	}, time);
+}
+
+</script>
+</html>

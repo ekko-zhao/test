@@ -1,0 +1,26 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div id="nav" width="100%" height="50" backgroundColor="#08abf7" >
+   	<div width="100" height="100%" vAlign="middle" >
+   		<div width="10" height="100%" hAlign="center" vAlign="middle" ></div>	
+   		<input id="titleInfo" type="label" value="通讯录" color="#FFFFFF" vAlign="middle" fontSize="16" />
+   	</div>
+   	<div width="100%" height="100%"></div>
+   	<div width="50" height="100%" vAlign="middle" hAlign="center" >
+   		
+   	</div>
+   	<div width="50" height="100%" vAlign="middle" hAlign="center" >
+   		<img src="/email/search.png" width="18" height="18" />
+   	</div>
+</div>
+</body>
+<script>
+if($M.isIOS){
+	nav.setHeight(60);
+	nav.setPaddingTop(10);
+	}
+</script>
+</html>

@@ -1,0 +1,99 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+</body>
+<script>
+	function sendMsg(text) {
+		// 		var user_input = [];
+		// 		user_input.userid = CURRENT_USER.nodeId;
+		// 		user_input.cuiid = "default_right";
+		// 		user_input.cuiversion = "0";
+		// 		var user_input_itemdata = {};
+		// 		user_input_itemdata.text = text;
+		// 		user_input.itemdata = user_input_itemdata;
+		// 		saveCuiHistory(user_input);
+		items.push({
+			'text' : text,
+			'template' : 'default_right'
+		});
+		listview.setItems(items);
+		listview.reloadData();
+		var ajax = new $M.Ajax();
+		ajax
+				.setAction("/com.primeton.ai.cui.mobilecui.chatMainService.biz.ext");
+		ajax.add("text", text);
+		ajax.add("userinfo", Utils.stringToJson(user_str).nodeId);
+		ajax.add('access_token', ACCESS_TOKEN);
+		//在ajax请求发出前，清空输入框
+		msg.setValue("");
+		ajax.submit(function(args) {
+			log("text" + text);
+			if (text.exception) {
+				alert("服务器异常！");
+			} else {
+				handleData(args);
+			}
+		}, function(err) {
+			alert("服务器未返回数据");
+			log(err + "`````errorcode");
+		});
+	}
+	function handleData(args) {
+		var json = Utils.stringToJson(args);
+		var retCode = json.retCode;
+		var retMsg = json.retMsg;
+		if (retCode != '0') {
+			alert(retMsg);
+		} else {
+			var data = json.data;
+			var cuiid = data.cuiid;
+			var itemdata = data.itemdata;
+			var template = data.template;
+			var actions = data.actions;
+			if (cuiid != "default_left") {
+				var tempObj = eval(template);
+				listview.addTemplate(tempObj, cuiid);
+			}
+			if (actions) {
+				itemdata.templateAction = actions;
+				for ( var action in actions) {
+					itemdata[action] = actions[action].value;
+					var arr = new Array();
+					arr[0] = action;
+					listview.addOnclickTags(arr);
+				}
+			}
+			itemdata.template = cuiid;
+			items.push(itemdata);
+			listview.setItems(items);
+			listview.reloadData();
+			listview.setSelection(items.length);
+		}
+	}
+	function goBack() {
+		$M.page.goBack();
+	}
+	function clickItem(row, tag, data) {
+		if (data.templateAction) {
+			if (data.templateAction.hasOwnProperty(tag)) {
+				eval(data.templateAction[tag].method);
+			}
+		}
+	}
+	function clearHistoryBtn() {
+		clearHistoryDialog.show();
+	}
+
+	function cancleCheckDialog() {
+		clearHistoryDialog.close();
+	}
+	function confirmCheckDialog() {
+		clearHistoryDialog.close();
+		clearHistory();
+	}
+	function clearHistory() {
+	}
+</script>
+</html>

@@ -1,0 +1,193 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+	$M.includeFile("/common/appMgr.html");
+</script>
+<body>
+	<div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3" >
+       <div width="100" height="100%" id="leftDiv" vAlign="middle" onClick="goBack">
+              <div width="10" height="100%"/>
+              <img src="/appstore/back.png" width="11" height="18"/>
+              <div width="4" height="100%"/>
+              <input type="label" value="返回"  fontSize="18" color="#ffffff" />
+       </div>
+       <input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="20" value="应用更新" />
+       <div width="80" height="100%" id="rightDiv" vAlign="middle" >
+       </div>
+	</div> 
+	
+	<listview id="update" width="100%" height="100%" onItemClick="clickItem">
+		<template>
+			<div width="100%" layout="VBox">
+				<div width="100%" height="80" layout="HBox" vAlign="middle">
+<div width="100%" height="100%" vAlign="middle" tag="enter">
+						<div width="56" height="56" marginLeft="15" borderWidth="1" borderColor="#ffffff" cornerRadius="12" >
+							<img src="/images/app.png" width="56" height="56" tag="icon" />
+						</div>
+						<div width="100%" height="100%"  marginLeft="13" vAlign="middle" layout="VBox">
+							<input type="label" fontSize="18" tag="name" id="appname" singleLine="true"/>
+							<div width="100%" height="3"></div>
+							<div width="100%" height="13" tag="appstar" id="appstar" >
+								<div width="9" height="9" tag="star1" id="star1">
+								</div>
+								<div width="1" height="100%"></div>
+								<div width="9" height="9" tag="star2" id="star2">
+								</div>
+								<div width="1" height="100%"></div>
+								<div width="9" height="9" tag="star3" id="star3">
+								</div>
+								<div width="1" height="100%"></div>
+								<div width="9" height="9" tag="star4" id="star4">
+								</div>
+								<div width="1" height="100%"></div>
+								<div width="9" height="9" tag="star5" id="star5">
+								</div>
+								<input type="label" value="" color="#888888" fontSize="11" marginLeft="5" tag="totalcom"/>
+							</div>		
+							
+							<div width="100%" height="2"></div>
+							<input type="label" fontSize="12" tag="summary" id="appdescribe" color="#999999"/>
+						</div>
+					</div>
+					<div width="40" height="25" tag="updatebtn" vAlign="middle" hAlign="center" marginLeft="10" borderWidth="1" borderColor="#0b78e3" cornerRadius="5" backgroundColor="#0b78e3">
+						<input type="label" value="更新" id="isUpdate"  color="#ffffff" fontSize="14" />
+					</div>
+					<div width="15" height="100%"/>
+				</div>
+				<div width="100%" height="1px" backgroundColor="#D9D9D9" /> 
+			</div>
+		</template>
+	</listview>
+	
+</body>
+
+
+<script> 
+if(Emp.isIOS){
+       nav.setHeight(60);
+       nav.setPaddingTop(8);
+}
+
+function goBack(){
+	$M.page.goBack();
+}
+
+var updateApps = new Array();
+update.setOnclickTags(['loadbtn','enter']);
+
+	Emp.page.addEvent("onLoad", function() {	
+		dataLoad();
+	});	
+	
+	appstar.setAttrAdapter([{
+    	value : '1',
+    	displayv: 'true'
+    },{
+    	value : '0',
+    	display : 'false'
+    }]);
+    
+	star1.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star2.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star3.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star4.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	star5.setAttrAdapter([{
+		value : '1',
+		backgroundImage : '/appstore/star_on.png'
+	}, {
+		value : '0',
+		backgroundImage : '/appstore/star_off.png'
+	}]);
+	
+	function getUpdateDataSfn(appList){
+		for(var i=0; i<appList.length; i++){
+			if(appList[i].commentParams!=null&&appList[i].commentParams!=""){
+				appList[i].appstar = '1';
+				var commentParams = Utils.stringToJson(appList[i].commentParams);
+				var avgScore = commentParams.avg;
+				appList[i].totalcom = "(" + commentParams.total + ")";
+				var j=1;
+				for(; j<=avgScore; j++){
+					eval("appList["+i+"].star"+j+"='1';");
+				}
+				for(; j<=5; j++){
+					eval("appList["+i+"].star"+j+"='0';");
+				}
+			}else{
+				appList[i].appstar = '0';
+			}
+		}
+		updateApps = appList;
+		update.setItems(appList);
+		update.reloadData();	
+	}
+	
+	function getDataFfn(e){
+		log("error:"+e);
+	}
+	
+	function UpdateSFn(){
+        dataLoad();
+        //通知列表更新
+        $M.contextData.setValue("isChange1", "true");
+        Utils.toast("更新成功");
+	}
+	
+	function dataLoad(){
+		AppManager.getUpdateAppList(getUpdateDataSfn, getDataFfn);
+	}
+		
+	function goBack(){
+		$M.page.goBack();
+	}
+	
+	function clickItem(row,tag,data){
+		if(tag=="updatebtn"){
+			AppManager.installUpdate(data, UpdateSFn, failureFn, loadingFn, row);
+		}
+	}
+	
+	function loadingFn(a, b, data, row){		
+		var newItem1 = data;
+		newItem1.loading=parseInt(b/a*40);
+		log(row);
+		listview.updateItem(row, newItem1);
+		listview.reloadData();
+	}
+	
+	function loadingAllFn(){
+	}
+	
+	function updateAllapps(){
+		for(var i =0;i<updateApps.length;i++){
+			AppManager.installUpdate(data, downloadSfn, failureFn, loadingAllFn, row);		
+		}
+	}
+</script>
+</html>

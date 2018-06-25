@@ -1,0 +1,417 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<script>
+	$M.includeFile("/common/scheduleFun.html");
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+
+	<!-- **************导航视图******************* -->
+	<div id="nav" width="100%" height="50" vAlign="middle" backgroundColor="#0b78e3">
+		<div width="80" height="100%" id="leftDiv" vAlign="middle" onClick="goBack" >
+			<img src="/meeting/back.png" width="13" height="20" marginLeft="20" ></img>
+		</div>
+		<input type="label" id="title" value="会议室预定" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18"/>
+		<div width="80" height="100%" >
+		</div>	
+	</div>
+	<div  width="100%" height="70" backgroundColor="#F5F6F7" layout="VBox" >
+		<div  width="100%" height="100%" marginTop="10" >
+			<div  width="100%" height="100%" hAlign="right" onClick="lessDate">
+				<img src="/meeting/left.png" width="12" height="20" marginRight="20"></img>
+			</div>
+			<div  width="100%" height="100%" hAlign="center" >
+				<input type="label" id="dateLabel" value="2017-04" fontSize="22" />
+			</div>
+			<div  width="100%" height="100%" onClick="moreDate">
+				<img src="/meeting/right.png" width="12" height="20" marginLeft="20" ></img>
+			</div>
+		</div>
+		<div width="100%" height="30" vAlign="middle" hAlign="center"
+				layout="HBox" marginRight="5">
+				<div width="100%" height="100%" vAlign="middle" hAlign="center">
+					<label value="日" fontSize="10" fontBold="true" color="#ACACAC" />
+				</div>
+				<div width="100%" height="100%" vAlign="middle" hAlign="center">
+					<label value="一" fontSize="10" fontBold="true" color="#2e3030" />
+				</div>
+				<div width="100%" height="100%" vAlign="middle" hAlign="center">
+					<label value="二" fontSize="10" fontBold="true" color="#2e3030" />
+				</div>
+				<div width="100%" height="100%" vAlign="middle" hAlign="center">
+					<label value="三" fontSize="10" fontBold="true" color="#2e3030" />
+				</div>
+				<div width="100%" height="100%" vAlign="middle" hAlign="center">
+					<label value="四" fontSize="10" fontBold="true" color="#2e3030" />
+				</div>
+				<div width="100%" height="100%" vAlign="middle" hAlign="center">
+					<label value="五" fontSize="10" fontBold="true" color="#2e3030" />
+				</div>
+				<div width="100%" height="100%" vAlign="middle" hAlign="center">
+					<label value="六" fontSize="10" fontBold="true" color="#ACACAC" />
+				</div>
+		 </div>
+	</div>
+	<div  width="100%" height="1" backgroundColor="#CFD0D1" ></div>
+	<div id="calendar" layout="VBox" width="100%" height="-2" />
+	<div  width="100%" height="1" backgroundColor="#CFD0D1" marginTop="5" ></div>
+	
+	<listview id="infoList" width="100%" height="100%" backgroundColor="#ffffff" >
+		<template>
+			<div width="100%" height="20" layout="VBox">
+			
+			</div>
+		</template>
+	</listview>
+</body>
+<script>
+
+	if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+	//返回上一页
+	function goBack(){
+		$M.page.goBack();
+	}
+
+	function lessDate(){
+		var dateArr=rememCurrenDate.split("-");
+		var newYear=parseInt(dateArr[0]);
+		var newMonth=parseInt(dateArr[1])-1;
+		if(newMonth<=0){
+			newYear=parseInt(dateArr[0])-1;
+			newMonth=12;
+		}
+		
+		rememCurrenMon = newMonth;
+		rememCurrenYear = newYear;
+		
+		drawCalendar(newYear,newMonth-1);;
+		rememCurrenDate=newYear+"-"+newMonth;
+		var wholemonth = newMonth-1<9?"0"+(newMonth):(newMonth);
+		dateLabel.setValue(newYear+"-"+wholemonth);
+	}
+	
+	
+	
+	function moreDate(){
+		var dateArr=rememCurrenDate.split("-");
+		var newYear=parseInt(dateArr[0]);
+		var newMonth=parseInt(dateArr[1])+1;
+		if(newMonth>12){
+			newYear=parseInt(dateArr[0])+1;
+			newMonth=1;
+		}
+				
+		rememCurrenMon = newMonth;
+		rememCurrenYear = newYear;
+		drawCalendar(newYear,newMonth-1);
+		rememCurrenDate=newYear+"-"+newMonth;
+		var wholemonth = newMonth-1<9?"0"+(newMonth):(newMonth);
+		dateLabel.setValue(newYear+"-"+wholemonth);
+	}
+	
+	var year = util.getSysTime("yyyy");
+	var month = util.getSysTime("M")-1;
+	var wholemonth = month<9?"0"+(month+1):(month+1);
+	var today = year+wholemonth+util.getSysTime("dd");
+	
+	
+	var curDateObj;
+	var maxDay;
+	var chosenDate = today;
+	
+	
+	var alldate=new Array();
+	var rememCurrenDate;//记录显示dateLabel的时间
+	var rememCurrenMon=wholemonth;
+	var rememCurrenYear=year;
+	
+	var dataresult;
+	var todaylabel;
+	var todaylunar;
+	
+	var fromPage;
+	
+	$M.page.addEvent('onLoad',function(params){
+		setTimeout(function(){
+			fromPage=params.from||"";
+			var year = util.getSysTime("yyyy");
+			var month = util.getSysTime("M")-1;
+			rememCurrenDate=year+"-"+util.getSysTime("M");
+			var wholemonth = month<9?"0"+(month+1):(month+1);
+			dateLabel.setValue(year+"-"+wholemonth);
+			drawCalendar(year,month);
+		}, 2)
+	});
+	
+	$M.page.addEvent('onBack',function(){
+		setTimeout(function(){
+			var year = util.getSysTime("yyyy");
+			var month = util.getSysTime("M")-1;
+			drawCalendar(year,month);
+		}, 2)
+	});
+	
+
+	function drawCalendar(curYear,curMonth){
+		var calArr = new Array();
+		curDateObj = new Date();
+		curDateObj.setFullYear(curYear, curMonth+1, 0);
+
+		maxDay = curDateObj.getDate();//获取本月天数
+
+		curDateObj.setFullYear(curYear, curMonth, 1);
+		var firstWeekDay = curDateObj.getDay();//获取本月第一天是星期几
+		
+		
+		/* if(curDateObj.getDay()==0){
+			firstWeekDay =7;
+		} */
+		
+		for(var i=0;i<firstWeekDay;i++){
+			calArr.push("");
+		}
+		for(var i=1;i<=maxDay;i++){
+			calArr.push(i);
+		}
+		
+		var curLength=calArr.length;
+		if(curLength<42){
+			for(var i=0;i<42-curLength;i++){
+				calArr.push("");
+			}
+		}
+		
+		var ajax = new Emp.Ajax();
+		ajax.setAction('/com.primeton.pmbusiness.meetingroom.mworkmeetingroombiz.getMonthState.biz.ext');
+		
+		ajax.addParam({'name':'chosenMon','value':rememCurrenMon});
+		ajax.addParam({'name':'chosenYear','value':rememCurrenYear});
+		ajax.add('access_token',ACCESS_TOKEN);	
+		ajax.onSuccess(function(args) {
+			log("-------"+args);
+			createCalendar(calArr,args);
+		});
+		
+		ajax.onFailure(function(code, msg) {
+			
+		});
+
+		ajax.submit();
+	} 
+	
+	
+	function createCalendar(calendarData,result){
+		var resultjson = util.stringToJson(result);
+		var orders = resultjson.dayOrdercount;
+		var orderdata = [];
+		for(var m = 0;m<orders.length;m++){
+			var str_meeting = orders[m].meetingdate;
+			str_meeting = str_meeting.replace(/-/g,'');
+			if(orders[m].isfull=="true")
+			orderdata.push(str_meeting);
+		}
+		var col = calendarData.length/7;
+		var p = new Emp.Panel({
+				'width' : '100%',
+				'height' : '-2',
+				'layout' : 'VBox',
+				'backgroundColor' : "#ffffff",
+			});
+			
+		//判断是否出现第6行情况以及2月只有28天且只有4行情况
+		var firstWeekDay = curDateObj.getDay();
+		if(firstWeekDay==0&&maxDay==28){
+			col=col-2;
+		}else if(((firstWeekDay==5)&&(maxDay>30)) || ((firstWeekDay==6)&&(maxDay>29))){
+		    col=col;
+		}else{
+		    col=col-1;
+		}
+		
+		for(var i=0;i<col;i++){
+			var p0 = new Emp.Panel({ 
+				'width' : '100%',
+				'height' : '100%',
+				'layout' : 'HBox',
+				'vAlign':'middle',
+			});
+			var str = calendarData[i*7];
+			if(i==0){
+				p0.setBackgroundImage("/meeting/tr_bg.png");
+			}
+			if(str !=""){
+				p0.setBackgroundImage("/meeting/tr_bg.png");
+			} 
+			
+			for(var j=0;j<7;j++){
+				var index = i*7+j;
+				 
+				var p1 = new Emp.Panel({ 
+					'width' : '100%',
+					'height' : '100%',
+					'vAlign':'middle',
+					'hAlign':'center',
+					'layout':'VBox',
+				});
+
+				var topline = new Emp.Panel({
+				    "width":"100%",
+				    "height":"2px",
+				    "backgroundColor":"#CFD0D1"
+				});
+				
+				var day = calendarData[index]<10?"0"+calendarData[index]:calendarData[index];
+				var date = year+wholemonth+day;
+
+				eval('back_'+ date +' = new Emp.Panel({'
+					+'"width":"45",'
+					+'"height":"45",'
+					+'"borderWidth" : "1",'
+					+'"borderColor" : "#ffffff",'
+					+'"vAlign":"middle",'
+					+'"hAlign":"center",'
+					+'"marginTop" : "5",'
+  				    +'"cornerRadius" : "22.5",'
+  				    +'"layout":"VBox"})');
+  				
+  				
+				var label = new Emp.Label({
+					'value' : ''+calendarData[index],
+					'color' : "#2e3030",
+					'fontSize' : 20,
+					'vAlign':'middle',
+					'hAlign':'center'
+				});
+				
+				
+				var lunar = new Emp.Label({
+					"id" : "_input_20420066",
+					"color" : "#2e3030",
+					"value" : ''+calendarChange.solar2lunar(year, parseInt(month)+1,calendarData[index]).IDayCn,
+					"fontSize" : "10"
+				});
+				
+				var full = new Emp.Label({
+					"id" : "_input_20420066",
+					"color" : "#ffffff",
+					"value" : '满',
+					"fontSize" : "10"
+				});
+
+				
+				eval('note_'+ date +' = new Emp.Panel({'
+				    +'"width":"30",'
+				    +'"vAlign":"middle",'
+					+'"hAlign":"center",'
+				    +'"height":"3px",'
+				    +'"backgroundColor":"#ff5622",'
+				    +'"visibility":"false"})'); 
+				    
+				eval('state_'+ date +' = new Emp.Panel({'
+					+'"width":"20",'
+					+'"height":"20",'
+					+'"borderWidth" : "1",'
+					+'"borderColor" : "#ff5622",'
+					+'"backgroundColor":"#ff5622",'
+					+'"vAlign":"middle",'
+					+'"hAlign":"center",'
+					+'"marginTop" : "2",'
+					+'"marginBottom" : "2",'
+  				    +'"cornerRadius" : "10",'
+  				    +'"visibility":"false",'
+  				    +'"layout":"VBox"})');
+				
+				if(label.getValue() == ''){
+					label.setBackgroundImage("/meeting/empty.png");
+				}else{
+					label.setBackgroundImage("/meeting/empty.png");
+				}
+				if(j==0||j==6){
+					label.setColor("#A8A4A0");
+				}
+				
+				eval('back_'+ date +'.add(label)');
+				eval('state_'+ date +'.add(full)');
+				
+				
+				if(calendarData[index]!=''&&i>0){
+					p1.add(topline);
+				}
+				eval('p1.add(back_'+ date +')');
+				
+				if(today==date){
+					eval('back_'+ date +'.setBackgroundColor("#ff5622")');
+					eval('note_'+ date +'.setVisibility(true)');
+					
+					label.setColor("#ffffff");
+					lunar.setColor("#ffffff");
+					todaylabel = label;
+					todaylunar = lunar;
+				}
+				
+				for(var m = 0;m<orderdata.length;m++){
+					if(date==orderdata[m]){
+						eval('state_'+ date +'.setVisibility(true)');
+					}
+				}					
+				
+				if(calendarData[index]!=''){
+					eval('back_'+ date +'.add(lunar)');
+					eval('p1.add(note_'+ date +')');
+					eval('p1.add(state_'+ date +')');
+					alldate.push(date);
+					eval('back_'+ date +'.addEvent("onClick",function(){'
+  						+'getNotes('+date+')'
+  						+'})');
+				}
+				
+				p0.add(p1);
+			}
+			p.add(p0);
+		}
+		calendar.removeAll();
+		calendar.add(p);
+	}
+
+		function getNotes(data) {
+			if (chosenDate) {
+				if(chosenDate != today){
+					if($M.isIOS){
+						eval('back_' + chosenDate + '.setBackgroundImage("/images/widgets/empty.png")');
+					}else{
+						eval('back_' + chosenDate + '.setBackgroundColor("#ffffff")');
+					}
+				}else if(chosenDate == today){
+					eval('back_' + chosenDate + '.setBackgroundColor("#ff5622")');
+				}
+			}
+			if (today != data) {
+				eval('back_' + data + '.setBackgroundImage("/meeting/line.png")');
+				if(year==util.getSysTime("yyyy")&&month==util.getSysTime("M")-1){
+					//选择其他日期，今天变为灰底红字
+					eval('back_' + today + '.setBackgroundColor("#F3F4F5")');
+					todaylabel.setColor("#ff5622");
+					todaylunar.setColor("#ff5622");
+				}
+			}else{
+				//选择今天，变为红底白字
+				eval('back_' + data + '.setBackgroundColor("#ff5622")');
+				todaylabel.setColor("#ffffff");
+				todaylunar.setColor("#ffffff");
+			}
+			
+			chosenDate = data;
+// 			log(chosenDate);
+			if(fromPage!=""){
+				$M.page.goBack({date:chosenDate+"",from:"CUIPage2"}, "/meeting/addMeeting.html");
+			}else{
+				$M.page.goTo("/meeting/meetingRoomList.html", {date:chosenDate}, false);
+			}
+	}
+</script>
+</html>

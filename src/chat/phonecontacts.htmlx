@@ -1,0 +1,157 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<script>
+		$M.includeFile("/common/commonUtils.html");
+		$M.includeFile("/chat/commonchat.html");
+		$M.includeFile("/chat/chatTemplate.html");
+	</script>
+</head>
+<body>
+	
+</body>
+<script>
+var items = [];
+var myID;
+var myName;
+var to;
+var name;
+var type = "1";
+var gID ;
+groupDiv.setDisplay(true);
+var myGroup;
+	if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+$M.page.addEvent('onLoad', function(params){
+	myID = params.myID;
+	myName = params.myName;
+	to = params.to.gID;
+	gID = params.to.gID;
+	name = params.to.name;
+	type = params.type;
+	myGroup = params.myGroup;
+	grouptitle.setValue(name); 
+	chat.setChatListener({'to':to,'chatType':'group'},function(r){
+		var msg = Utils.stringToJson(r);
+		var item = {};
+		if (msg.type == "text") {
+			item.template = "rtext";
+			item.name = msg.from.name;
+			item.text = msg.text;
+			item.time = msg.time;
+		} else if (msg.type == "img") {
+			item.template = "rimg";
+			item.name = msg.from.name;
+			item.img = "baimg://" + msg.mID;
+			item.time = msg.time;
+		}
+		var date = new Date(msg.time);
+		item.date = date.format("yyyy-MM-dd hh:mm");
+		items.push(item);
+		reloadData();
+		chat.setAllMsgRead();
+	});
+	chat.loadMessages({'time':0},function(r){
+		log("=="+r);
+		loadMessage(Utils.stringToJson(r),"1");
+		chat.setAllMsgRead();
+	});
+	
+});
+
+
+function goBack() {
+	if(type == "2"){
+		$M.page.goBack({},'/chat/chatgroup.html');
+	}else{
+		$M.page.goBack({});
+	}
+}
+$M.page.addEvent('onPressBackKeySystem', function(){
+	if(type == "2"){
+		$M.page.goBack({},'/chat/chatgroup.html');
+	}else{
+		$M.page.goBack();
+	}
+});
+
+function sendmsg() {
+	if (sendtext.getValue() == "") {
+		return;
+	}
+	
+	var item = {'template':'stext','name':myName,'text':sendtext.getValue()};
+	chat.sendMessage({'chatType':'group','type':'text','to':to,'text':sendtext.getValue()},function(r){log("send "+r);
+		chat.getAllMembersInGroup({'gID':gID},function(r){
+			var data = Utils.stringToJson(r);
+			var userList = data.userList;
+			var useridList = "";
+			for(var i=0;i<userList.length;i++){
+				if(userList[i].userID != preference.get('userid')){
+					useridList = useridList + userList[i].userID;
+				}
+			}
+			var ajaxData = {};
+			ajaxData.userids = "["+useridList+"]"; //推送人员列表
+			ajaxData.title = name; 		//标题
+			ajaxData.msgContent = "2";//类型
+			ajaxData.type = "chatMessage";	//推送组类型
+			ajaxData.summary = "";	//摘要
+			AjaxUtil.submit("/com.primeton.pmbusiness.push.pushComponent.appStorePush.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(result){
+				log("推送成功");
+			}, function(errCode, errMsg){
+				log("推送失败");
+			});
+			
+		});
+	});
+	var date = new Date();
+	item.date = date.format("yyyy-MM-dd hh:mm");
+	item.time = date.getTime();
+	items.push(item);
+	reloadData();
+	sendtext.setValue("");
+}
+
+function sendImg(path) {
+	var item = {'template':'simg','name':myName,'img':path};
+	chat.sendMessage({'chatType':'group','type':'img','to':to,'path':path},function(r){log("send img "+r);
+		chat.getAllMembersInGroup({'gID':gID},function(r){
+			var data = Utils.stringToJson(r);
+			var userList = data.userList;
+			var useridList = "";
+			for(var i=0;i<userList.length;i++){
+				if(userList[i].userID != preference.get('userid')){
+					useridList = useridList + userList[i].userID;
+				}
+			}
+			var ajaxData = {};
+			ajaxData.userids = "["+useridList+"]"; //推送人员列表
+			ajaxData.title = name; 		//标题
+			ajaxData.msgContent = "2";//类型
+			ajaxData.type = "chatMessage";	//推送组类型
+			ajaxData.summary = "";	//摘要
+			AjaxUtil.submit("/com.primeton.pmbusiness.push.pushComponent.appStorePush.biz.ext", ajaxData, AjaxUtil.TYPE_POST, function(result){
+				log("推送成功");
+			}, function(errCode, errMsg){
+				log("推送失败");
+			});
+		});
+	});
+	var date = new Date();
+	item.date = date.format("yyyy-MM-dd hh:mm");
+	items.push(item);
+	reloadData();
+}
+
+function groupDatil() {
+	var temp = {};
+	temp.gID = gID;
+	temp.name = name;
+	temp.myGroup = myGroup;
+	$M.page.goTo('/chat/groupDetail.html', temp, false);
+}
+</script>
+</html>

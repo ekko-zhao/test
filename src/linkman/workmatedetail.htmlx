@@ -1,0 +1,287 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<title>联系人详细信息</title>
+</head>
+<script>
+	$M.includeFile("/common/commonUtils.html");
+	Emp.includeFile("/email/commonPre.html");
+</script>
+<body>
+<div width="100%" height="100%" layout="VBox" >
+	<div width="100%" height="220" class="emp-nav-backgroundColor" layout="VBox" >
+		<div width="100%" height="50" id="nav" >
+			<div width="80" height="100%" id="leftDiv" vAlign="middle"  onPressUp="goBack" marginBottom="-10" >
+				<div width="10" height="100%"/>
+				<img src="/linkman/back.png" width="11" height="18"/>
+			</div>
+			<input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="20" value="" />
+			<div width="80" height="100%" vAlign="middle" >
+			</div>
+		</div>
+		<div width="100%" height="100%" hAlign="center" layout="VBox" >			
+			<div width="85" height="85" backgroundImage="/linkman/person_circle.png" hAlign="center" vAlign="middle" >
+				<input type="label" id="contactNamePanel" color="#ffffff" fontSize="18" />
+			</div>
+			<div width="100%" height="25" hAlign="center"  vAlign="bottom" >
+				<img src="/linkman/qiye.png" width="18" height="18" />
+				<div width="10" height="100%"/>
+				<img src="/linkman/verify.png" width="18" height="18" />
+			</div>
+			<div width="100%" height="35" hAlign="center" vAlign="middle" >
+				<input id="companyName" type="label" fontSize="16" color="#ffffff" />
+			</div>
+		</div>
+	</div>
+
+	<!-- 详细内容显示区域 -->
+	<div width="100%" height="100%" backgroundColor="#ffffff" layout="VBox" overflow="y" >
+		<div width="100%" height="48" layout="VBox">
+			<div height="1px" width="100%" backgroundColor="#D9D9D9" />
+			<div width="100%" height="100%" vAlign="middle">
+				<input type="label" value="个人信息" marginLeft="20" fontSize="20" class="emp-fontcolor" fontBold="true" width="80" />
+				<div width="100%" height="100%"/>
+				<div width="-2" height="100%" vAlign="middle" onClick="addToContacts" >
+					<input type="label" width="60" height="100%" value="添加到" color="#38b285" hAlign="center" fontBold="false" fontSize="18" />
+					<div width="100" height="28" borderColor="#38b285" borderWidth="2px" cornerRadius="5" backgroundColor="#38b285" >
+						<input type="label" width="100%" height="100%" value="手机通讯录" color="#ffffff" hAlign="center" fontBold="true" />
+					</div>	
+					<div width="10" height="100%"/>
+				</div>	
+			</div>
+			<div height="1px" width="100%" backgroundColor="#D9D9D9" />
+		</div>	
+		<div width="100%" height="10" layout="VBox" backgroundColor="#f8f8f8"></div>
+		<div width="100%" height="-2" backgroundColor="#FFFFFF" layout="VBox" vAlign="middle" >
+			<div id="contactDetailDiv" width="100%" height="-2" layout="HBox" vAlign="middle" marginTop="8" >
+				<div width="100%" height="-2" layout="VBox" marginLeft="15" vAlign="middle" >
+					<div width="100%" height="60" hAlign="center" vAlign="middle" layout="VBox"  marginLeft="5" marginRight="5">
+						
+						<input type="label"  width="100%" value="姓名" height="18" fontSize="15" color="#999999"/>
+						<input id="usernamePanel" type="label" width="100%" height="23"  fontSize="18" color="#393a3b"/>
+						<div width="100%" height="9"/>
+						<div height="1px" width="100%" backgroundColor="#D9D9D9" />
+					</div>
+					<div width="100%" height="60" hAlign="center" vAlign="middle" layout="VBox" marginLeft="5" marginRight="5" >
+						
+						<input type="label"  width="100%" value="部门" height="18" fontSize="15" color="#999999"/>
+						<input id="department" type="label" width="100%"  height="23"  fontSize="18" color="#393a3b" />
+						<div width="100%" height="9"/>
+						<div height="1px" width="100%" backgroundColor="#D9D9D9" />
+					</div>
+					<div width="100%" height="60" hAlign="center" vAlign="middle" layout="VBox" marginLeft="5" marginRight="5">
+						
+						<input type="label"  width="100%" value="职位" height="18" fontSize="15" color="#999999"  />
+						<input id="position" type="label" width="100%" height="23"  fontSize="18" color="#393a3b"/>
+						<div width="100%" height="9"/>
+						<div height="1px" width="100%" backgroundColor="#D9D9D9" />
+					</div>
+					<div width="100%" height="60" hAlign="center" vAlign="middle" layout="VBox" marginLeft="5" marginRight="5">
+						
+						<input type="label"  width="100%" value="电话" height="18" fontSize="15" color="#999999"/>
+						<input id="contactPhonePanel" type="label" width="100%" height="23"  fontSize="18" color="#393a3b"/>
+						<div width="100%" height="9"/>
+						<div height="1px" width="100%" backgroundColor="#D9D9D9" />
+					</div>
+					<div width="100%" height="60" hAlign="center" vAlign="middle" layout="VBox"  marginLeft="5" marginRight="5">
+						
+						<input type="label"  width="100%" value="邮箱" height="18" fontSize="15" color="#999999"/>
+						<input id="userEmailPanel" type="label" width="100%" height="26" fontSize="20" color="#FF943D" />
+						<div width="100%" height="9"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	<div height="1px" width="100%" backgroundColor="#D9D9D9" />	
+	<!-- 电话功能操作区 -->
+	<div width="100%" height="45" backgroundColor="#F9F9F9" vAlign="middle" >
+		<div height="30" width="1px" backgroundColor="#D9D9D9" />
+		<div height="100%" width="100%" hAlign="center" layout="HBox" vAlign="middle" onPressUp="makePhoneCall" >
+			<img src="/linkman/phonecall.png" width="22" height="21" />
+			<div width="5" height="100%"/>
+			<input type="label" value="拨打电话" fontSize="13" vAlign="middle" class="emp-fontcolor"/>
+		</div>
+		<div height="30" width="1px" backgroundColor="#D9D9D9" />
+		<div height="100%" width="100%" hAlign="center" layout="HBox" vAlign="middle" onPressUp="sendMessage" >
+			<img src="/linkman/message.png" width="25" height="20" />
+			<div width="5" height="100%"/>
+			<input type="label" value="发送短信" fontSize="13" vAlign="middle" class="emp-fontcolor"/> 
+		</div>
+		<div height="30" width="1px" backgroundColor="#D9D9D9" />
+		<div height="100%" width="100%" hAlign="center" layout="HBox" vAlign="middle" onPressUp="sendChart" >
+			<img src="/linkman/chat.png" width="25" height="20" />
+			<div width="5" height="100%"/>
+			<input type="label" value="聊天" fontSize="13" vAlign="middle" class="emp-fontcolor"/> 
+		</div>
+	</div>	
+</div>
+
+<dialog id="dialog">
+	<div id="div" layout="VBox"  hAlign="center" backgroundColor="#ffffff" height="100" width="200" cornerRadius="10" borderColor="#D9D9D9" borderWidth="1px" >
+		<div width="100%" height="22"></div>
+		<input id="dialogtext" type="label" value="保存联系人成功！" /> 
+		<div width="100%" height="22"></div>
+		<div width="100%" height="1px" backgroundColor="#D9D9D9" />	
+		<input type="button" width="100%" height="35" value="关闭" onClick="closeDialog" color="#4ca1fe"  backgroundColor="#ffffff" fontSize="20" /> 
+	</div>
+</dialog>
+
+</body>
+<script> 
+if(Emp.isIOS){
+	nav.setHeight(60);
+	nav.setPaddingTop(8);
+}
+var contactData;
+$M.page.addEvent('onLoad', function(param){
+	contactData = param;
+	initPageData();
+});
+
+if ($M.isIOS) {
+	nav.setHeight("50");
+	Utils.setStatusBarStyle("light");
+	companyName.setFontSize(18);
+}
+
+function initPageData(){
+	companyName.setValue(preference.get('company').nodeName);
+	contactNamePanel.setValue(contactData.nodeName);
+	usernamePanel.setValue(contactData.nodeName);
+	if(contactData.mobileno != null){
+		contactPhonePanel.setValue(contactData.mobileno);
+	}
+	else{
+		contactPhonePanel.setValue(contactData.otel);
+	}
+	userEmailPanel.setValue(contactData.oemail);		
+	department.setValue(contactData.orgName);
+	position.setValue(contactData.positionName);						
+}
+
+function backPressDown(){
+	
+}
+
+function goBack(){
+	$M.page.goBack();
+}
+
+function makePhoneCall(){	
+	if(contactPhonePanel.getValue()==""||contactPhonePanel.getValue()==null){		
+		toast("无电话号码");
+	}else{
+		insertContacts();
+		Utils.tel(contactPhonePanel.getValue()); //拨打输入的电话
+	}
+}
+
+function sendMessage(){	
+	if(contactPhonePanel.getValue()==""||contactPhonePanel.getValue()==null){		
+		toast("无电话号码");
+	}else{
+		insertContacts();
+		Utils.openSystemSms(contactPhonePanel.getValue(),""); //打开编辑短信面板
+	}
+}
+
+function sendmail(){
+	var tomail = userEmailPanel.getValue();
+	if(tomail==""||tomail==null){		
+		toast("无邮箱");
+	}else{
+		var name = mailpreference.get("userid");
+		var pwd = mailpreference.get("mailPwd");
+		log("name"+name);
+		if(name == null || name == ""||name == " "||name==undefined|| pwd == null || pwd == ""|| pwd == ""||pwd==undefined){
+			$M.page.goTo('/linkman/email/login.html', {'tomail':tomail}, false);
+		}else{
+			$M.page.goTo('/linkman/email/writeMail.html', {'whomail':tomail}, false);
+		}
+	}
+}
+
+function gotoSendMessage(){
+	if(contactPhonePanel.getValue()==""||contactPhonePanel.getValue()==null){		
+		toast("无电话号码");
+	}else{
+		insertContacts();
+		var toUser = contactData.userid;
+		Emp.page.goTo("/linkman/personalchat.html", {to:toUser,nickName:contactData.titlelabel}, false);
+	}
+}
+
+function addToContacts(){
+		var params = {};
+		if(contactData.nodeName!="" && contactData.nodeName!=null){
+			params.firstName = contactData.nodeName;
+		}
+		if(companyName.getValue()!="" && companyName.getValue()!=null){
+			params.companyName = companyName.getValue();
+		}
+		if(position.getValue()!="" && position.getValue()!=null){
+			params.jobTitle = position.getValue();
+		}
+		if(department.getValue()!="" && department.getValue()!=null){
+			params.departmentName = department.getValue();
+		}
+		if(contactPhonePanel.getValue()!="" && contactPhonePanel.getValue()!=null){
+			params.phone = { phone0:contactPhonePanel.getValue() };
+		}
+		if(userEmailPanel.getValue()!="" && userEmailPanel.getValue()!=null){
+			params.email = { email0:userEmailPanel.getValue() };
+		}
+		
+		Contacts.saveContact(params,
+			function(){
+				dialogtext.setValue("保存联系人成功！");
+				dialog.show();},
+			function(){
+				dialogtext.setValue("保存失败！");
+				dialog.show();});
+}
+
+function closeDialog(){
+	dialog.close();
+}
+
+function insertContacts(){
+	//if exist  , update data department.getValue(result.orgName);  position.setValue(
+	log(contactData.mobileno);
+	var tempItem = database.query("select * from contacts where UserID=\'"+contactData.nodeId+'\'');
+	if(tempItem =='' || tempItem === undefined){		
+		database.excute('insert into contacts (UserID,UserName,PhoneNumber,Department,Position,Email,Count) values(' +
+					'\''+contactData.nodeId+'\',\''+contactData.nodeName+'\',\''+contactPhonePanel.getValue()+'\',\''+department.getValue()+'\',\''+position.getValue()+'\',\''+userEmailPanel.getValue()+'\',1)');
+		log("add");
+	}else{ 
+		database.excute('update contacts set Count=Count+1 where UserID=\''+contactData.nodeId+'\'');
+		log("update");
+	}
+}
+//发送消息
+function sendChart() {
+	var pref = new $M.Preferences();
+	pref.open('workbench');
+	userId = pref.get('userid');
+	if(userId == contactData.userid){
+		toast("不能和自己聊天");
+	}else{
+		var temp = {};
+		var to = {};
+		to.userID = contactData.userid;
+		to.name = contactData.empname;
+		temp.to=to;
+		temp.myID = preference.get('userid');
+		if(CURRENT_USER.nodeName != null){
+			temp.myName = CURRENT_USER.nodeName;
+		}else{
+			temp.myName = preference.get('userid');
+		}
+		temp.type = "1";
+		$M.page.goTo("/chat/chatsigle.html", temp, false);
+	}
+}
+</script>
+</html>

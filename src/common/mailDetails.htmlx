@@ -1,0 +1,26 @@
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>Hello World</title>
+</head>
+<body>
+	
+</body>
+<script> 
+var miadetais1="<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><HTML><HEAD><META content=\"text/html; charset=GB2312\" http-equiv=Content-Type><META name=GENERATOR content=\"MSHTML 11.00.10586.17\"><STYLE>BLOCKQUOTE {MARGIN-BOTTOM: 0px; MARGIN-TOP: 0px; MARGIN-LEFT: 2em}OL {MARGIN-BOTTOM: 0px; MARGIN-TOP: 0px}UL {MARGIN-BOTTOM: 0px; MARGIN-TOP: 0px}P {MARGIN-BOTTOM: 0px; MARGIN-TOP: 0px}";
+var miadetais2="BODY {FONT-SIZE: 10.5pt; FONT-FAMILY: 微软雅黑; COLOR: #000000; LINE-HEIGHT: 1.5}</STYLE></HEAD>";
+var miadetais3="<BODY><DIV>上周工作：</DIV><DIV><DIV style=\"TEXT-INDENT: 2em\"><DIV><DIV style=\"TEXT-INDENT: 2em\"><DIV><DIV style=\"TEXT-INDENT: 2em\"><STRONG>1、SAP-Adap<SPAN style=\"FONT-WEIGHT: normal\"></SPAN>tor</STRONG></DIV><DIV style=\"TEXT-INDENT: 4em\">1）SAP-Adaptor的开发环境重新搭建，公司git库损坏</DIV><DIV style=\"TEXT-INDENT: 4em\">2）SAP-Adaptor著作权申报材料修改，补充源代码文档，格式整理后源代码量不足。 </DIV></DIV>";
+
+var miadetais4="<DIV style=\"TEXT-INDENT: 2em\"> </DIV><DIV style=\"TEXT-INDENT: 2em\"><STRONG>2、东航POC</STRONG></DIV><DIV style=\"TEXT-INDENT: 4em\">1）流量控制开发</DIV><DIV style=\"TEXT-INDENT: 4em\">2）服务分组隔离和分组流控开发</DIV><DIV style=\"TEXT-INDENT: 4em\">3）异步Servlet高可用性开发</DIV><DIV style=\"TEXT-INDENT: 4em\"> </DIV><DIV style=\"TEXT-INDENT: 2em\"><STRONG>3、EOS Cloud</STRONG></DIV><DIV style=\"TEXT-INDENT: 4em\">1）技术预研，docker学习</DIV></DIV></DIV><DIV style=\"TEXT-INDENT: 4em\"> </DIV></DIV></DIV>";
+
+var miadetais5="<DIV dir=ltr>下周工作：</DIV><DIV style=\"TEXT-INDENT: 2em\"><DIV style=\"TEXT-INDENT: 2em\"><DIV style=\"TEXT-INDENT: 2em\"><DIV><DIV style=\"TEXT-INDENT: 2em\"><STRONG>1、SAP-Adap<SPAN style=\"FONT-WEIGHT: normal\"></SPAN>tor</STRONG></DIV><DIV style=\"TEXT-INDENT: 4em\">1）SAP-Adaptor产品测试</DIV></DIV><DIV style=\"TEXT-INDENT: 2em\"> </DIV>";
+
+var miadetais6="<DIV style=\"TEXT-INDENT: 2em\"><STRONG>2、东航POC</STRONG></DIV><DIV style=\"TEXT-INDENT: 4em\">1）高可用性场景测试、集成</DIV><DIV style=\"TEXT-INDENT: 4em\"> </DIV><DIV style=\"TEXT-INDENT: 2em\"><STRONG>3、EOS Cloud</STRONG></DIV><DIV style=\"TEXT-INDENT: 4em\">1）技术预研</DIV><DIV style=\"TEXT-INDENT: 4em\"> </DIV><DIV style=\"TEXT-INDENT: 2em\"><STRONG>4、技术支持</STRONG></DIV><DIV style=\"TEXT-INDENT: 4em\">未定</DIV><DIV style=\"TEXT-INDENT: 4em\"> </DIV><DIV style=\"TEXT-INDENT: 4em\"> </DIV>";
+
+var miadetais7="<DIV style=\"TEXT-INDENT: 4em\"><DIV style=\"TEXT-INDENT: 2em\"> </DIV></DIV></DIV><DIV> </DIV><DIV style=\"TEXT-INDENT: 2em\"> </DIV><DIV style=\"TEXT-INDENT: 2em\"> </DIV><DIV style=\"TEXT-INDENT: 2em\"> </DIV></DIV></DIV><HR style=\"HEIGHT: 1px; WIDTH: 210px\" align=left color=#b5c4df SIZE=1<DIV><SPAN><DIV style=\"FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; MARGIN-TOP: 10px; COLOR: #000000; MARGIN-LEFT: 10px; MARGIN-RIGHT: 10px\">"
+
+var miadetais8="<DIV><SPAN style=\"FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: #000000\">陈光耀</SPAN></DIV><DIV><SPAN style=\"FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: #000000\"></SPAN> </DIV<DIV><SPAN style=\"FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: #000000\">普元信息技术股份有限公司 <BR>地址：上海市张江高科技园区碧波路４５６号４层<BR>邮编：201203<BR>电话：021-50805188-674<BR>传真：021-50801900<BR>手机：13701998156<BR>电子邮件：<A style=\"MARGIN-BOTTOM: 0px; MARGIN-TOP: 0px\" href=\"mailto:chengy@primeton.com\">chengy@primeton.com</A></SPAN></DIV><DIV><SPAN style=\"FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: #000000\">请访问公司网址：<A style=\"MARGIN-BOTTOM: 0px; MARGIN-TOP: 0px\" href=\"http://www.primeton.com/\">http://www.primeton.com</A><BR></DIV></SPAN></DIV></SPAN></DIV></BODY></HTML>";
+
+var mailDetails=miadetais1+miadetais2+miadetais3+miadetais4+miadetais5+miadetais7+miadetais8;
+</script>
+</html>

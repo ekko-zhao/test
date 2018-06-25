@@ -1,0 +1,135 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<script>
+	$M.includeFile("/cuipage/cuiUtils.html");
+	$M.includeFile("/common/commonUtils.html");
+	$M.includeFile("/common/commonProgress.html");
+</script>
+<body>
+	<div isNav="true" id="nav" width="100%" height="50" vAlign="middle"
+		backgroundColor="#0b78e3">
+		<div width="80" height="100%" id="leftDiv" vAlign="middle"
+			onClick="goBack">
+			<img src="/linkman/back.png" width="11" height="18" marginLeft="10" />
+		</div>
+		<input type="label" id="title" width="100%" height="100%"
+			hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" />
+		<div width="80" height="100%" id="rightDiv" vAlign="middle"
+			hAlign="right" onClick="clearHistoryBtn">
+			<img src="/cui/clear_history.png" width="18" height="18"
+				marginRight="20" />
+		</div>
+	</div>
+	<div width="100%" height="100%" vAlign="middle" hAlign="center"
+		backgroundColor="#ebebeb">
+		<listview id="listview" width="100%" height="100%"
+			backgroundColor="#ebebeb" dividerColor="#ffffff"
+			dividerVisible="false" scrollBarStyle="hidden" enablePullDown="true"
+			onItemClick="clickItem"> <template>
+		<div width="100%" height="-2" minHeight="60" layout="VBox"
+			id="default_right" vAlign="middle" hAlign="center">
+			<div width="8" height="10" position="relative" left="347" top="26"
+				backgroundImage="/cui/chat_angle_right.png" marginRight="8"></div>
+			<div width="100%" height="-2" vAlign="middle" hAlign="right"
+				marginBottom="15" marginTop="15">
+				<div width="-2" paddingTop="7" paddingBottom="7" paddingLeft="13"
+					paddingRight="15" marginLeft="20" marginRight="12"
+					borderColor="#6f78f6" borderWidth="1" cornerRadius="5"
+					backgroundColor="#6f78f6">
+					<input type="label" tag="text" color="#ffffff" singleLine="false"
+						fontSize="16" maxWidth="300"></input>
+				</div>
+			</div>
+		</div>
+		</template> <template>
+		<div width="100%" height="-2" minHeight="60" layout="HBox"
+			id="default_left" vAlign="middle" hAlign="center">
+			<div width="8" height="10" position="relative" left="6" top="26"
+				backgroundImage="/cui/chat_angle_left.png" marginRight="8"></div>
+			<div width="100%" height="-2" vAlign="middle" hAlign="left"
+				marginBottom="15" marginTop="15">
+				<div width="-2" paddingTop="7" paddingBottom="7" paddingLeft="13"
+					paddingRight="15" marginLeft="13" marginRight="20"
+					borderColor="#fefefe" borderWidth="1" cornerRadius="5"
+					backgroundColor="#fefefe">
+					<input type="label" tag="text" color="#333333" singleLine="false"
+						fontSize="16" maxWidth="300"></input>
+				</div>
+			</div>
+		</div>
+		</template> </listview>
+
+	</div>
+	<div width="100%" height="2px" backgroundColor="#ececec"></div>
+	<div width="100%" height="42" layout="HBox" backgroundColor="#f5f5f5"
+		vAlign="middle" hAlign="center">
+		<div onClick="voice_send" backgroundImage="/cui/input_voice.png"
+			width="30" height="30" marginLeft="5" marginRight="5"></div>
+		<div width="100%" height="100%" layout="VBox" marginBottom="4"
+			marginLeft="2" marginRight="8" marginTop="4"
+			backgroundColor="#fcfcfc" cornerRadius="5" borderWidth="1px"
+			borderColor="#dddddd">
+			<input id="msg" type="text" backgroundColor="#fcfcfc" width="100%"
+				height="100%"></input>
+		</div>
+		<div marginRight="5" backgroundColor="#38ACFF" vAlign="middle"
+			hAlign="center" borderColor="#38ACFF" borderWidth="1"
+			cornerRadius="5">
+			<input width="-2" height="30" type="button" value="发送" fontSize="16"
+				backgroundColor="#38ACFF" color="#ffffff" onClick="send"></input>
+		</div>
+	</div>
+	<dialog id="clearHistoryDialog" canceledOnTouchOutside="false">
+	<div id="div" layout="VBox" hAlign="center" backgroundColor="#ffffff"
+		height="130" width="250" cornerRadius="10" borderColor="#D9D9D9"
+		borderWidth="1px">
+		<div width="100%" height="15"></div>
+		<div width="100%" height="70" vAlign="middle" hAlign="center">
+			<input type="label" value="将清空所有历史记录" hAlign="center" width="180"
+				vAlign="middle" color="#333333" fontSize="16" />
+		</div>
+		<div width="100%" height="100%"></div>
+		<div width="100%" height="1px" backgroundColor="#D9D9D9" />
+		<div width="100%" height="40">
+			<input type="button" width="100%" height="35" value="取消"
+				onClick="cancleCheckDialog" color="#4ca1fe"
+				backgroundColor="#ffffff" fontSize="18" />
+			<div width="1px" height="100%" backgroundColor="#D9D9D9"></div>
+			<input type="button" width="100%" height="35" value="确认"
+				onClick="confirmCheckDialog" color="#4ca1fe"
+				backgroundColor="#ffffff" fontSize="18" />
+		</div>
+	</div>
+	</dialog>
+</body>
+<script>
+	if (Emp.isIOS) {
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+	title.setValue("智能小助手");
+	var tempPre = new $M.Preferences();
+	tempPre.open('cuiTemplates');
+	listview.addTemplate(default_right, "default_right");
+	listview.addTemplate(default_left, "default_left");
+	var items = [];
+	function send() {
+		if (msg.getValue() == "") {
+			// 			alert("输入为空");
+			dialogtext.setValue("输入为空");
+			dialog.show();
+			return;
+		}
+		sendMsg(msg.getValue());
+
+	};
+
+	function voice_send() {
+		Utils.record2String(true, function(text, path) {
+			sendMsg(text);
+		});
+	}
+</script>
+</html>

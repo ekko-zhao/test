@@ -1,0 +1,635 @@
+<html>
+<head>Code refactoring performed by ShaoBo.
+</head>
+<script>
+	$M.includeFile("/common/appMgr.html");
+	$M.includeFile("/common/commonUtils.html");
+</script>
+<body>
+	<div id="waitpgs" width="100%" hAlign="center" vAlign="middle"
+		height="100%" backgroundColor="#222222" opacity="0.8" top="50" position="relative">
+		<progress width="50" height="50" />
+	</div>
+	<div id="nav" width="100%" height="50" vAlign="middle" class="emp-nav-backgroundColor">
+		<div width="80" height="100%" id="leftDiv" vAlign="middle" onClick="goBack">
+			<img src="/meeting/back.png" width="13" height="20" marginLeft="20"></img>
+		</div>
+		<input type="label" id="title" value="应用编辑" width="100%" height="100%"
+			hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" />
+		<div width="80" height="100%" id="rightDiv1" vAlign="middle"
+			hAlign="center" onClick="saveNewOrder" display="false">
+			<input type="label" value="完成" color="#ffffff" />
+		</div>
+		<div width="80" height="100%" id="rightDiv2" vAlign="middle"
+			hAlign="center" onClick="gotoappstore" display="true">
+			<img src="/menu/nav_gostore.png" width="12" height="12" />
+			<div width="5" height="100%" />
+
+			<input type="label" value="更多应用" color="#ffffff" fontSize="14" />
+		</div>
+	</div>
+
+	<div width="100%" height="35" vAlign="middle">
+		<div width="10" height="100%" />
+		<input type="label" value="首页应用" color="#333333" fontSize="16" /> 
+		<input type="label" value="（按住拖动调整排序）" color="#cccccc" fontSize="16" />
+	</div>
+	<div width="100%" height="1px" backgroundColor="#cccccc" />
+	<div width="100%" height="240" layout="VBox" id="gridView" backgroundColor="#ffffff">
+	
+	</div>
+
+	<div width="100%" height="100%" backgroundColor="#f8f8f8" layout="VBox">
+
+		<div width="100%" height="1px" backgroundColor="#cccccc" />
+		<div width="100%" height="35" vAlign="middle">
+			<div width="10" height="100%" />
+			<input type="label" value="其他应用" color="#333333" fontSize="16" />
+		</div>
+		<div width="100%" height="1px" backgroundColor="#cccccc" />
+		<div width="100%" height="100%" layout="VBox" id="otherApps" backgroundColor="#ffffff">
+		
+		</div>
+	</div>
+
+	<template>
+	<div id="temp1" width="100%" height="120" vAlign="middle"
+		hAlign="center" layout="VBox" borderColor="#aaaaaa" borderWidth="1px">
+		<div width="20" height="20" hAlign="center" vAlign="middle"
+			position="relative" top="8" left="65" display="false" id="deleteApp" tag='deleteApp'>
+			<img src="/menu/removeApp.png" width="15" height="15" />
+		</div>
+		<div width="20" height="20" hAlign="center" vAlign="middle"
+			position="relative" top="8" left="65" display="false" id="addApp" tag='addApp'>
+			<img src="/menu/addApp.png" width="15" height="15" />
+		</div>
+		<div id="mark" backgroundImage="/images/upload.png" width="15"
+			height="15" position="relative" top="45" left="64" tag="hasCache" />
+		<div width="100%" height="14" />
+		<div width="50" height="45" borderWidth="1" borderColor="#ffffff"
+			cornerRadius="12" hAlign="center" vAlign="middle">
+			<img tag="icon" width="40" height="40" />
+			<div id="point" backgroundImage="/images/redpoint.png" width="10" height="10" 
+				position="relative" top="0" left="35" tag="hasUpdate" />
+		</div>
+		<div width="100%" height="100%" layout="VBox" vAlign="middle" hAlign="center">
+			<input type="label" value="" tag="name" />
+		</div>
+		<div width="100%" height="5" />
+		<div width="100%" height="1px" backgroundColor="#cccccc" />
+	</div>
+	</template>
+
+</body>
+<script>
+	if (Emp.isIOS) {
+		nav.setHeight(60);
+		waitpgs.setTop(60);
+		nav.setPaddingTop(8);
+	}
+	
+	//UI控件变量
+	var dragGridViewHome;	//首页
+    var dragGridViewAll;	//其它
+    
+	//app列表数据
+	var cacheData;		//缓存情况
+	var installedList;	//本地已安装
+	var allList;		//所有有权限的
+	var updateList;		//更新
+	var homeData;		//主页缓存
+	var otherData;		//其它缓存
+	var ownList;		//已安装且有权限的
+	var list = [];		//临时处理数据
+	var dragHomeData;	//动态首页数据
+	var dragOtherData;	//动态其它数据
+	
+	//其它
+	var userId = preference1.get('userid');
+	
+	AppManager.USERID = preference1.get('userid');
+	otherData = preference.get(userId + "cacheOtherData");
+	installedList = AppManager.getInstalledAppList();
+	
+	//life circle --------------------
+	Emp.page.addEvent("onLoad", function(params) {
+		setTimeout(function(){
+			var otherh = otherApps.getHeight() + "px";
+			dragGridViewAll.setHeight(otherh);
+			gridView.add(dragGridViewHome);
+			otherApps.add(dragGridViewAll);
+		},5);
+		if (otherData == undefined) {
+			initCache();
+			log("no other");
+			disposalData();
+		} else {
+			disposalData();
+		}
+	});
+	Emp.page.addEvent("onBack", function(params) {
+		$M.setCurrentAppId('com.primeton.mwork');
+		installedList = AppManager.getInstalledAppList();
+		filterHomeData();
+		otherData = copyArr(preference.get(userId + "cacheOtherData"));
+		disposalData();
+	});
+	//life circle ====================
+	
+	//初始化UI -------------------------
+	dragGridViewHome = new Emp.DragGridView({
+		width : '100%',
+		height : '240',
+		column : 4,
+		itemHeight : 120,
+		isEnableDragGrid : false,
+	});	
+	dragGridViewHome.setTemplate(temp1); 
+    dragGridViewAll = new Emp.DragGridView({
+		width : '100%',
+		height : '100%',
+		column : 4,
+		itemHeight : 120,
+		isEnableDragGrid : false,
+	});
+	dragGridViewAll.setTemplate(temp1);
+	
+	deleteApp.setAttrAdapter([ {
+		value : 'show',
+		display : 'true'
+	}, {
+		value : 'hide',
+		display : 'false'
+	}, {
+		value : '',
+		display : 'false'
+	} ]);
+	addApp.setAttrAdapter([ {
+		value : 'show',
+		display : 'true'
+	}, {
+		value : 'hide',
+		display : 'false'
+	}, {
+		value : '',
+		display : 'false'
+	} ]);
+	point.setAttrAdapter([ {
+		value : 'true',
+		display : 'true'
+	}, {
+		value : 'false',
+		display : 'false'
+	}]);
+	mark.setAttrAdapter([ {
+		value : 'true',
+		display : 'true'
+	}, {
+		value : 'false',
+		display : 'false'
+	}]);
+	//初始化UI =========================
+	
+	//初始化首页列表缓存
+	function initCache() {
+		otherData = [];
+	}
+	
+	//整理数据入口
+	function disposalData() {
+		homeData = copyArr(preference.get(userId + "cacheHomeData"));
+		if(Utils.isNetworkAvailable()){
+			getAllList();
+		}else{
+			filterWithInstalledList();
+			reloadData();
+		}
+	}
+	
+	//是否已安装
+	function getIsInstalled(item) {
+		var isInstalled = false;
+		for (var j = 0; j < installedList.length; j++) {
+			var ins = installedList[j];
+			if (item.appid == ins.appid) {
+				isInstalled = true;
+				break;
+			}
+		}
+		return isInstalled;
+	}
+	
+	//与本地已安装列表取交集
+	function filterHomeData() {
+		list = [];
+		homeData = copyArr(homeData);
+		for (var i = 0; i < homeData.length; i++) {
+			var item = homeData[i];
+			if (item.isOriginal == "true") {
+				list.push(item);
+				continue;
+			} else if (getIsInstalled(item)) {
+				list.push(item);
+			}
+		}
+		homeData = list;
+		preference.put(userId + "cacheHomeData", homeData);
+	}
+	
+	//获取网络数据
+	function getAllList() {
+		AppManager.USERID = preference1.get('userid');
+		AppManager.getAppList(getUpdateList,offLine);
+	}
+	
+	function getUpdateList(arg) {
+		allList = arg; //所以有权限的数据
+		AppManager.getUpdateAppList(UpdateSfn,offLine);
+	}
+	
+	function UpdateSfn(arg) {
+		waitpgs.setDisplay(false);
+		updateList = arg; //所以可以更新的数据
+ 		//log("all="+Utils.jsonToString(allList));
+ 		//log("home="+Utils.jsonToString(homeData));
+ 		//log("upd="+Utils.jsonToString(updateList));
+ 		//log("ins="+Utils.jsonToString(installedList));
+		
+ 		//log("own="+Utils.jsonToString(ownList));
+		filterOtherData();
+ 		//log("other="+Utils.jsonToString(otherData));
+ 		removeRepetitionList();
+		reloadData();
+	}
+	//当pc端取消权限后移动端要进行更新（有网情况下）
+	function removeRepetitionList() {
+		var newAllList = [];
+		for(var i=0;i<homeData.length;i++){
+			if(homeData[i].appid == ""){
+				newAllList.push(homeData[i]);
+			}
+			for(var j=0;j<allList.length;j++){
+				if(homeData[i].appid == allList[j].id){
+					newAllList.push(homeData[i]);
+				}
+			}
+		}
+		homeData = newAllList;
+	}
+	//获取数据失败
+	function offLine(e) {
+		waitpgs.setDisplay(false);
+		toast("网络问题，获取数据失败！");
+		filterWithInstalledList();
+		reloadData();
+	}
+	
+	//是否已安装
+	function getIsInstalled(item) {
+		var isInstalled = false;
+		for (var j = 0; j < installedList.length; j++) {
+			var ins = installedList[j];
+			if (item.appid == ins.appid) {
+				isInstalled = true;
+				break;
+			}
+		}
+		return isInstalled;
+	}
+	
+	//与本地已安装列表取交集
+	function filterWithInstalledList() {
+		list = [];
+		for (var i = 0; i < otherData.length; i++) {
+			var item = otherData[i];
+			if (getIsInstalled(item)) {
+				list.push(item);
+			}
+		}
+		finishedFilter();
+	}
+	
+	//otherData
+	function filterOtherData() {
+		getOwnList();
+		list = [];
+		var otherList = [];
+		//ownList去掉homeData
+		for (var i = 0; i < ownList.length; i++) {
+			var own = ownList[i];
+			var inHome = false;
+			for (var j = 0; j < homeData.length; j++) {
+				var item = homeData[j];
+				if (item.appid == own.appid) {
+					inHome = true;
+					break;
+				}
+			}
+			if (inHome == false) {
+				otherList.push(own);
+			}
+		} 
+		//根据otherData排序
+		for (var i = 0; i < otherData.length; i++) {
+			var data = otherData[i];
+			for (var j = 0; j < otherList.length; j++) {
+				var oth = otherList[j];
+				if (data.appid == oth.appid || data.isOriginal == 'true') {
+					list.push(data);
+					break;
+				}
+			}
+		}
+		//加入已安装未缓存的
+		for (var i = 0; i < otherList.length; i++) {
+			var oth = otherList[i];
+			var isCache = false;
+			for (var j = 0; j < list.length; j++) {
+				var item = list[j];
+				if (oth.appid == item.appid) {
+					isCache = true;
+					break;
+				}
+			}
+			if (isCache == false) {
+				list.push(oth);
+			}
+		}
+		finishedFilter();
+	}
+	
+	function getOwnList() {
+		list = [];
+		for (var i = 0; i < installedList.length; i++) {
+			var ins = installedList[i];
+			for (var j = 0; j < allList.length; j++) {
+				var item = allList[j];
+				if (item.id == ins.appid) {
+					list.push(ins);
+					break;
+				}
+			}
+		}
+		ownList = list;
+	}
+	
+	//完成数据筛选
+	function finishedFilter() {
+		otherData = list;
+		preference.put(userId + "cacheOtherData", otherData);
+	}
+	
+	//取出数据库缓存情况
+	function getCache() {
+		cacheData = {};
+		var db = $M.Database.openDatabase("microAppCache");
+		var sql = "select * from appsdata where userid = '" + userId + "'";
+  		var params  = new Array();
+		var result =db.query(sql,params);
+		for (var i = 0; i < result.length; i++) {
+			var cache = result[i];
+			cacheData[cache.appid] = cache.cache;
+		}
+		db.close();
+	}
+	
+	//显示数据
+	function reloadData() {
+		getCache();
+		for (var i = 0; i < homeData.length; i++) {
+			var item = homeData[i];
+			if (cacheData[item.appid] > 0) {
+				item.hasCache = "true";
+			} else {
+				item.hasCache = "false";
+			}
+			//标记更新
+			var hasUpdate = false
+			for (var u = 0; u < updateList.length; u++) {
+				var upd = updateList[u];
+				if (item.appid == upd.id) {
+					hasUpdate = true;
+					break;
+				}
+			}
+			if (hasUpdate) {
+				item.hasUpdate = "true";
+				item.updateappinfo = Utils.jsonToString(upd);
+			} else {
+				item.hasUpdate = "false";
+			}
+		}
+		for (var i = 0; i < otherData.length; i++) {
+			var item = otherData[i];
+			if (cacheData[item.appid] > 0) {
+				item.hasCache = "true";
+			} else {
+				item.hasCache = "false";
+			}
+			//标记更新
+			var hasUpdate = false
+			for (var u = 0; u < updateList.length; u++) {
+				var upd = updateList[u];
+				if (item.appid == upd.id) {
+					hasUpdate = true;
+					break;
+				}
+			}
+			if (hasUpdate) {
+				item.hasUpdate = "true";
+				item.updateappinfo = Utils.jsonToString(upd);
+			} else {
+				item.hasUpdate = "false";
+			}
+		}
+		gridView.remove(dragGridViewHome);
+		dragGridViewHome.setItems(homeData);
+		gridView.add(dragGridViewHome);
+		
+		otherApps.remove(dragGridViewAll);
+		dragGridViewAll.setItems(otherData);
+		otherApps.add(dragGridViewAll);
+		saveNewOrder();
+	}
+	
+	function copyArr(arr) {
+		var newArr = [];
+		for (var i = 0; i < arr.length; i++) {
+			var item = arr[i];
+			newArr.push(copyObj(item));
+		}
+		return newArr;
+	}
+	
+	function copyObj(obj) {
+		var newObj = {};
+		for ( var key in obj) {
+			newObj[key] = obj[key];
+		}
+		return newObj;
+	}
+	
+	//事件 -------------------------
+	function goBack() {
+		$M.page.goBack({'key':'workbench'});
+	}
+	$M.page.addEvent('onPressBackKeySystem', goBack);
+	
+	function gotoappstore() {
+		if(Utils.isNetworkAvailable()){
+			$M.page.goTo("/appstore/applist.html", {}, false);
+		}else{
+			alert('当前网络不可用');
+		}
+	}
+	
+	//长按事件    
+	dragGridViewHome.addEvent("onItemLongClick", function(startPosition, data) {
+		dragGridViewHome.setEnableDragGrid(true);
+		rightDiv1.setDisplay(true);
+		rightDiv2.setDisplay(false);
+		dragHomeData = copyArr(homeData);
+		dragOtherData = copyArr(otherData);
+		for (var i = 0; i < dragHomeData.length; i++) {
+			dragHomeData[i].deleteApp = 'show';
+			dragHomeData[i].addApp = 'hide';
+		}
+		for (var j = 0; j < dragOtherData.length; j++) {
+			dragOtherData[j].deleteApp = 'hide';
+			dragOtherData[j].addApp = 'show';
+		}
+		dragGridViewHome.setItems(dragHomeData);
+		dragGridViewAll.setItems(dragOtherData);
+
+	});
+	
+	dragGridViewAll.addEvent("onItemLongClick", function(startPosition, data) {
+		dragGridViewHome.setEnableDragGrid(true);
+		rightDiv1.setDisplay(true);
+		rightDiv2.setDisplay(false);
+		dragHomeData = copyArr(homeData);
+		dragOtherData = copyArr(otherData);
+		for (var i = 0; i < dragHomeData.length; i++) {
+			dragHomeData[i].deleteApp = 'show';
+			dragHomeData[i].addApp = 'hide';
+		}
+		for (var j = 0; j < dragOtherData.length; j++) {
+			dragOtherData[j].deleteApp = 'hide';
+			dragOtherData[j].addApp = 'show';
+		}
+		dragGridViewHome.setItems(dragHomeData);
+		dragGridViewAll.setItems(dragOtherData);
+	});
+	
+	//完成
+	function saveNewOrder() {
+		dragGridViewHome.setEnableDragGrid(false);
+		rightDiv1.setDisplay(false);
+		rightDiv2.setDisplay(true);
+		dragHomeData = dragGridViewHome.getItems();
+		dragOtherData = dragGridViewAll.getItems();
+		var homedrag = copyArr(dragHomeData);
+		var otherdrag = copyArr(dragOtherData);
+		for (var i = 0; i < homedrag.length; i++) {
+			homedrag[i].deleteApp = 'hide';
+			homedrag[i].addApp = 'hide';
+		}
+		for (var j = 0; j < otherdrag.length; j++) {
+			otherdrag[j].deleteApp = 'hide';
+			otherdrag[j].addApp = 'hide';
+		}
+		homeData = homedrag;
+		dragGridViewHome.setItems(homedrag);
+		preference.put(userId + "cacheHomeData", homedrag);
+		dragGridViewAll.setItems(otherdrag);
+		otherData = otherdrag;
+		preference.put(userId + "cacheOtherData", otherdrag);
+	}
+	
+	//移出首页
+	function moveOut(row, data) {
+		dragHomeData.splice(row, 1);
+		var data = copyObj(data);
+		data.deleteApp = 'hide';
+		data.addApp = 'show';
+		dragOtherData.push(data);
+ 		dragGridViewHome.setItems(dragHomeData);
+		dragGridViewAll.setItems(dragOtherData);
+	}
+	
+	//移入首页
+	function moveIn(row, data) {
+		if(dragHomeData.length == 11) {
+			toast("首页最多放11个应用！");
+		} else {
+			dragOtherData.splice(row, 1);
+			var data = copyObj(data);
+			data.deleteApp = "show";
+			data.addApp = "hide";
+			dragHomeData.push(data);
+			dragGridViewHome.setItems(dragHomeData);
+			dragGridViewAll.setItems(dragOtherData);
+		}
+	}
+	
+	//点击应用
+	function startApp(row, data) {
+		var params = {};
+		var token = preference.get('access_token');
+		params = {
+			'token' : token
+		};
+		if (data != null && data.isOriginal == 'true') {
+			$M.page.goTo(data.url);
+		} else if (data != null) {
+			if (data.hasUpdate == 'true') {
+				if (Utils.isNetworkAvailable()) {
+					confirm("更新" + data.name + " 应用", function() {
+						AppManager.installUpdate(Utils
+								.stringToJson(data.updateappinfo), successFn,
+								failureFn, loadingFn, '1');
+					}, function() {
+						toast('取消更新');
+					});
+				} else {
+					toast('当前网络不可用');
+				}
+			} else {
+				statisticsAppInfo(userId,"",data.id,data.name,data.ver,"2");
+				AppManager.startApp(data, params, failureFn);
+			}
+		}
+	}
+
+	//首页应用单击事件	 
+	dragGridViewHome.addEvent("onItemClick", function(row, tag, data) {
+		if (data.deleteApp == 'show') {
+			moveOut(row, data);
+		} else {
+			startApp(row, data);
+		}
+	});
+
+	//其他应用单击事件	 
+	dragGridViewAll.addEvent("onItemClick", function(row, tag, data) {
+		if (data.addApp == 'show') {
+			moveIn(row, data);
+		} else {
+			startApp(row, data);
+		}
+	});
+	
+	function failureFn(){
+		log('open fail');
+	}
+	
+	function successFn(){
+		toast('更新应用成功');
+		disposalData();
+	}
+	
+	function loadingFn(){
+	
+	}
+</script>
+</html>

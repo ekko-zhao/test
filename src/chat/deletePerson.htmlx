@@ -1,0 +1,191 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<script>
+	$M.includeFile("/chat/commonchat.html");
+	$M.includeFile("/common/commonUtils.html");
+</script>
+</head>
+<body>
+	<div id="nav" width="100%" height="50" vAlign="middle"
+		class="emp-nav-backgroundColor">
+		<div width="80" height="100%" id="leftDiv" vAlign="middle"
+			onClick="goBack">
+			<img src="/meeting/back.png" width="13" height="20" marginLeft="20"></img>
+		</div>
+		<input type="label" id="title" value="全体群人员" width="100%" height="100%"
+			hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="18" />
+		<div width="80" height="100%" id="rightDiv" vAlign="middle"
+			hAlign="center"   >
+			<input id="OKDiv" type="label" value="确定" color="#ffffff" fontSize="20" onClick="deleteP"/>
+			<input id="personNumberl" type="label" value="(0)" color="#ffffff" fontSize="20"/>
+		</div>
+	</div>
+	<!-- 搜索框 -->
+	<div width="100%" height="40" vAlign="middle" backgroundColor="#ffffff">
+		<div width="100%" marginLeft="10" marginRight="10" backgroundColor="#F2F2F2" vAlign="middle" cornerRadius="5" borderColor="#f2f2f2" borderWidth="1px"  >
+			<img src="/linkman/icon_title_bar_search.png" width="13" height="13" marginLeft="5" />
+			<input type="text" fontSize="15" id="search" returnType="search" height="27" width="100%" value="" emptyText="搜索" backgroundColor="#F2F2F2" paddingLeft="5" onChange="searchperson"  />
+			<div width="27" height="27" id="cancelSearch" visibility="false" vAlign="middle" >
+				<img src="/common/cancel.png" width="20" height="20" marginRight="5" />
+			</div>
+		</div>
+	</div>
+	<div width="100%" height="1" backgroundColor="#f2f2f2" ></div>
+	<div width="100%" height="100%">
+		<listview id="listview" width="100%" height="100%" dividerVisible="true" dividerColor="#D9D9D9"  >
+			<template >
+				<div width="100%" height="50" layout="HBox" vAlign="middle" >
+					<div  width="40" height="40" id="circle" tag="circle" vAlign="middle" hAlign="center" marginLeft="10" >
+						<input  id="nameImg" tag="nameImg" type="label"  color="#ffffff"  fontSize="24" />
+					</div>
+					<input type="label" width="100%" height="100%" tag="name" marginLeft="20" />
+					<div width="40" height="100%" hAlign="center" vAlign="middle" id="rightArrow" tag="rightArrow">
+						<img  width="20" height="20" tag="imgcheck" id="imgcheck"/>
+					</div>
+				</div>
+			</template>
+		</listview>
+	</div>
+</body>
+<script> 
+	function goBack() {
+		$M.page.goBack();
+	}
+	circle.setAttrAdapter([ {
+		value : '0',
+		backgroundImage : '/linkman/ciracle1.png'
+	}, {
+		value : '1',
+		backgroundImage : '/linkman/ciracle2.png'
+	},{
+		value : '2',
+		backgroundImage : '/linkman/ciracle3.png'	
+	},{
+		value : '3',
+		backgroundImage : '/linkman/ciracle4.png'
+	
+	}]);
+	imgcheck.setAttrAdapter([{
+		value : '1',
+		src : ""
+	},{
+		value : '2',
+		src : "/chat/checkPic.png"
+	},{
+		value : '3',
+		src : "/chat/unCheckPic.png"
+	}
+	]);
+	var gID;
+	var userList;
+	var items = [];
+	var personNumber = 0;
+	
+	var key;
+		if(Emp.isIOS){
+		nav.setHeight(60);
+		nav.setPaddingTop(8);
+	}
+	$M.page.addEvent('onLoad', function (param) {
+		userList = param.userList;
+		gID = param.gID;
+		key = param.key;
+		items = [];
+		if(key == "S"){
+			OKDiv.setDisplay(false); 
+			personNumberl.setDisplay(false);
+		}
+		for(var i=0;i<userList.length;i++){
+			var temp = {};
+			var count = parseInt(Math.random()*4+1);
+			temp.circle = count%4;
+			temp.name = userList[i].name;
+			temp.userID = userList[i].userID;
+			temp.nameImg = userList[i].name.substring(0,1);
+			if(key == "D"){
+				if(userList[i].userID == preference.get('userid')){
+					temp.imgcheck = "1";
+				}else{
+					temp.imgcheck = "2";
+				}
+			}else{
+				temp.imgcheck = "1";
+			}
+			items.push(temp);
+		}
+		listview.setItems(items);
+		listview.reloadData();
+	});
+	//搜索
+	function searchperson() {
+		var name = search.getValue();
+		 items = [];
+		 for(var i=0;i<userList.length;i++){
+		 	if(userList[i].name.indexOf(name) >= 0){
+				var temp = {};
+				var count = parseInt(Math.random()*4+1);
+				temp.circle = count%4;
+				temp.name = userList[i].name;
+				temp.userID = userList[i].userID;
+				temp.nameImg = userList[i].name.substring(0,1);
+				items.push(temp);
+			}
+		}
+		listview.setItems(items);
+		listview.reloadData();
+	}
+	//设置listview响应item点击事件
+	listview.addEvent('onItemClick', function(row, tag, data){
+		if(key == "D"){
+			if(data.imgcheck == "2"){
+				personNumber ++;
+				personNumberl.setValue("("+personNumber+")");
+				items[row].imgcheck = "3";
+				var temp = {};
+				temp.circle = data.circle;
+				temp.name = data.name;
+				temp.userID = data.userID;
+				temp.nameImg = data.nameImg;
+				temp.imgcheck = "3";
+				listview.updateItem(row, temp);
+				listview.reloadData();
+			}else if(data.imgcheck == "3"){
+				personNumber -- ;
+				personNumberl.setValue("("+personNumber+")");
+				items[row].imgcheck = "2";
+				var temp = {};
+				temp.circle = data.circle;
+				temp.name = data.name;
+				temp.userID = data.userID;
+				temp.nameImg = data.nameImg;
+				temp.imgcheck = "2";
+				listview.updateItem(row, temp);
+				listview.reloadData();
+			}
+		}else{
+			$M.page.goTo("/chat/personInfo.html", data.userID, false);
+		}
+		
+	});
+	function deleteP() {
+		if(personNumber == 0){
+			alert("未选择人员");
+		}else{
+			confirm("确定删除人员？",function (){
+				var userl = [];
+				for(var i=0;i<items.length;i++){
+					if(items[i].imgcheck == "3"){
+						userl.push(items[i].userID);
+					}
+				}
+				chat.deleteMember({'gID':gID,'userList':userl}, function(r){log(r);toast("删除成功");
+					$M.page.goBack({}, '/chat/phonecontacts.html');
+				});
+			} , function () {
+			});
+		}
+		
+	}
+</script>
+</html>

@@ -1,0 +1,697 @@
+<html>
+<head>
+       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<script>
+       $M.includeFile("/common/appMgr.html");
+       $M.includeFile("/common/commonUtils.html");
+       $M.includeFile("/common/commonSkin.html");
+</script>
+<body>
+	<div id="nav" width="100%" height="50" vAlign="middle" class="emp-nav-backgroundColor" >
+	       <div width="100" height="100%" id="leftDiv" vAlign="middle" onClick="goBack">
+	              <div width="10" height="100%"/>
+	              <img src="/appstore/back.png" width="11" height="18"/>
+	              <div width="4" height="100%"/>
+	              <input type="label" value="应用商店"  fontSize="18" color="#ffffff" />
+	       </div>
+	       <input type="label" id="titleInfo" width="100%" height="100%" hAlign="center" vAlign="middle" color="#FFFFFF" fontSize="20" value="" />
+	       <div width="80" height="100%" id="rightDiv" vAlign="middle" >
+	       </div>
+	</div> 
+              <div width="330" height="100%" layout="VBox" marginLeft="10" hAlign="center"  onClick="disdialog">
+                     <div width="100%" height="10"></div>
+                     <div width="100%" height="100" hAlign="center" vAlign="middle">
+                     	<div width="80" height="80" borderWidth="1px" borderColor="#999999" cornerRadius="12" >
+                     		<img src="/images/app.png" width="80" height="80" id="icon" />
+                     	</div>
+                           
+                           <div width="10" height="100%"></div>
+                           <div width="160" height="100" layout="VBox" >
+                                  <div width="100%" height="12"></div>
+                                  <input type="label" value="label" id="appname"  fontSize="18" />
+                                  <div width="100%" height="20" id="appstar" vAlign="middle" >
+                                         <img src="" width="9" height="9" id="star1"/>
+                                         <div width="1" height="100%"></div>
+                                         <img src="" width="9" height="9" id="star2"/>
+                                         <div width="1" height="100%"></div>
+                                         <img src="" width="9" height="9" id="star3"/>
+                                         <div width="1" height="100%"></div>
+                                         <img src="" width="9" height="9" id="star4"/>
+                                         <div width="1" height="100%"></div>
+                                         <img src="" width="9" height="9" id="star5"/>  
+                                         <div width="5" height="100%"></div>
+                                         <input type="label" value="" color="#888888" fontSize="12" id="totalcom"/>
+                                  </div> 
+                                  <input type="label" value="" width="160" height="100%" marginBottom="0" fontSize="12" color="#888888" id="summary" />
+                           </div>
+                           <div width="5" height="100%"></div>
+                           <div id="dwondiv" width="65" height="30"  borderWidth="1" vAlign="middle"  cornerRadius="5">
+                                  <div width="0" height="100%" backgroundColor="#8fc2f2" id="loading">                                    
+                                  </div>
+                                  <input type="label"   id="operateBtn" position="relative" width="63" height="30" hAlign="center" vAlign="middle" fontSize="16" />                    
+                           </div>
+                     </div>
+                     <div width="100%" height="10"></div>
+                  	 <div width="170" height="30">
+                           <div id="detail" width="100%" height="100%" backgroundColor="#0b78e3" borderWidth="1" borderColor="#0b78e3" hAlign="center" vAlign="middle" onClick="clickTab1" cornerRadius="5">    
+                                  <input type="label" value="详情" color="#ffffff" id="text_detail" fontSize="16" />        
+                           </div>
+                           <div width="10" height="100%" ></div>
+                           <div id="comment" width="100%" height="100%" backgroundColor="#ffffff" borderWidth="1" borderColor="#0b78e3" hAlign="center" vAlign="middle" onClick="clickTab2" cornerRadius="5">
+                                  <input type="label" value="评论" color="#0b78e3" id="text_comment" fontSize="16" />
+                           </div>
+                     </div>
+                     <div width="100%" height="15"></div>
+                     
+                     <slide id="apptab" height="100%" enableLoop="false" enableScroll="false" tipVisible="false">
+                         <slidepage>
+                           <div width="340" layout="VBox" marginLeft="10" hAlign="center" vAlign="middle" overflow="y" bounces="false" >
+                                  <div id="preview" width="100%" height="320" overflow="x">
+                                  <!-- 截图 -->
+                                  </div>
+                                  <div width="100%" height="20"></div>
+                                  
+                                  <div width="100%" height="1px" backgroundColor="#D9D9D9" />
+                                  
+                                  <div width="100%" height="-2" layout="VBox" hAlign="center" >
+                                         <div width="100%" height="20"></div>
+                                         <div width="100%" height="-2" layout="VBox" >
+                                                <input type="label" value="详细信息" fontSize="18" />
+                                                <div width="100%" height="5"></div>
+                                                <input width="320" type="label" color="#999999"  fontSize="14" value="" singleLine="false" id="describe"/>
+                                         </div>
+                                         <div width="100%" height="20"></div>
+                                         <div width="100%" height="1px" backgroundColor="#D9D9D9" />
+                                         <div width="100%" height="20"></div>
+                                         <div width="100%" height="170">
+                                                <div width="90" height="100%" layout="VBox" >                   
+                                                       <input width="80" type="label" value="开发商"  hAlign="right" color="#999999" fontSize="14" />
+                                                       <div width="100%" height="5"></div>
+                                                       <input width="80" type="label" value="类别" hAlign="right" color="#999999" fontSize="14" />
+                                                       <div width="100%" height="5"></div>
+                                                       <input width="80" type="label" value="更新日期" hAlign="right" color="#999999" fontSize="14" />
+                                                       <div width="100%" height="5"></div>
+                                                       <input width="80" type="label" value="版本" hAlign="right" color="#999999" fontSize="14" />
+                                                       <div width="100%" height="5"></div>
+                                                       <input width="80" type="label" value="大小" hAlign="right" color="#999999" fontSize="14" />
+                                                       <div width="100%" height="5"></div>
+                                                       <input width="80" type="label" value="语言" hAlign="right" color="#999999" fontSize="14" />
+                                                </div>
+                                                <div width="20" height="100%"></div>
+                                                <div width="270" height="100%" layout="VBox" >                          
+                                                       <input width="270" type="label" value="label" id="developer" color="#999999" fontSize="14" />
+                                                       <div width="100%" height="5"></div>
+                                                       <input width="270" type="label" value="label" id="apptype" color="#999999" fontSize="14" />
+                                                       <div width="100%" height="5"></div>
+                                                       <input width="270" type="label" value="label" id="updateLog" color="#999999" fontSize="14" />
+                                                       <div width="100%" height="5"></div>
+                                                       <input width="270" type="label" value="label" id="version" color="#999999" fontSize="14" />
+                                                       <div width="100%" height="5"></div>
+                                                       <input width="270" type="label" value="label" id="appsize" color="#999999" fontSize="14" />
+                                                       <div width="100%" height="5"></div>
+                                                       <input width="270" type="label" value="label" id="language" color="#999999" fontSize="14" />
+                                                </div>
+                                         </div>
+                                         <div width="100%" height="20"/>   
+                                         <div display="false" width="220" height="40" id="sharediv" cornerRadius="10" borderColor="#0b78e3" backgroundColor="#0b78e3" borderWidth="1" hAlign="center" vAlign="middle" onClick="shareToWechat" >
+                                                <input type="label" value="分享" color="#ffffff" />
+                                         </div>
+                                         <div width="100%" height="20">                  
+                                         </div>
+                                  </div>
+                           </div>
+                         </slidepage>
+                         <slidepage>
+                        
+		<div id="commentpage" width="330" height="100%" layout="VBox" marginLeft="10" hAlign="center" >
+			<div width="100%" height="1px" backgroundColor="#D9D9D9" />
+			<div width="100%" height="85" hAlign="center" vAlign="middle" >
+				<div width="100%" height="100%" layout="VBox" >
+					<div width="100%" height="5"></div>
+					<div width="320" height="15" vAlign="middle" >
+						<div width="60" height="100%" vAlign="middle" >
+							<img src="/appstore/star_gray.png" width="9" height="9" />
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1" />
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1"/>
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1"/>
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1"/>
+						</div>
+						<div width="260" height="3" backgroundColor="#f9f9f9">
+							<div width="200" height="100%" backgroundColor="#d9d9d9"  id="chart5">
+							</div>
+						</div>
+					</div>
+					<div width="320" height="15" vAlign="middle" >
+						<div width="60" height="100%" vAlign="middle" >
+							<img src="" width="9" height="9" />
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1" />
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1"/>
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1"/>
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1"/>
+						</div>
+						<div width="260" height="3" backgroundColor="#f9f9f9" >
+							<div width="160" height="100%" backgroundColor="#d9d9d9" id="chart4">
+							</div>
+						</div>
+					</div>
+					<div width="320" height="15" vAlign="middle" >
+						<div width="60" height="100%" vAlign="middle" >
+							<img src="" width="9" height="9" />
+							<img src="" width="9" height="9" marginLeft="1" />
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1"/>
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1"/>
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1"/>
+						</div>
+						<div width="260" height="3" backgroundColor="#f9f9f9" >
+							<div width="20" height="100%" backgroundColor="#d9d9d9" id="chart3">
+							</div>
+						</div>
+					</div>
+					<div width="320" height="15" vAlign="middle" >
+						<div width="60" height="100%" vAlign="middle" >
+							<img src="" width="9" height="9" />
+							<img src="" width="9" height="9" marginLeft="1" />
+							<img src="" width="9" height="9" marginLeft="1"/>
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1"/>
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1"/>
+						</div>
+						<div width="260" height="3" backgroundColor="#f9f9f9" >
+							<div width="20" height="100%" backgroundColor="#d9d9d9" id="chart2">
+							</div>
+						</div>
+					</div>
+					<div width="320" height="15" vAlign="middle" >
+						<div width="60" height="100%" vAlign="middle" >
+							<img src="" width="9" height="9" />
+							<img src="" width="9" height="9" marginLeft="1" />
+							<img src="" width="9" height="9" marginLeft="1"/>
+							<img src="" width="9" height="9" marginLeft="1"/>
+							<img src="/appstore/star_gray.png" width="9" height="9" marginLeft="1"/>
+						</div>
+						<div width="260" height="3" backgroundColor="#f9f9f9" >
+							<div width="20" height="100%" backgroundColor="#d9d9d9" id="chart1">
+							</div>
+						</div>
+					</div>
+					
+				</div>			
+			</div>
+			<div width="100%" height="1px" backgroundColor="#D9D9D9" />
+			<div width="100%" height="10"></div>
+			<listview id="commentslist" width="100%" height="100%" enablePullUp="true" >
+			    <template>
+			        <div width="100%" height="100" layout="VBox">
+			        	<div width="100%" height="10"></div>
+			        	<input type="label" value="评论标题" tag="commentTitle"/>
+			        	<div width="100%" height="5"></div> 
+			        	<div width="100%" height="18" vAlign="middle" >
+			        		<div width="55" height="11" tag="score" >
+								<div width="10" height="10" tag="star1" id="star11">
+								</div>
+								<div width="1" height="100%"></div>
+								<div width="10" height="10" tag="star2" id="star22">
+								</div>
+								<div width="1" height="100%"></div>
+								<div width="10" height="10" tag="star3" id="star33">
+								</div>
+								<div width="1" height="100%"></div>
+								<div width="10" height="10" tag="star4" id="star44">
+								</div>
+								<div width="1" height="100%"></div>
+								<div width="10" height="10" tag="star5" id="star55">
+								</div>
+							</div>		
+			        		<div width="10" height="100%"/>
+							<input type="label" value="label" tag="userId"  color="#999999" fontSize="14"/>						
+							<div width="5" height="1px" backgroundColor="#999999" />
+							<input type="label" value="" tag="createTime"  color="#999999" fontSize="14"/>
+						</div>
+						<div width="100%" height="5"></div>
+			        	<input type="label" value="" width="320" height="35" singleLine="false" color="#999999" fontSize="14" tag="appComment" />
+						<div width="100%" height="100%"></div>
+						<div width="100%" height="1px" backgroundColor="#999999" ></div>
+			        </div>
+			    </template>
+			</listview>
+		</div>
+		<div id="nocommentpage" width="330" height="100%" layout="VBox" marginLeft="10" hAlign="center" display="false" >
+			<input type="label" value="暂无评论" color="#999999" fontSize="18" />
+		</div>
+                         
+                         </slidepage>
+                     </slide>
+              </div>
+              
+              
+       <div height="183" width="360" position="relative" layout="VBox" left="0" top="457" backgroundImage="/appstore/bg_share.png" visibility="false" id="sharetowx" >
+              <div width="100%" height="23"/>          
+              <div vAlign="middle" layout="HBox" height="70" width="100%" >
+                     <div width="15" height="100%"/>
+                     <img src="/appstore/session.png" width="60" height="60" onClick="typesession" />
+                     <div width="12" height="100%"/>
+                     <img src="/appstore/circle.png" width="60" height="60" onClick="typecircle"/>
+              </div>
+              <div width="100%" height="5"/>
+              <div vAlign="middle" layout="HBox" height="20" width="100%" >
+                     <div width="14" height="100%"/>
+                     <input type="label" value="发送给朋友" color="#656565" fontSize="10" width="60" hAlign="center" />
+                     <div width="12" height="100%"/>
+                     <input type="label" value="分享到朋友圈" color="#656565" fontSize="10" width="60" hAlign="center" />
+              </div>
+              <div width="100%" height="100%"/>
+              <div width="100%" height="20" hAlign="center" vAlign="middle" onClick="disdialog" >
+                     <input type="label" value="取消" color="#212121" fontSize="16"/>
+              </div>
+              <div width="100%" height="15"/>
+       </div>
+              
+</body>
+<script>
+//operation:1.下载      2.写评论   3.打开    4.更新
+if(Emp.isIOS){
+       nav.setHeight(60);
+       nav.setPaddingTop(8);
+}
+var aboutapp;  //string
+var appInfo;   //json
+var operation;
+var listpage=0;
+var isReload;	
+var btn_operation;
+
+star11.setAttrAdapter([{
+	value : '1',
+	backgroundImage : '/appstore/star_on.png'
+}, {
+	value : '0',
+	backgroundImage : '/appstore/star_off.png'
+}]);
+star22.setAttrAdapter([{
+	value : '1',
+	backgroundImage : '/appstore/star_on.png'
+}, {
+	value : '0',
+	backgroundImage : '/appstore/star_off.png'
+}]);
+star33.setAttrAdapter([{
+	value : '1',
+	backgroundImage : '/appstore/star_on.png'
+}, {
+	value : '0',
+	backgroundImage : '/appstore/star_off.png'
+}]);
+star44.setAttrAdapter([{
+	value : '1',
+	backgroundImage : '/appstore/star_on.png'
+}, {
+	value : '0',
+	backgroundImage : '/appstore/star_off.png'
+}]);
+star55.setAttrAdapter([{
+	value : '1',
+	backgroundImage : '/appstore/star_on.png'
+}, {
+	value : '0',
+	backgroundImage : '/appstore/star_off.png'
+}]);
+
+$M.page.addEvent('onLoad', function(params){
+       //初始化界面颜色
+       dwondiv.setBorderColor(skin_fondcolor);
+       operateBtn.setColor(skin_fondcolor);
+       detail.setBackgroundColor(skin_fondcolor);
+       detail.setBorderColor(skin_fondcolor);
+       text_detail.setColor(skin_fondcolor_white);
+       comment.setBackgroundColor(skin_fondcolor_white);
+       text_comment.setColor(skin_fondcolor);
+       comment.setBorderColor(skin_fondcolor);
+       
+       aboutapp = Utils.jsonToString(params);
+       appInfo =params;
+       appname.setValue(params.name);
+       if(params.type=="h5"||params.type=="micro"){
+              sharediv.setDisplay(true);
+       }
+       
+       if(params.commentParams==null||params.commentParams==""){
+              appstar.setDisplay(false);
+       }else{
+              var commentParams = Utils.stringToJson(params.commentParams);
+              //评分
+              for(var i=1; i<=5; i++){
+                     if(i<=parseInt(commentParams.avg)){
+                           eval("star"+i+".setSrc('/appstore/star_on.png');");
+                     }else{
+                           eval("star"+i+".setSrc('/appstore/star_off.png');");
+                     }
+              }
+              totalcom.setValue("("+ commentParams.total +")");
+       }      
+       
+       icon.setValue(params.icon);
+       summary.setValue(params.summary);
+       describe.setValue(params.desc);
+       
+       var previewData = params.preview;
+       previewData = Utils.stringToJson(previewData);
+       for(var i=0; i<previewData.length; i++){
+              if(previewData[i]!=""){
+                     var previewImg = new $M.Image({"width":"180", "height":"320"});
+                     previewImg.setSrc(previewData[i]);
+                     preview.add(previewImg);
+                     var div=new $M.Panel({"width":"10", "height":"100%"});
+                     preview.add(div);
+              }
+       }
+       
+       var paramsData = Utils.stringToJson(params.params);
+       developer.setValue(paramsData.developer);
+       apptype.setValue(params.type);
+       updateLog.setValue(paramsData.updateLog);
+       version.setValue(params.ver);
+       appsize.setValue(paramsData.appSize);
+       language.setValue(paramsData.language);
+       operateBtn.setValue(params.isload);
+       operateBtn.setHeight(30);
+       operateBtn.setWidth(63);
+       btn_operation = params.isload;
+       
+       if(btn_operation=="下载"){
+              operation = 1;
+       }else if(btn_operation=="打开"){
+              operation = 3;
+       }else if(btn_operation=="更新"){
+              operation = 4;
+       }
+       
+       
+    log("原本数据："+aboutapp);
+	if(appInfo.commentParams==null||appInfo.commentParams==""){
+		nocommentpage.setDisplay(true);
+		commentpage.setDisplay(false);
+	}else{
+		var commentParams = Utils.stringToJson(appInfo.commentParams); 
+		chart1.setWidth(parseInt(260*commentParams.score1/commentParams.total));
+		chart2.setWidth(parseInt(260*commentParams.score2/commentParams.total));
+		chart3.setWidth(parseInt(260*commentParams.score3/commentParams.total));
+		chart4.setWidth(parseInt(260*commentParams.score4/commentParams.total));
+		chart5.setWidth(parseInt(260*commentParams.score5/commentParams.total));
+		getComments(appInfo);
+	}
+       
+});
+       function goBack(){
+              $M.page.goBack();
+       }
+       function clickTab1(){
+              apptab.setSelectedIndex(0);
+       }
+       function clickTab2(){
+              apptab.setSelectedIndex(1);
+       }
+              
+       function successFn(){
+              log("success");
+       }
+       
+       function failureFn(){
+              log("fail");
+       }
+       
+       function loadingFn(a, b){
+              loading.setWidth(parseInt(parseInt(b)/parseInt(a)*65));
+       }
+       
+       function downloadSfn(){
+              //通知列表更新
+        	  $M.contextData.setValue("isChange1","true");
+    		  $M.contextData.setValue("isChange2","true");
+              operation = 3;
+              operateBtn.setValue("打开");
+              btn_operation = '打开';
+       		  operateBtn.setHeight(30);
+       		  operateBtn.setWidth(63);
+              loading.setWidth(0);
+       }
+       
+       function updateSfn(){
+       		//通知列表更新
+        	$M.contextData.setValue("isChange1","true");
+			$M.contextData.setValue("isChange2","true");
+            operation = 3;
+            operateBtn.setValue("打开");
+            operateBtn.setHeight(30);
+       		operateBtn.setWidth(63);
+       		loading.setWidth(0);
+       }
+       
+       operateBtn.addEvent('onClick', function(){
+              if(operation == 1){
+                     AppManager.installApp(appInfo, downloadSfn, failureFn, loadingFn);
+              }else if(operation == 2){
+                     $M.page.goTo("/appstore/writecomment.html",appInfo, false);
+              }else if(operation == 3){
+                     var params ={};
+                     params.param=null;
+                     AppManager.startApp(appInfo, params, failureFn, ""); 
+              }else if(operation == 4){
+                     AppManager.installUpdate(appInfo, updateSfn, failureFn);
+              }
+       });
+       
+	apptab.addEvent('onChange', function(oldValue, newValue){
+		var sel = apptab.getSelectedIndex();
+			if(sel==0||sel=='0'){
+            	detail.setBackgroundColor(skin_fondcolor);
+                comment.setBackgroundColor(skin_fondcolor_white);
+                text_detail.setColor(skin_fondcolor_white);
+                text_comment.setColor(skin_fondcolor);
+                if(appInfo!=null&&appInfo!=""){
+                	operateBtn.setValue(btn_operation);
+              		operateBtn.setHeight(30);
+       				operateBtn.setWidth(63);
+                    if(btn_operation=="下载"){
+                    	operation = 1;
+                    }else if(btn_operation=="打开"){
+                        operation = 3;
+                    }else if(btn_operation=="更新"){
+                        operation = 4;
+                    }
+                 }
+			}else{
+                 detail.setBackgroundColor(skin_fondcolor_white);
+                 comment.setBackgroundColor(skin_fondcolor);
+                 text_comment.setColor(skin_fondcolor_white);
+                 text_detail.setColor(skin_fondcolor);
+                 operateBtn.setValue('写评论');
+             	 operateBtn.setHeight(30);
+      			 operateBtn.setWidth(63);
+                 operation = 2;
+            }
+       });
+       
+       
+	$M.page.addEvent('onBack', function(params){ 
+		$M.setCurrentAppId('com.primeton.mwork');
+		if(params==null||params==''||params=='undefined'){
+			log("ios滑动返回不刷页面");
+			return;
+		}
+		isReload= params.isNew;
+		var ajax = new $M.Ajax();
+		ajax.setAction(AppManager.searchOneDetailtUrl);
+		ajax.add('appId', appInfo.id);
+		ajax.add('appType',appInfo.type);
+		ajax.submit(function(r) {
+			
+		try {
+			var newApp = Utils.stringToJson(r)
+			if (newApp!=null||newApp!=""||newApp!='undefined') {
+				log("新的："+Utils.jsonToString(newApp));
+				if(isReload==null||isReload==""||isReload=='undefined'||isReload=='false'){
+					log("不刷页面");
+				}else if(isReload=="true"){
+					$M.contextData.setValue("isChange1","true");
+					$M.contextData.setValue("isChange2","true");
+					if(newApp.commentParams==null||newApp.commentParams==""||newApp.commentParams=='undefined'){
+						appstar.setDisplay(false);
+						nocommentpage.setDisplay(true);
+						commentpage.setDisplay(false);
+			       	}else{
+			            var commentParams = Utils.stringToJson(newApp.commentParams);
+			              //评分
+			            for(var i=1; i<=5; i++){
+			                   if(i<=parseInt(commentParams.avg)){
+			                         eval("star"+i+".setSrc('/appstore/star_on.png');");
+			                   }else{
+			                         eval("star"+i+".setSrc('/appstore/star_off.png');");
+			                   }
+			            }
+			            appstar.setDisplay(true);
+			            totalcom.setValue("("+ commentParams.total +")");
+						
+						log("刷页面吗？刷！===评论总数："+commentParams.total); 
+						
+						nocommentpage.setDisplay(false);
+						commentpage.setDisplay(true);
+						var commentParams = Utils.stringToJson(newApp.commentParams);
+						chart1.setWidth(parseInt(260*commentParams.score1/commentParams.total));
+						chart2.setWidth(parseInt(260*commentParams.score2/commentParams.total));
+						chart3.setWidth(parseInt(260*commentParams.score3/commentParams.total));
+						chart4.setWidth(parseInt(260*commentParams.score4/commentParams.total));
+						chart5.setWidth(parseInt(260*commentParams.score5/commentParams.total));
+						listpage=0;
+						AppManager.getAppComments(getDataSfn, getDataFfn, newApp.appId, listpage+'', '10');
+					}
+				}	
+			} else {
+				log("我error了哭唧唧");
+			}
+		} catch (e) {
+			log("我error了e:"+e);
+		}
+		}, function(r) {
+			log("我error了r:"+r);
+		});
+	});
+	
+
+function getDataSfn(results){
+	var comments = Utils.stringToJson(results.data);	
+	
+	for(var i=0;i<comments.length;i++){
+		comments[i].createTime = comments[i].createTime.substring(0,10);
+		var j=1;
+		for(; j<=comments[i].score; j++){
+			eval("comments["+i+"].star"+j+"='1';");
+		}
+		for(; j<=5; j++){
+			eval("comments["+i+"].star"+j+"='0';");
+		}
+	}
+	commentslist.setItems(comments);
+	commentslist.reloadData();	
+}
+
+function getMoreDataSfn(results){
+	var comments = Utils.stringToJson(results.data);	
+	log(comments.length);
+	if(comments.length>0){
+		for(var i=0;i<comments.length;i++){
+			comments[i].createTime = comments[i].createTime.substring(0,10);
+			var j=1;
+			for(; j<=comments[i].score; j++){
+				eval("comments["+i+"].star"+j+"='1';");
+			}
+			for(; j<=5; j++){
+				eval("comments["+i+"].star"+j+"='0';");
+			}
+		}
+		commentslist.appendItems(comments, 'bottom');
+		commentslist.reloadData();	
+	}else{
+		commentslist.reloadData();	
+	}
+	
+}
+
+commentslist.addEvent('onLoadMore', function(action){
+	if(action == 'pullUp'){
+		listpage++;
+// 		var appInfo = Utils.stringToJson(aboutapp);
+		AppManager.getAppComments(getMoreDataSfn, getDataFfn, appInfo.id, listpage+'', '10');
+	}
+});
+
+function getDataFfn(e){
+	log("error:"+e);
+}
+
+function getComments(appInfo){
+	AppManager.getAppComments(getDataSfn, getDataFfn, appInfo.id, listpage+'', '10');
+}
+       
+       
+   
+       
+       
+       /**
+        * content 分享内容 
+        * title 标题
+        * image  图片路径
+        * url 点击后跳转到的页面
+        * desc 描述信息
+        * type 分享类型  text:0 image:1 news:2
+        */
+       if($M.isAndroid){
+              sharetowx.setHeight(170); 
+       }
+       
+       var isVisibility = false;
+       var data = {};
+                     
+       function disdialog(){
+              sharetowx.clearAnimation();
+              if(isVisibility==true){
+                  sharetowx.setVisibility(false);
+                  isVisibility=false;
+           }
+       }
+       
+       function typesession(){
+              log("session");
+              Utils.shareWebchat(2,'session',data,function(retCode,retMsg){
+                     if(retCode == "0")
+                  {
+                    toast("分享成功");
+                    return;
+                  }
+                  if(retCode == "-2")
+                  {
+                     toast("取消分享");
+                     return;
+                  }
+                     toast(retCode+','+retMsg);
+              });
+       }
+       
+       function typecircle(){
+              log("circle");
+              Utils.shareWebchat(2,'timeline',data,function(retCode,retMsg){
+                  if(retCode == "0")
+                  {
+                    toast("分享成功");
+                    return;
+                  }
+                  if(retCode == "-2")
+                  {
+                     toast("取消分享");
+                     return;
+                  }
+                     toast(retCode+','+retMsg);
+              });
+       }
+       function shareToWechat(){
+              data.content = appInfo.desc;
+              data.title ="小伙伴给您推荐一款超好用的爱屁屁呀--"+appInfo.name;
+              data.image = appInfo.icon;
+              data.url = SERVICEPATH+'/store/admin/shareAppDetail.jsp?appId="'+appInfo.id+'"&appType="'+appInfo.type+'"';
+              
+              sharetowx.clearAnimation();
+              if(isVisibility==false){
+              var translateAnimation = new $M.TranslateAnimation({
+                     fromX : 0,
+                     toX : 0,
+                     toY : 457,
+                     fromY : 640,
+                     duration : 300
+                  });
+                  sharetowx.addAnimation(translateAnimation);
+                  sharetowx.startAnimation();
+                  sharetowx.setVisibility(true);
+                  isVisibility=true;
+           }
+       }      
+</script>
+</html>
